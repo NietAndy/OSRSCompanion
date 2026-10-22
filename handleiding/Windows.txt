@@ -1,0 +1,11 @@
+OSRS Companion voor Windows
+
+1. Download "OSRS Companion.exe" van de nieuwste release en zet hem in een map naar keuze, bijvoorbeeld Documenten.
+2. Dubbelklik erop. Er is geen installatie nodig.
+3. Zegt Windows "Windows heeft uw pc beschermd" (SmartScreen)? Kies "Meer info" en dan "Toch uitvoeren".
+   De app is niet door een betaalde ontwikkelaar ondertekend, vandaar die melding.
+4. Je levels en instellingen worden bewaard op deze pc, ook als je een nieuwe versie van het bestand neerzet.
+
+Updaten: download het nieuwe bestand, verwijder het oude en zet het nieuwe op dezelfde plek.
+
+Wat de app kan, staat in het bestand "Mac.txt" in deze map. Dat is dezelfde uitleg: de onderdelen werken op Windows en Mac hetzelfde.

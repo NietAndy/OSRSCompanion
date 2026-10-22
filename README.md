@@ -15,6 +15,8 @@ Ga naar [Releases](../../releases/latest) en pak het bestand voor jouw computer:
 
 De app controleert bij het opstarten zelf of er een nieuwere versie staat en laat dat zien met een knop om te downloaden. Hij installeert niets vanzelf.
 
+Uitleg per computer: [Windows](handleiding/Windows.txt) en [Mac](handleiding/Mac.txt).
+
 ## Updaten
 
 1. Download het nieuwe bestand van de nieuwste release.
