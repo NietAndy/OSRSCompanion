@@ -28,13 +28,16 @@ Online: 0.5.14. Gedaan sinds 0.5.7: Sailing-stappen, Achievement Diaries, Prijsm
 | begin jan | 0.7.0 | Nieuwe naam met datamigratie; installer voorbereiden |
 | half jan | 0.7.1 | Vergelijken met spelers (#36) |
 | eind jan | 0.8.0 | Eerste-start-uitleg, privacytekst, Over-pagina |
-| begin feb | 0.9.0-rc1 | Test op schone pc, updatetest |
-| half feb | 1.0.0 | Release met checksums |
+| begin feb | 0.9.0 | Thema's en compacte modus |
+| half feb | 0.9.5 | Bufferweek en opruimen |
+| eind feb | 0.9.8 | Eigen startscherm: blokken kiezen, verslepen en verbergen; blokken verdwijnen als een doel is gehaald (met terughalen en een Afgerond-lijst) |
+| begin mrt | 0.9.9-rc1 | Test op schone pc, updatetest |
+| half mrt | 1.0.0 | Release met checksums |
 
 Data na eind november zijn een schatting. Schuift iets, dan schuift het laatste item door; de afwerking blijft.
 
 ## 4. Na 1.0 (prioriteit A/B/C, moeite S/M/L)
-- Nieuwe interface (thema's, eigen startscherm, compacte modus) – A, L
+- Verdere interface-uitbreidingen (meer thema's, startscherm met meer blokken) – A, M
 - Sneltoetsen en slimmer zoekveld – A, M
 - Timers voor farm runs en birdhouses – A, M
 - Collection log en Combat Achievements – A, M
@@ -54,6 +57,9 @@ Data na eind november zijn een schatting. Schuift iets, dan schuift het laatste 
 - Synchronisatie tussen computers – C, L
 - Mobiele of browserversie – C, L
 - Mac en Linux – C, M
+
+## 4b. Ontwerp van het startscherm
+Visueel ontwerp staat als Claude Design-canvas "OSRS Companion – eigen startscherm" (drie schermen: Levelaar, Farmer en flipper, Aanpassen). Nog toe te voegen: een vierde scherm met "doel gehaald" (felicitatie, Afgerond-lijst, schakelaar per blok: Verbergen als klaar / Laten staan, met Ongedaan maken). Ontwerpregels: de app kent alleen wat de gebruiker invult; "gehaald" is dus een afvinkmoment plus automatische controle; verdwijnen moet nooit verrassen en altijd terug te halen zijn.
 
 ## 5. Open beslissingen
 - Nieuwe naam voor of na 1.0? Favoriet: Gielinor Gids; migratie nodig.
