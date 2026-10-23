@@ -46,6 +46,14 @@ def bouw(naam, tag, url, body):
         "allowed_mentions": {"parse": []},
     }
 
+def met_rol(payload, rol):
+    """Zet een @rol-vermelding boven het bericht, als er een geldig rol-ID is ingesteld."""
+    rol = (rol or "").strip()
+    if rol.isdigit() and 15 <= len(rol) <= 22:
+        payload["content"] = "<@&" + rol + ">"
+        payload["allowed_mentions"] = {"parse": [], "roles": [rol]}
+    return payload
+
 def main():
     hook = os.environ.get("WEBHOOK", "").strip()
     naam, tag, url, body = os.environ.get("NAME"), os.environ.get("TAG"), os.environ.get("URL"), os.environ.get("BODY")
@@ -55,7 +63,7 @@ def main():
         if v:
             naam, tag = "Versie " + v, "v" + v
             url = (url or "").rstrip("/") + "/tag/v" + v if url else None
-    payload = bouw(naam, tag, url, body)
+    payload = met_rol(bouw(naam, tag, url, body), os.environ.get("ROL"))
     if "--dry" in sys.argv:
         print(json.dumps(payload, ensure_ascii=False, indent=2)); return 0
     if not hook.startswith("https://discord.com/api/webhooks/") and not hook.startswith("https://discordapp.com/api/webhooks/"):

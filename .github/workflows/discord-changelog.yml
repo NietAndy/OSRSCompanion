@@ -24,5 +24,6 @@ jobs:
           TAG: ${{ github.event.release.tag_name }}
           URL: ${{ github.event.release.html_url || format('https://github.com/{0}/releases', github.repository) }}
           VERSIE: ${{ github.event.inputs.versie }}
+          ROL: ${{ secrets.DISCORD_ROLE_ID }}   # optioneel: het ID van de rol die je wilt taggen
           BODY: ${{ github.event.release.body }}
         run: python3 .github/scripts/discord.py
