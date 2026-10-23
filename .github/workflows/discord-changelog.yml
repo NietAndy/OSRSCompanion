@@ -4,7 +4,12 @@ name: Discord changelog
 on:
   release:
     types: [published]
-  workflow_dispatch:   # knop "Run workflow", om de koppeling te testen
+  workflow_dispatch:   # knop "Run workflow": post de notities van een versie uit de repo
+    inputs:
+      versie:
+        description: "Versie, bijvoorbeeld 0.5.8 (leeg = de nieuwste)"
+        required: false
+        default: ""
 
 jobs:
   discord:
@@ -15,8 +20,9 @@ jobs:
       - name: Bericht naar Discord
         env:
           WEBHOOK: ${{ secrets.DISCORD_CHANGELOG_WEBHOOK }}
-          NAME: ${{ github.event.release.name || 'Testbericht' }}
-          TAG: ${{ github.event.release.tag_name || 'test' }}
+          NAME: ${{ github.event.release.name }}
+          TAG: ${{ github.event.release.tag_name }}
           URL: ${{ github.event.release.html_url || format('https://github.com/{0}/releases', github.repository) }}
-          BODY: ${{ github.event.release.body || 'Dit is een testbericht. Als je dit in het changelog-kanaal ziet, werkt de koppeling.' }}
+          VERSIE: ${{ github.event.inputs.versie }}
+          BODY: ${{ github.event.release.body }}
         run: python3 .github/scripts/discord.py

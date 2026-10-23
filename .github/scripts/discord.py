@@ -1,5 +1,27 @@
 """Stuurt de releasenotities van een GitHub-release naar een Discord-webhook (#changelog)."""
-import json, os, re, sys, urllib.request, urllib.error
+import glob, json, os, re, sys, urllib.request, urllib.error
+
+def versie_van(pad):
+    m = re.search(r"RELEASE-NOTES-([\d.]+)\.md$", pad)
+    return m.group(1) if m else ""
+
+def sleutel(v):
+    return tuple(int(x) for x in v.split(".") if x.isdigit())
+
+def notities(versie):
+    """Zoekt de releasenotities in de repo: de gevraagde versie, anders de nieuwste."""
+    bestanden = glob.glob("RELEASE-NOTES-*.md")
+    if not bestanden:
+        return "", ""
+    kies = None
+    if versie:
+        for b in bestanden:
+            if versie_van(b) == versie.lstrip("vV"):
+                kies = b
+    if not kies:
+        kies = max(bestanden, key=lambda b: sleutel(versie_van(b)))
+    with open(kies, encoding="utf-8") as f:
+        return versie_van(kies), f.read()
 
 def bouw(naam, tag, url, body):
     tekst = (body or "").replace("\r\n", "\n").strip()
@@ -13,7 +35,7 @@ def bouw(naam, tag, url, body):
         tekst = tekst[:3800].rsplit("\n", 1)[0] + "\n…"
     titel = ("🚀 " + (naam or tag or "Nieuwe versie"))[:250]
     return {
-        "username": "OSRS Companion",
+        "username": "Changelog Bot",
         "embeds": [{
             "title": titel,
             "url": url or None,
@@ -26,7 +48,14 @@ def bouw(naam, tag, url, body):
 
 def main():
     hook = os.environ.get("WEBHOOK", "").strip()
-    payload = bouw(os.environ.get("NAME"), os.environ.get("TAG"), os.environ.get("URL"), os.environ.get("BODY"))
+    naam, tag, url, body = os.environ.get("NAME"), os.environ.get("TAG"), os.environ.get("URL"), os.environ.get("BODY")
+    if not (body or "").strip():
+        # Handmatige run: neem de releasenotities uit de repo
+        v, body = notities(os.environ.get("VERSIE", ""))
+        if v:
+            naam, tag = "Versie " + v, "v" + v
+            url = (url or "").rstrip("/") + "/tag/v" + v if url else None
+    payload = bouw(naam, tag, url, body)
     if "--dry" in sys.argv:
         print(json.dumps(payload, ensure_ascii=False, indent=2)); return 0
     if not hook.startswith("https://discord.com/api/webhooks/") and not hook.startswith("https://discordapp.com/api/webhooks/"):
