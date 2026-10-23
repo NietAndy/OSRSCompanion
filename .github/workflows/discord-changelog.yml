@@ -1,0 +1,21 @@
+name: Discord changelog
+
+# Zodra je op GitHub een release publiceert, komen de releasenotities in #changelog op Discord.
+on:
+  release:
+    types: [published]
+
+jobs:
+  discord:
+    runs-on: ubuntu-latest
+    if: ${{ !github.event.release.prerelease }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Bericht naar Discord
+        env:
+          WEBHOOK: ${{ secrets.DISCORD_CHANGELOG_WEBHOOK }}
+          NAME: ${{ github.event.release.name }}
+          TAG: ${{ github.event.release.tag_name }}
+          URL: ${{ github.event.release.html_url }}
+          BODY: ${{ github.event.release.body }}
+        run: python3 .github/scripts/discord.py
