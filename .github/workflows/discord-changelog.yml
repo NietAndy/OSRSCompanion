@@ -18,5 +18,5 @@ jobs:
           NAME: ${{ github.event.release.name || 'Testbericht' }}
           TAG: ${{ github.event.release.tag_name || 'test' }}
           URL: ${{ github.event.release.html_url || format('https://github.com/{0}/releases', github.repository) }}
-          BODY: ${{ github.event.release.body || 'Dit is een testbericht. Als je dit in #changelog ziet, werkt de koppeling.' }}
+          BODY: ${{ github.event.release.body || 'Dit is een testbericht. Als je dit in het changelog-kanaal ziet, werkt de koppeling.' }}
         run: python3 .github/scripts/discord.py
