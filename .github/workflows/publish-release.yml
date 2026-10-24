@@ -1,0 +1,67 @@
+name: Geplande release
+
+# Publiceert de draft-release v0.5.16 op 24 oktober 2026 om 19:00 Nederlandse tijd.
+# Zomertijd (UTC+2) geldt tot 25 oktober, dus 19:00 NL = 17:00 UTC.
+# Na de release is dit bestand overbodig en mag je het verwijderen.
+on:
+  schedule:
+    - cron: "0 17 24 10 *"
+  workflow_dispatch:      # knop "Run workflow": publiceert de draft meteen
+    inputs:
+      tag:
+        description: "Tag van de draft-release"
+        required: false
+        default: "v0.5.16"
+
+permissions:
+  contents: write   # release publiceren en de tag aanmaken
+  actions: write    # de Discord-workflow starten
+
+jobs:
+  publiceer:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Controleer en publiceer de draft
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          TAG: ${{ inputs.tag || 'v0.5.16' }}
+          BRANCH: ${{ github.event.repository.default_branch }}
+        run: |
+          set -euo pipefail
+          VERSIE="${TAG#v}"
+
+          release=$(gh api "repos/$REPO/releases?per_page=100" \
+            --jq '[.[] | select(.tag_name == env.TAG)] | first // empty')
+          if [ -z "$release" ]; then
+            echo "::error::Geen release met tag $TAG gevonden. Maak eerst de draft aan."
+            exit 1
+          fi
+
+          if [ "$(jq -r '.draft' <<<"$release")" != "true" ]; then
+            echo "Release $TAG is al gepubliceerd. Niets te doen."
+            exit 0
+          fi
+
+          # Veiligheidscheck 1: het programma zit bij de draft
+          if ! jq -e '.assets | map(.name) | index("Gielinor.Guide.exe")' <<<"$release" >/dev/null; then
+            echo "::error::Gielinor.Guide.exe ontbreekt bij de draft $TAG. Niet gepubliceerd. Voeg het bestand toe en start deze workflow met Run workflow."
+            exit 1
+          fi
+
+          # Veiligheidscheck 2: de releasenotities staan op main (anders post Discord de notes van een oudere versie)
+          if [ ! -f "RELEASE-NOTES-$VERSIE.md" ]; then
+            echo "::error::RELEASE-NOTES-$VERSIE.md staat niet op $BRANCH. Niet gepubliceerd. Zet het bestand op $BRANCH en start deze workflow met Run workflow."
+            exit 1
+          fi
+
+          # Publiceren: de tag wordt nu aangemaakt op de dan actuele main
+          gh api -X PATCH "repos/$REPO/releases/$(jq -r '.id' <<<"$release")" \
+            -F draft=false -f make_latest=true >/dev/null
+          echo "Release $TAG gepubliceerd."
+
+          # Een release die met het standaard token gepubliceerd wordt, start de Discord-workflow niet vanzelf. Dus doen we dat hier zelf.
+          gh workflow run discord-changelog.yml --ref "$BRANCH" -f versie="$VERSIE"
+          echo "Discord-workflow gestart voor versie $VERSIE."
