@@ -80,3 +80,8 @@ jobs:
           # Een release die met het standaard token gepubliceerd wordt, start de Discord-workflow niet vanzelf. Dus doen we dat hier zelf.
           gh workflow run discord-changelog.yml --ref "$BRANCH" -f versie="$VERSIE"
           echo "Discord-workflow gestart voor versie $VERSIE."
+
+          # Het verhaaltje voor #releases. Mislukt dit, dan blijft de release gewoon gepubliceerd.
+          gh workflow run discord-releases.yml --ref "$BRANCH" -f versie="$VERSIE" \
+            && echo "Verhaaltje-workflow gestart voor versie $VERSIE." \
+            || echo "::warning::Kon de verhaaltje-workflow niet starten. Start Discord releases handmatig."

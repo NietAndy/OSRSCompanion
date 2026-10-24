@@ -1,0 +1,25 @@
+name: Discord releases
+
+# Zet het verhaaltje van een release (RELEASE-STORY-x.y.z.md) in #releases op Discord.
+# Start vanzelf als je zelf een release publiceert, en wordt door "Geplande release" gestart bij een geplande release.
+on:
+  release:
+    types: [released]
+  workflow_dispatch:     # knop "Run workflow": post het verhaaltje van een versie
+    inputs:
+      versie:
+        description: "Versie, bijvoorbeeld 0.5.15.2"
+        required: true
+
+jobs:
+  discord:
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'workflow_dispatch' || !github.event.release.prerelease }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verhaaltje naar Discord
+        env:
+          WEBHOOK: ${{ secrets.DISCORD_RELEASES_WEBHOOK }}
+          VERSIE: ${{ github.event.inputs.versie || github.event.release.tag_name }}
+          REPO: ${{ github.repository }}
+        run: python3 .github/scripts/discord_releases.py
