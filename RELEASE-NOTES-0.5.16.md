@@ -10,3 +10,13 @@
 - De exacte plekken komen uit de wereldkaart van RuneLite (BSD 2-Clause). De plaatsnamen komen uit hun Farming-gegevens.
 - Alleen voor de spirit tree-patch geldt een level (83). Voor de andere patches hangt het level af van het gewas dat je plant.
 - Prifddinas (crystal tree) en de onderwaterpatches (seaweed, coral) en Hespori staan er nog niet bij, omdat de kaart die plekken niet toont.
+
+## Ook in deze versie
+- **Altaren:** Wrath (level 95, Dragon Slayer II), Astral (level 40, Lunar Diplomacy) en het Blood-altaar van Kourend (level 77) staan erbij. Het Blood-altaar van Morytania heet nu zo.
+- **Vis:** sea turtle (79) en manta ray (81) staan bij Fishing Trawler.
+- **Bronze spear:** gecontroleerd, het recept (1 bronze bar + 1 logs) klopt.
+
+## Bekende beperkingen
+- Coördinaten van Death-, Blood (Morytania)-, Soul-, Astral- en Blood (Kourend)-altaar en de Wrath-ruine zijn niet of bij benadering gecontroleerd. De Fishing Trawler-plek is ook bij benadering.
+- Quest-eisen van recepten zijn nog niet overal ingevuld; dan blijft het recept beschikbaar.
+- Nieuwsafbeeldingen (wiki en Jagex) en de meldingen zijn niet op Windows getest.

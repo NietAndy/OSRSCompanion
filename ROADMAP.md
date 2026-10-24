@@ -82,12 +82,12 @@ Visueel ontwerp staat als Claude Design-canvas "OSRS Companion – eigen startsc
 - Workflow voor geplande publicatie bouwen, met Discord-melding in dezelfde workflow?
 
 ## 6. Bekende gaten
-- Wrath- en Astral-altaar ontbreken; coördinaten Death-, Blood- en Soul-altaar niet gecontroleerd.
-- Sea turtle en manta ray ontbreken bij Vis.
+- Altaren: Wrath en Astral zijn in 0.5.16 toegevoegd, plus het Blood-altaar van Kourend. Levels en quests zijn bevestigd met de wiki. Coördinaten van Death, Blood (Morytania), Soul, Astral, Blood (Kourend) en de Wrath-ruine zijn niet of alleen bij benadering gecontroleerd.
+- Sea turtle (79) en manta ray (81) staan sinds 0.5.16 bij Vis als Fishing Trawler (Port Khazard); de plek is bij benadering.
 - Quest-eisen van recepten onvolledig (waar ze ontbreken blijft het recept beschikbaar).
-- Bronze spear: niet bevestigd of er logs voor nodig zijn.
+- Bronze spear: bevestigd met de wiki, 1 bronze bar + 1 logs. Klopt dus.
 - Nieuwsafbeeldingen en toasts niet op Windows getest.
-- Farming-patches komen per gebied van 64×64 tegels, niet exact.
+- Farming-patches: sinds 0.5.16 exact; Prifddinas, onderwaterpatches en Hespori ontbreken nog.
 
 ## 7. Risico's
 - Hernoeming en migratie kunnen data kosten: eerst back-up laten maken, rc laten testen.
