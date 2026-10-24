@@ -1,6 +1,6 @@
 # OSRS Companion – roadmap (voor ons)
 
-Bijgewerkt 2026-10-23. Werkdocument voor de gebruiker en Claude. Een bewerkbare kopie staat als Claude Doc; deze file is wat Claude aan het begin van een sessie leest.
+Bijgewerkt 2026-10-24. Werkdocument voor de gebruiker en Claude. Een bewerkbare kopie staat als Claude Doc; deze file is wat Claude aan het begin van een sessie leest.
 
 ## 1. Werkafspraken
 - Eén release per vrijdag, kleine versiestappen (0.5.x). Extra cijfer = hotfix (0.5.16.1). Middelgrote stap (0.6, 0.7) alleen als opslag of naam verandert.
@@ -10,6 +10,18 @@ Bijgewerkt 2026-10-23. Werkdocument voor de gebruiker en Claude. Een bewerkbare 
 - Alleen Windows. Niets betaalds. Geen automatisering of uitlezen van het spel (Jagex).
 - Gegevens van OSRS Wiki, Shortest Path (BSD) en RuneLite (BSD), met bron.
 - `package.json`: driedelig `version` plus eigen `appVersie`; de updater leest `appVersie`.
+
+### Wekelijkse controle op nieuwe OSRS-inhoud (elke vrijdag, vóór het bouwen)
+Doel: alles wat Jagex uitbrengt komt ook in de app. Elke vrijdag loop ik de lijst hieronder langs en zet wat nieuw is in de release van die week. Is er niets nieuw, dan staat dat in de releasenotities.
+1. **Nieuws:** de laatste OSRS-nieuwsberichten en de updatepost van de week (nieuwe content, aanpassingen aan bestaande content, balanswijzigingen).
+2. **Quests en miniquests:** nieuwe quests en wijzigingen in eisen of beloningen. Aantal in de app vergelijken met de wiki (nu 184 quests).
+3. **Items:** nieuwe handelbare items voor de Grand Exchange-lijst en de prijzen, plus nieuwe uitrusting voor Gear en Schade.
+4. **Skills en bronnen:** nieuwe trainingsmethoden, vispotten, ertsen, bomen, patches en altaren; wijzigingen in levelsvereisten.
+5. **Monsters en drops:** nieuwe bazen en vijanden, aangepaste drops en drop-kansen, nieuwe pets.
+6. **Kaart en vervoer:** nieuwe gebieden, teleports, shortcuts en banken.
+7. **Achievement Diaries, clues en geld verdienen:** nieuwe taken, nieuwe cluestappen, aangepaste winstschattingen.
+8. **Prijzen:** de momentopname van de Grand Exchange vernieuwen.
+Regels: alleen wat ik op de wiki of bij de officiële nieuwsberichten kan nalezen; wat ik niet kan controleren, markeer ik als "niet gecontroleerd". Nieuwe plekken en levels komen met bron in de releasenotities. Wat te groot is voor één week gaat als eigen punt op de lijst.
 
 ## 2. Stand
 Online: 0.5.14. Gedaan sinds 0.5.7: Sailing-stappen, Achievement Diaries, Prijsmeldingen (#39), Skilling-planner (#38) met quest-eisen, nieuws als krant, kaart met producten en Runecraft-altaren, kaartopties als dropdowns, zijbalk met klapbare groepen, skill-icoontjes, Discord-setup en changelog-workflow.
