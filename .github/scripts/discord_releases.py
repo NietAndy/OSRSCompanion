@@ -31,7 +31,7 @@ def bouw(versie, repo, tekst):
 def main():
     versie = os.environ.get("VERSIE", "").strip().lstrip("vV")
     repo = os.environ.get("REPO", "").strip()
-    hook = os.environ.get("WEBHOOK", "").strip()
+    hook = os.environ.get("WEBHOOK", "").strip().strip("'\"").strip()
     if not versie:
         print("Geen versie opgegeven. Niets verstuurd."); return 1
     tekst = lees_verhaal(versie)
@@ -40,8 +40,10 @@ def main():
     payload = bouw(versie, repo, tekst)
     if "--dry" in sys.argv:
         print(json.dumps(payload, ensure_ascii=False, indent=2)); return 0
+    if not hook:
+        print("De secret DISCORD_RELEASES_WEBHOOK is leeg of bestaat niet. Zet hem bij Settings > Secrets and variables > Actions > Repository secrets (niet bij Variables of Environment secrets). Niets verstuurd."); return 1
     if not (hook.startswith("https://discord.com/api/webhooks/") or hook.startswith("https://discordapp.com/api/webhooks/")):
-        print("Geen geldige DISCORD_RELEASES_WEBHOOK secret ingesteld. Niets verstuurd."); return 1
+        print("De secret DISCORD_RELEASES_WEBHOOK bevat geen Discord-webhook-URL. Hij moet beginnen met https://discord.com/api/webhooks/ . Kopieer hem opnieuw uit Discord. Niets verstuurd."); return 1
     req = urllib.request.Request(hook, data=json.dumps(payload).encode("utf-8"),
                                  headers={"Content-Type": "application/json", "User-Agent": "OSRSCompanion-release-bot (GitHub Actions)"})
     try:
