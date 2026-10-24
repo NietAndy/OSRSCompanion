@@ -1,17 +1,19 @@
 name: Geplande release
 
-# Publiceert de draft-release v0.5.15.2 op 24 oktober 2026 om 19:00 Nederlandse tijd.
-# Zomertijd (UTC+2) geldt tot 25 oktober, dus 19:00 NL = 17:00 UTC.
-# Na de release is dit bestand overbodig en mag je het verwijderen.
+# Publiceert automatisch de nieuwste draft-release (geen pre-release).
+#  - Eenmalig vandaag, 24 oktober 2026, om 19:15 Nederlandse tijd (zomertijd, UTC+2): 17:15 UTC.
+#  - Daarna elke dag om 18:00 UTC. Dat is 19:00 in de wintertijd en 20:00 in de zomertijd.
+# Er is geen draft? Dan gebeurt er niets. Is de draft niet compleet? Dan publiceert hij niet en wordt de run rood.
 on:
   schedule:
-    - cron: "0 17 24 10 *"
+    - cron: "15 17 24 10 *"
+    - cron: "0 18 * * *"
   workflow_dispatch:      # knop "Run workflow": publiceert de draft meteen
     inputs:
       tag:
-        description: "Tag van de draft-release"
+        description: "Tag van de draft, bijvoorbeeld v0.5.15.2 (leeg = de nieuwste draft)"
         required: false
-        default: "v0.5.15.2"
+        default: ""
 
 permissions:
   contents: write   # release publiceren en de tag aanmaken
@@ -27,23 +29,36 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
-          TAG: ${{ inputs.tag || 'v0.5.15.2' }}
+          TAG: ${{ inputs.tag }}
           BRANCH: ${{ github.event.repository.default_branch }}
         run: |
           set -euo pipefail
+
+          releases=$(gh api "repos/$REPO/releases?per_page=100")
+
+          if [ -n "$TAG" ]; then
+            # Een bepaalde tag is opgegeven (handmatige run)
+            release=$(jq -c --arg t "$TAG" '[.[] | select(.tag_name == $t)] | first // empty' <<<"$releases")
+            if [ -z "$release" ]; then
+              echo "::error::Geen release met tag $TAG gevonden."
+              exit 1
+            fi
+            if [ "$(jq -r '.draft' <<<"$release")" != "true" ]; then
+              echo "Release $TAG is al gepubliceerd. Niets te doen."
+              exit 0
+            fi
+          else
+            # Geen tag opgegeven: pak de nieuwste draft die geen pre-release is
+            release=$(jq -c '[.[] | select(.draft == true and .prerelease == false)] | sort_by(.created_at) | last // empty' <<<"$releases")
+            if [ -z "$release" ]; then
+              echo "Geen draft-release gevonden. Niets te doen."
+              exit 0
+            fi
+          fi
+
+          TAG=$(jq -r '.tag_name' <<<"$release")
           VERSIE="${TAG#v}"
-
-          release=$(gh api "repos/$REPO/releases?per_page=100" \
-            --jq '[.[] | select(.tag_name == env.TAG)] | first // empty')
-          if [ -z "$release" ]; then
-            echo "::error::Geen release met tag $TAG gevonden. Maak eerst de draft aan."
-            exit 1
-          fi
-
-          if [ "$(jq -r '.draft' <<<"$release")" != "true" ]; then
-            echo "Release $TAG is al gepubliceerd. Niets te doen."
-            exit 0
-          fi
+          echo "Draft gevonden: $TAG"
 
           # Veiligheidscheck 1: het programma (een .exe-bestand) zit bij de draft
           if ! jq -e '.assets | any(.name | test("\\.exe$"; "i"))' <<<"$release" >/dev/null; then
