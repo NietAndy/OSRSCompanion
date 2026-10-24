@@ -45,9 +45,9 @@ jobs:
             exit 0
           fi
 
-          # Veiligheidscheck 1: het programma zit bij de draft
-          if ! jq -e '.assets | map(.name) | index("Gielinor.Guide.exe")' <<<"$release" >/dev/null; then
-            echo "::error::Gielinor.Guide.exe ontbreekt bij de draft $TAG. Niet gepubliceerd. Voeg het bestand toe en start deze workflow met Run workflow."
+          # Veiligheidscheck 1: het programma (een .exe-bestand) zit bij de draft
+          if ! jq -e '.assets | any(.name | test("\\.exe$"; "i"))' <<<"$release" >/dev/null; then
+            echo "::error::Er zit geen .exe-bestand bij de draft $TAG. Niet gepubliceerd. Voeg het bestand toe en start deze workflow met Run workflow."
             exit 1
           fi
 
