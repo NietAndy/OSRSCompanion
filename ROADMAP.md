@@ -17,15 +17,15 @@ Online: 0.5.14. Gedaan sinds 0.5.7: Sailing-stappen, Achievement Diaries, Prijsm
 ## 3. Planning
 | Vrijdag | Versie | Inhoud |
 |---|---|---|
-| 30 okt | 0.5.15 (nieuwe naam: Gielinor Guide) | Farming-patches op de kaart; geplande publicatie + Discord-melding |
-| 6 nov | 0.5.16 | Zoeken met item-kaarten (4.129 GE-items) |
-| 13 nov | 0.5.17 | Uitleg bij begrippen (#35); foutlogboek |
-| 20 nov | 0.5.18 | Hunter-locaties; hiscores met "opgehaald om" |
-| 27 nov | 0.5.19 | Bufferweek |
-| 4 dec | 0.6.0 | Eigen voortgang (#34); versie in opslagformaat; sterkere back-up |
+| 24 okt (klaar) | 0.5.15 | Nieuwe naam: Gielinor Guide; gegevens blijven in dezelfde map |
+| 30 okt | 0.5.16 | Farming-patches op de kaart; geplande publicatie + Discord-melding |
+| 6 nov | 0.5.17 | Zoeken met item-kaarten (4.129 GE-items) |
+| 13 nov | 0.5.18 | Uitleg bij begrippen (#35); foutlogboek |
+| 20 nov | 0.5.19 | Hunter-locaties; hiscores met "opgehaald om" |
+| 27 nov | 0.5.20 | Bufferweek |
 | 11 dec | 0.6.1 | Quest-volgorde (#37) |
 | 18 dec | 0.6.2 | Buffer en opruimen; feestdagenrust |
-| begin jan | 0.7.0 | Nieuwe naam met datamigratie; installer voorbereiden |
+| begin jan | 0.7.0 | Installer voorbereiden |
 | half jan | 0.7.1 | Vergelijken met spelers (#36) |
 | eind jan | 0.8.0 | Eerste-start-uitleg, privacytekst, Over-pagina |
 | begin feb | 0.9.0 | Thema's en compacte modus |
@@ -62,7 +62,8 @@ Data na eind november zijn een schatting. Schuift iets, dan schuift het laatste 
 Visueel ontwerp staat als Claude Design-canvas "OSRS Companion – eigen startscherm" (drie schermen: Levelaar, Farmer en flipper, Aanpassen). Nog toe te voegen: een vierde scherm met "doel gehaald" (felicitatie, Afgerond-lijst, schakelaar per blok: Verbergen als klaar / Laten staan, met Ongedaan maken). Ontwerpregels: de app kent alleen wat de gebruiker invult; "gehaald" is dus een afvinkmoment plus automatische controle; verdwijnen moet nooit verrassen en altijd terug te halen zijn.
 
 ## 5. Open beslissingen
-- Nieuwe naam voor of na 1.0? Favoriet: Gielinor Gids; migratie nodig.
+- Naam: besloten, Gielinor Guide (0.5.15). Hernoem de GitHub-repository pas als alle apps op 0.5.15 of nieuwer staan.
+- Nog te beslissen: snellere opstart (grote data apart laden, laadscherm) en de uiterlijke punten uit de review van 24 okt. Voorstel: opstart als eerstvolgende stap.
 - Hoeveel tijd heeft de gebruiker per week om te testen?
 - Repo publiek maken (gratis ondertekenen via SignPath)?
 - Kloppen de Discord-kanaalnamen (#ideeën, #bugs)?

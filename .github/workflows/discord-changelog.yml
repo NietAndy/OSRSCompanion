@@ -3,7 +3,7 @@ name: Discord changelog
 # Zodra je op GitHub een release publiceert, komen de releasenotities in #changelog op Discord.
 on:
   release:
-    types: [published]
+    types: [released]   # ook bij een pre-release die je tot release maakt; een gewone release geeft maar één bericht
   workflow_dispatch:   # knop "Run workflow": post de notities van een versie uit de repo
     inputs:
       versie:
