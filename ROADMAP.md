@@ -17,7 +17,7 @@ Online: 0.5.14. Gedaan sinds 0.5.7: Sailing-stappen, Achievement Diaries, Prijsm
 ## 3. Planning
 | Vrijdag | Versie | Inhoud |
 |---|---|---|
-| 30 okt | 0.5.15 | Farming-patches op de kaart; geplande publicatie + Discord-melding |
+| 30 okt | 0.5.15 (nieuwe naam: Gielinor Guide) | Farming-patches op de kaart; geplande publicatie + Discord-melding |
 | 6 nov | 0.5.16 | Zoeken met item-kaarten (4.129 GE-items) |
 | 13 nov | 0.5.17 | Uitleg bij begrippen (#35); foutlogboek |
 | 20 nov | 0.5.18 | Hunter-locaties; hiscores met "opgehaald om" |

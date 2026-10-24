@@ -1,4 +1,4 @@
-# OSRS Companion
+# Gielinor Guide (voorheen OSRS Companion)
 
 Een Nederlandse gids voor Old School RuneScape, voor persoonlijk gebruik: advies op maat, quests, een kaart met je live positie en looproute, prijzen van de Grand Exchange, manieren om geld te verdienen en meer.
 
@@ -10,8 +10,8 @@ Ga naar [Releases](../../releases/latest) en pak het bestand voor jouw computer:
 
 | Computer | Bestand | Zo gebruik je het |
 | --- | --- | --- |
-| Windows | `OSRS Companion.exe` | Dubbelklik. Er is geen installatie nodig. Windows kan bij het eerste openen waarschuwen, kies dan "Meer info" en "Toch uitvoeren". |
-| Mac (Apple Silicon) | `OSRS-Companion-Mac-arm64.zip` | Pak de zip uit en sleep de app naar Programma's. Lees `LEES MIJ.txt` in de zip voor het eerste keer openen. |
+| Windows | `Gielinor Guide.exe` | Dubbelklik. Er is geen installatie nodig. Windows kan bij het eerste openen waarschuwen, kies dan "Meer info" en "Toch uitvoeren". |
+| Mac (Apple Silicon) | `Gielinor-Guide-Mac-arm64.zip` | Pak de zip uit en sleep de app naar Programma's. Lees `LEES MIJ.txt` in de zip voor het eerste keer openen. |
 
 De app controleert bij het opstarten zelf of er een nieuwere versie staat en laat dat zien met een knop om te downloaden. Hij installeert niets vanzelf.
 
