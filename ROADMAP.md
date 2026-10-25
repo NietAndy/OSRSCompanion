@@ -1,6 +1,6 @@
 # OSRS Companion – roadmap (voor ons)
 
-Bijgewerkt 2026-10-24. Werkdocument voor de gebruiker en Claude. Een bewerkbare kopie staat als Claude Doc; deze file is wat Claude aan het begin van een sessie leest.
+Bijgewerkt 2026-10-25. Werkdocument voor de gebruiker en Claude. Een bewerkbare kopie staat als Claude Doc; deze file is wat Claude aan het begin van een sessie leest.
 
 ## 1. Werkafspraken
 - Eén release per vrijdag, kleine versiestappen (0.5.x). Extra cijfer = hotfix (0.5.16.1). Middelgrote stap (0.6, 0.7) alleen als opslag of naam verandert.
@@ -24,14 +24,14 @@ Doel: alles wat Jagex uitbrengt komt ook in de app. Elke vrijdag loop ik de lijs
 Regels: alleen wat ik op de wiki of bij de officiële nieuwsberichten kan nalezen; wat ik niet kan controleren, markeer ik als "niet gecontroleerd". Nieuwe plekken en levels komen met bron in de releasenotities. Wat te groot is voor één week gaat als eigen punt op de lijst.
 
 ## 2. Stand
-Online: 0.5.14. Gedaan sinds 0.5.7: Sailing-stappen, Achievement Diaries, Prijsmeldingen (#39), Skilling-planner (#38) met quest-eisen, nieuws als krant, kaart met producten en Runecraft-altaren, kaartopties als dropdowns, zijbalk met klapbare groepen, skill-icoontjes, Discord-setup en changelog-workflow.
+Online: 0.5.14 (0.5.16 klaar, wacht op publicatie). Gedaan sinds 0.5.7: Sailing-stappen, Achievement Diaries, Prijsmeldingen (#39), Skilling-planner (#38) met quest-eisen, nieuws als krant, kaart met producten en Runecraft-altaren, kaartopties als dropdowns, zijbalk met klapbare groepen, skill-icoontjes, Discord-setup en changelog-workflow.
 
 ## 3. Planning
 | Vrijdag | Versie | Inhoud |
 |---|---|---|
 | 24 okt (klaar) | 0.5.15 | Nieuwe naam: Gielinor Guide; gegevens blijven in dezelfde map |
 | 30 okt | 0.5.16 | Foutlogboek (klaar) en Farming-patches op de kaart (klaar); geplande publicatie en Discord-melding (klaar) |
-| 6 nov | 0.5.17 | Zoeken met item-kaarten (4.129 GE-items) |
+| 6 nov | 0.5.17 | Officiële icoontjes bij alle items, ook capes en uitrusting (zie 4c); zoeken met item-kaarten (4.129 GE-items); snellere opstart |
 | 13 nov | 0.5.18 | Uitleg bij begrippen (#35) |
 | 20 nov | 0.5.19 | Hunter-locaties; hiscores met "opgehaald om" |
 | 27 nov | 0.5.20 | Bufferweek |
@@ -72,6 +72,33 @@ Data na eind november zijn een schatting. Schuift iets, dan schuift het laatste 
 
 ## 4b. Ontwerp van het startscherm
 Visueel ontwerp staat als Claude Design-canvas "OSRS Companion – eigen startscherm" (drie schermen: Levelaar, Farmer en flipper, Aanpassen). Nog toe te voegen: een vierde scherm met "doel gehaald" (felicitatie, Afgerond-lijst, schakelaar per blok: Verbergen als klaar / Laten staan, met Ongedaan maken). Ontwerpregels: de app kent alleen wat de gebruiker invult; "gehaald" is dus een afvinkmoment plus automatische controle; verdwijnen moet nooit verrassen en altijd terug te halen zijn.
+
+## 4c. Officiële item-icoontjes overal (0.5.17, wens van de gebruiker)
+Doel: overal waar een item, cape of stuk uitrusting staat, het officiële icoontje uit het spel tonen (GE-lijst, recepten, drops, Gear, Schade, Geld verdienen, Quests, Skilling-planner, nieuws).
+Aanpak (nog te bevestigen bij het bouwen):
+- De prijs-API van de OSRS Wiki (`prices.runescape.wiki/api/v2/osrs/mapping`) geeft per verhandelbaar item de bestandsnaam van het icoon. Het plaatje komt dan van de wiki-afbeeldingenserver.
+- Niet-verhandelbare items (capes zoals de max cape en skill capes, quest-beloningen, Diary-items): bestandsnaam afleiden van de itemnaam; waar dat niet lukt, valt de app terug op het huidige plaatje of een neutraal icoon.
+- Plaatjes eenmalig ophalen en op schijf bewaren (cache), zodat de app daarna ook offline werkt en de wiki niet steeds wordt belast. Vooraf in de exe stoppen kan ik niet: mijn werkomgeving komt niet bij de wiki.
+- Altijd een herkenbare User-Agent meesturen (de wiki vraagt dat). Eén aanvraag voor alle prijzen, nooit per item in een lus.
+- Alleen de icoontjes van wat de gebruiker echt ziet laden (lui laden), anders wordt de opstart trager.
+Aandachtspunten:
+- Rechten: de icoontjes zijn kunst van Jagex. Het beleid voor fan-inhoud van Jagex vraagt een zichtbare vermelding ("Created using intellectual property belonging to Jagex Limited under the terms of Jagex's Fan Content Policy", met de mededeling dat het niet door Jagex is goedgekeurd). Volgens mijn samenvatting van dat beleid staan "companion- of gids-apps" ook in de lijst met dingen die niet mogen onder die licentie. Dat is niet door mij in de volledige tekst nagelezen. Eerst nalezen of Jagex mailen (IP@Jagex.com) voordat de app breder wordt gedeeld.
+- Zonder internet en zonder cache: terugvallen op het huidige plaatje.
+
+## 4d. Onderzoek 25 okt: wat bestaat er al en wat kan beter
+Bekeken: de OSRS Wiki, RuneLite, Wise Old Man, TempleOSRS, GE Tracker, OSRS Toolkit, Theoatrix, OldSchool.tools. Bruikbare ideeën voor ons, met prioriteit en moeite:
+- **Prijsgrafieken per item** (uur, dag, maand, jaar) via de prijs-API van de wiki; past bij het zoeken met item-kaarten in 0.5.17/0.5.18 – A, M
+- **Buy limits en high alch-winst** in de item-kaart (komt uit dezelfde mapping) – A, S
+- **Buy limits-teller:** wanneer je weer mag kopen – B, M
+- **Best in Slot en Gear-kiezer** per activiteit – B, L
+- **DPS-calculator met sets** (al in de lijst na 1.0) – B, M
+- **Quest-helper-achtig overzicht:** volgorde voor de quest cape en wat je nog mist – A, M (past bij 0.6.1)
+- **Accountvoortgang** met doelen en XP-winst per dag, week, maand (eerst eigen momentopnames; Wise Old Man later) – A, M
+- **Collection log en Combat Achievements** (al in de lijst) – B, M
+- **Ironman-hulp** (Herblore, Farming, Hunter), **House planner**, **Slayer-hulp** – C, L
+- **Gebruik zonder internet** met alle gegevens lokaal – A, M (de app doet dit voor de meeste dingen al)
+- **Handmatige import van je bank** (csv uit RuneLite) om te zien wat je al hebt voor een recept – B, M
+Wat we zelf nog moeten verbeteren: snellere opstart; Windows-testlijst na elke release; automatische tests; uiterlijke punten uit de review van 24 okt; quest-eisen van alle recepten aanvullen; coördinaten van een paar altaren controleren.
 
 ## 5. Open beslissingen
 - Naam: besloten, Gielinor Guide (0.5.15). Hernoem de GitHub-repository pas als alle apps op 0.5.15 of nieuwer staan.
