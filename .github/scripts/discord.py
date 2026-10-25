@@ -46,9 +46,11 @@ def bouw(naam, tag, url, body):
         "allowed_mentions": {"parse": []},
     }
 
+ROL_STANDAARD = "1563825662836473936"   # rol die bij elke changelog wordt getagd
+
 def met_rol(payload, rol):
     """Zet een @rol-vermelding boven het bericht, als er een geldig rol-ID is ingesteld."""
-    rol = (rol or "").strip()
+    rol = (rol or "").strip() or ROL_STANDAARD
     if rol.isdigit() and 15 <= len(rol) <= 22:
         payload["content"] = "<@&" + rol + ">"
         payload["allowed_mentions"] = {"parse": [], "roles": [rol]}

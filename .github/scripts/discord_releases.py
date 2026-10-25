@@ -28,6 +28,15 @@ def bouw(versie, repo, tekst):
         "allowed_mentions": {"parse": []},
     }
 
+ROL_STANDAARD = "1563825748366852096"   # rol die bij elk verhaaltje in #releases wordt getagd
+
+def met_rol(payload, rol):
+    rol = (rol or "").strip() or ROL_STANDAARD
+    if rol.isdigit() and 15 <= len(rol) <= 22:
+        payload["content"] = "<@&" + rol + ">"
+        payload["allowed_mentions"] = {"parse": [], "roles": [rol]}
+    return payload
+
 def main():
     versie = os.environ.get("VERSIE", "").strip().lstrip("vV")
     repo = os.environ.get("REPO", "").strip()
@@ -37,7 +46,7 @@ def main():
     tekst = lees_verhaal(versie)
     if not tekst:
         print("Geen RELEASE-STORY-" + versie + ".md gevonden. Niets verstuurd."); return 0
-    payload = bouw(versie, repo, tekst)
+    payload = met_rol(bouw(versie, repo, tekst), os.environ.get("ROL"))
     if "--dry" in sys.argv:
         print(json.dumps(payload, ensure_ascii=False, indent=2)); return 0
     if not hook:
