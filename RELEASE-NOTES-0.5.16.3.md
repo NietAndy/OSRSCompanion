@@ -6,6 +6,8 @@
 
 - **Nieuwe pagina "Over en bronnen"** (onder Info). Daar staat dat de officiële icoontjes en afbeeldingen uit het spel door Jagex zijn gemaakt, met de vermelding uit hun Fan Content Policy, en de lijst met bronnen.
 
+- **De krant (Nieuws, "De app") heeft weer een nieuwe editie**, van zondag 25 oktober, met alles sinds de vorige: nieuwe naam, officiële icoontjes, foutlogboek, Farming-patches, gebiedsnaam, altaren en vis, reparaties en de pagina Over en bronnen.
+
 ## Opgelost
 - **"Controleer op updates"** sprong ten onrechte naar de Kaart en gaf een foutmelding in het Logboek. Dat gebeurde al langer, maar het logboek maakt het sinds 0.5.16 zichtbaar. De updatecontrole zelf werkte altijd.
 
