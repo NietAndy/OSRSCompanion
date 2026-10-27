@@ -31,6 +31,7 @@ Klaar voor vrijdag 30 okt: 0.5.17 (verkoopcalculator). Online: 0.5.16.3 (gebieds
 |---|---|---|
 | 24 okt (klaar) | 0.5.15 | Nieuwe naam: Gielinor Guide; gegevens blijven in dezelfde map |
 | 30 okt | 0.5.17 | Verkoopcalculator op de Prijzen-pagina (zie 4e) |
+| rond 2 nov | 0.5.17.1 | Verkoopcalculator zoekt slimmer ("Bedoelde je Coal?", Enter kiest het eerste resultaat); logo "RuneScape Helper" wordt Gielinor Guide; `handleiding/Mac.txt` uit de repo; menu in de zijbalk opnieuw ordenen (voorstellen eerst laten zien) |
 | 6 nov | 0.5.18 | Officiële icoontjes bij alle items, ook capes en uitrusting (zie 4c); zoeken met item-kaarten (4.129 GE-items); snellere opstart |
 | 13 nov | 0.5.19 | Uitleg bij begrippen (#35) |
 | 20 nov | 0.5.20 | Hunter-locaties; hiscores met "opgehaald om" |
