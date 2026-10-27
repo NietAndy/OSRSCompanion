@@ -30,10 +30,11 @@ Online: 0.5.16.3 (gebiedsnaam onder de kaart, update-knop gerepareerd). Gedaan s
 | Vrijdag | Versie | Inhoud |
 |---|---|---|
 | 24 okt (klaar) | 0.5.15 | Nieuwe naam: Gielinor Guide; gegevens blijven in dezelfde map |
-| 6 nov | 0.5.17 | Officiële icoontjes bij alle items, ook capes en uitrusting (zie 4c); zoeken met item-kaarten (4.129 GE-items); snellere opstart |
-| 13 nov | 0.5.18 | Uitleg bij begrippen (#35) |
-| 20 nov | 0.5.19 | Hunter-locaties; hiscores met "opgehaald om" |
-| 27 nov | 0.5.20 | Bufferweek |
+| 30 okt | 0.5.17 | Verkoopcalculator op de Prijzen-pagina (zie 4e) |
+| 6 nov | 0.5.18 | Officiële icoontjes bij alle items, ook capes en uitrusting (zie 4c); zoeken met item-kaarten (4.129 GE-items); snellere opstart |
+| 13 nov | 0.5.19 | Uitleg bij begrippen (#35) |
+| 20 nov | 0.5.20 | Hunter-locaties; hiscores met "opgehaald om" |
+| 27 nov | 0.5.21 | Bufferweek |
 | 11 dec | 0.6.1 | Quest-volgorde (#37) |
 | 18 dec | 0.6.2 | Buffer en opruimen; feestdagenrust |
 | begin jan | 0.7.0 | Installer voorbereiden |
@@ -72,7 +73,7 @@ Data na eind november zijn een schatting. Schuift iets, dan schuift het laatste 
 ## 4b. Ontwerp van het startscherm
 Visueel ontwerp staat als Claude Design-canvas "OSRS Companion – eigen startscherm" (drie schermen: Levelaar, Farmer en flipper, Aanpassen). Nog toe te voegen: een vierde scherm met "doel gehaald" (felicitatie, Afgerond-lijst, schakelaar per blok: Verbergen als klaar / Laten staan, met Ongedaan maken). Ontwerpregels: de app kent alleen wat de gebruiker invult; "gehaald" is dus een afvinkmoment plus automatische controle; verdwijnen moet nooit verrassen en altijd terug te halen zijn.
 
-## 4c. Officiële item-icoontjes overal (0.5.17, wens van de gebruiker)
+## 4c. Officiële item-icoontjes overal (0.5.18, wens van de gebruiker)
 Doel: overal waar een item, cape of stuk uitrusting staat, het officiële icoontje uit het spel tonen (GE-lijst, recepten, drops, Gear, Schade, Geld verdienen, Quests, Skilling-planner, nieuws).
 Aanpak (nog te bevestigen bij het bouwen):
 - De prijs-API van de OSRS Wiki (`prices.runescape.wiki/api/v2/osrs/mapping`) geeft per verhandelbaar item de bestandsnaam van het icoon. Het plaatje komt dan van de wiki-afbeeldingenserver.
@@ -84,9 +85,19 @@ Aandachtspunten:
 - Rechten: de icoontjes zijn kunst van Jagex. Het beleid voor fan-inhoud van Jagex vraagt een zichtbare vermelding ("Created using intellectual property belonging to Jagex Limited under the terms of Jagex's Fan Content Policy", met de mededeling dat het niet door Jagex is goedgekeurd). Volgens mijn samenvatting van dat beleid staan "companion- of gids-apps" ook in de lijst met dingen die niet mogen onder die licentie. Dat is niet door mij in de volledige tekst nagelezen. Eerst nalezen of Jagex mailen (IP@Jagex.com) voordat de app breder wordt gedeeld.
 - Zonder internet en zonder cache: terugvallen op het huidige plaatje.
 
+## 4e. Verkoopcalculator (0.5.17, vrijdag 30 okt, wens van de gebruiker)
+Doel: zien wat je verdient als je een aantal items verkoopt, bijvoorbeeld 1500 Coal ore en 2 Gold pickaxe.
+- Blok "Verkoopcalculator" bovenaan de Prijzen-pagina. Tot 5 regels; per regel een item (zoeken) en een aantal. Aantallen als 1,5k of 2m werken ook.
+- Prijs per regel: standaard de **laagste prijs** (wat je krijgt als je meteen verkoopt). Daarnaast staat ook wat je **gemiddeld** kunt krijgen (gemiddelde van hoog en laag). Per regel is een eigen prijs in te vullen.
+- Uitkomst: per regel prijs, bruto, belasting en netto; onderaan het totaal bruto, belasting en wat je overhoudt, voor zowel de lage als de gemiddelde prijs.
+- GE-belasting (schakelaar, standaard aan): 2% sinds 29 mei 2025, per stuk naar beneden afgerond, maximaal 5 miljoen per item, geen belasting onder 50 coins. Vrijgesteld zijn onder meer bonds, energy potions, laagwaardig eten, enkele teleport-tablets en gereedschap zoals een hamer. De vrijstellingenlijst is niet volledig nagelezen (de wiki-pagina is deels niet gelezen).
+- Werkt ook offline met de laatste momentopname; met de knop Prijzen vernieuwen zijn de prijzen actueel. De laatste regels worden onthouden.
+- Niet in deze versie: geschiedenis, winst op kopen en verkopen, koppeling met je bank.
+- Gevolg voor de planning: alles wat daarna kwam schuift één versie op (de icoontjes zijn nu 0.5.18, 6 nov).
+
 ## 4d. Onderzoek 25 okt: wat bestaat er al en wat kan beter
 Bekeken: de OSRS Wiki, RuneLite, Wise Old Man, TempleOSRS, GE Tracker, OSRS Toolkit, Theoatrix, OldSchool.tools. Bruikbare ideeën voor ons, met prioriteit en moeite:
-- **Prijsgrafieken per item** (uur, dag, maand, jaar) via de prijs-API van de wiki; past bij het zoeken met item-kaarten in 0.5.17/0.5.18 – A, M
+- **Prijsgrafieken per item** (uur, dag, maand, jaar) via de prijs-API van de wiki; past bij het zoeken met item-kaarten in 0.5.18/0.5.19 – A, M
 - **Buy limits en high alch-winst** in de item-kaart (komt uit dezelfde mapping) – A, S
 - **Buy limits-teller:** wanneer je weer mag kopen – B, M
 - **Best in Slot en Gear-kiezer** per activiteit – B, L
