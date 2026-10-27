@@ -40,6 +40,7 @@ Klaar voor vrijdag 30 okt: 0.5.17 (verkoopcalculator). Online: 0.5.16.3 (gebieds
 | begin jan | 0.7.0 | Installer voorbereiden |
 | half jan | 0.7.1 | Vergelijken met spelers (#36) |
 | eind jan | 0.8.0 | Eerste-start-uitleg, privacytekst, Over-pagina |
+| begin feb | 0.8.1 | Inloggen met Discord (naam, avatar, optioneel serverrol), zonder eigen database (zie 4f) |
 | begin feb | 0.9.0 | Thema's en compacte modus |
 | half feb | 0.9.5 | Bufferweek en opruimen |
 | eind feb | 0.9.8 | Eigen startscherm: blokken kiezen, verslepen en verbergen; blokken verdwijnen als een doel is gehaald (met terughalen en een Afgerond-lijst) |
@@ -94,6 +95,9 @@ Doel: zien wat je verdient als je een aantal items verkoopt, bijvoorbeeld 1500 C
 - Werkt ook offline met de laatste momentopname; met de knop Prijzen vernieuwen zijn de prijzen actueel. De laatste regels worden onthouden.
 - Niet in deze versie: geschiedenis, winst op kopen en verkopen, koppeling met je bank.
 - Gevolg voor de planning: alles wat daarna kwam schuift één versie op (de icoontjes zijn nu 0.5.18, 6 nov).
+
+## 4f. Inloggen met Discord (0.8.1, wens van de gebruiker)
+Doel: mensen koppelen hun Discord aan de app, zonder eigen database. Aanpak: OAuth met PKCE en een localhost-terugkeer (geen client secret in de app). De app krijgt naam, avatar en Discord-ID, en met `guilds.members.read` ook of iemand in de server zit en welke rol hij heeft. Bewust niet: voortgang synchroniseren (blijft lokaal, back-up blijft de weg naar een andere pc) en ranglijsten. Een rolcontrole in de app is een gemak, geen beveiliging. Pas bij vraag naar sync over meerdere pc's een gratis databasedienst met Discord-login toevoegen. Volgt op 0.8.0 omdat de privacytekst dan al klaarstaat: die moet vermelden wat Discord deelt.
 
 ## 4d. Onderzoek 25 okt: wat bestaat er al en wat kan beter
 Bekeken: de OSRS Wiki, RuneLite, Wise Old Man, TempleOSRS, GE Tracker, OSRS Toolkit, Theoatrix, OldSchool.tools. Bruikbare ideeën voor ons, met prioriteit en moeite:
