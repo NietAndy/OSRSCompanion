@@ -33,7 +33,11 @@ def bouw(naam, tag, url, body):
         tekst = "Er staat een nieuwe versie klaar. Zie de release voor de details."
     if len(tekst) > 3800:
         tekst = tekst[:3800].rsplit("\n", 1)[0] + "\n…"
-    titel = ("🚀 " + (naam or tag or "Nieuwe versie"))[:250]
+    # Titel is altijd "Weekly release"; het versienummer staat vet bovenaan de tekst
+    m = re.search(r"\d+(?:\.\d+)+", tag or naam or "")
+    if m:
+        tekst = "**Versie " + m.group(0) + "**\n\n" + tekst
+    titel = "🚀 Weekly release"
     return {
         "username": "Changelog Bot",
         "embeds": [{

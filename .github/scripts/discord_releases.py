@@ -23,7 +23,7 @@ def bouw(versie, repo, tekst):
             "url": "https://github.com/" + repo + "/releases/tag/v" + versie if repo else None,
             "description": tekst,
             "color": 0xF2C14E,
-            "footer": {"text": "Gielinor Guide " + versie},
+            "footer": {"text": "Weekly release · Gielinor Guide " + versie},
         }],
         "allowed_mentions": {"parse": []},
     }
