@@ -7,6 +7,7 @@ Bijgewerkt 2026-10-25. Werkdocument voor de gebruiker en Claude. Een bewerkbare 
 - Elke wijziging: aanpassen, testen in Linux-Chromium met mocks, exe bouwen, sturen, `RELEASE-NOTES-x.y.z.md` in de repo.
 - Claude test niet op Windows; de gebruiker wel. Dat bepaalt de bufferweken.
 - Releasetag `vX.Y.Z`, titel "Weekly update <dag> <datum> (X.Y.Z)", bijvoorbeeld "Weekly update zaterdag 25 oktober (0.5.16.3)". De tag bepaalt de versie, de titel is voor mensen en voor Discord. Het bestand moet op .exe eindigen.
+- Release notes bevatten alleen wat er gewijzigd is (Nieuw, Opgelost, Verbeterd). Geen kopje "Let op" met beperkingen of "niet getest"; die melding gaat alleen in het gesprek.
 - Alleen Windows. Niets betaalds. Geen automatisering of uitlezen van het spel (Jagex).
 - Gegevens van OSRS Wiki, Shortest Path (BSD) en RuneLite (BSD), met bron.
 - `package.json`: driedelig `version` plus eigen `appVersie`; de updater leest `appVersie`.
