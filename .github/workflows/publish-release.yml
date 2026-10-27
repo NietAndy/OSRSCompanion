@@ -1,13 +1,11 @@
 name: Geplande release
 
 # Publiceert automatisch de nieuwste draft-release (geen pre-release).
-#  - Eenmalig vandaag, 24 oktober 2026, om 19:15 Nederlandse tijd (zomertijd, UTC+2): 17:15 UTC.
-#  - Daarna elke dag om 18:00 UTC. Dat is 19:00 in de wintertijd en 20:00 in de zomertijd.
+#  - Elke vrijdag om 18:00 UTC. Dat is 19:00 in de wintertijd (vanaf 25 oktober) en 20:00 in de zomertijd.
 # Er is geen draft? Dan gebeurt er niets. Is de draft niet compleet? Dan publiceert hij niet en wordt de run rood.
 on:
   schedule:
-    - cron: "15 17 24 10 *"
-    - cron: "0 18 * * *"
+    - cron: "0 18 * * 5"
   workflow_dispatch:      # knop "Run workflow": publiceert de draft meteen
     inputs:
       tag:
