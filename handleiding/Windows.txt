@@ -7,5 +7,3 @@ OSRS Companion voor Windows
 4. Je levels en instellingen worden bewaard op deze pc, ook als je een nieuwe versie van het bestand neerzet.
 
 Updaten: download het nieuwe bestand, verwijder het oude en zet het nieuwe op dezelfde plek.
-
-Wat de app kan, staat in het bestand "Mac.txt" in deze map. Dat is dezelfde uitleg: de onderdelen werken op Windows en Mac hetzelfde.
