@@ -3,6 +3,7 @@
 ## Nieuw
 - **Menu bovenin** in plaats van de zijbalk, met vijf uitklapmenu's: Mijn speler, Opzoeken, Vechten, Geld en verzamelen en Info. De knop van de pagina waar je bent heeft een gouden rand. Escape of een klik ernaast sluit het menu. Op een smal scherm blijft het een balk om doorheen te schuiven.
 - Je **gevechtslevel** staat nu als kleine knop rechts in het menu.
+- **Grotere kaart**: de kaart gebruikt de volle breedte en veel meer van de hoogte. De uitleg bovenaan is weg en de zoekbalk en knoppen staan op één regel.
 - **Nieuw logo**: er staat nu Gielinor Guide in plaats van RuneScape Helper.
 
 ## Verbeterd
