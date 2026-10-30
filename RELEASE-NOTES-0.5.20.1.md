@@ -4,6 +4,8 @@
 - **Versie in het menu:** onder de naam Gielinor Guide staat weer welke versie je draait.
 - **Prijsmelding op het Overzicht:** met het plaatje van het item, de grafiek, de prijs in een leesbaar lettertype en hoe vaak de prijs vernieuwt.
 
+- **Grafiek bij de prijsmelding** op het Overzicht: lukt het ophalen bij de wiki niet, dan staat er waarom. De app houdt nu ook zelf de prijs bij en tekent daar een grafiek van.
+
 ## Opgelost
 - De zoekbalk, je naam en de knoppen in het menu stonden over de menuknoppen heen. Ze zitten nu netjes in het menu en passen zich aan de breedte van het venster aan.
 - Op smallere schermen wordt de zoekbalk een icoon. Controleer op updates staat dan onder Over en bronnen.
