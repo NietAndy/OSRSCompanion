@@ -25,7 +25,7 @@ Doel: alles wat Jagex uitbrengt komt ook in de app. Elke vrijdag loop ik de lijs
 Regels: alleen wat ik op de wiki of bij de officiële nieuwsberichten kan nalezen; wat ik niet kan controleren, markeer ik als "niet gecontroleerd". Nieuwe plekken en levels komen met bron in de releasenotities. Wat te groot is voor één week gaat als eigen punt op de lijst.
 
 ## 2. Stand
-Klaar: 0.5.19.1 (begrippen, automatische prijzen, grote prijsmelding, slepen, quest-volgorde, rondleiding, meld een probleem). Online op GitHub: controleer welke versie de gebruiker als laatste heeft gepubliceerd.
+Klaar: 0.5.19.2 (begrippen, automatische prijzen, grote prijsmelding, slepen, quest-volgorde, rondleiding, meld een probleem). Online op GitHub: controleer welke versie de gebruiker als laatste heeft gepubliceerd.
 Gedaan sinds 0.5.7: Sailing-stappen, Achievement Diaries, Prijsmeldingen (#39), Skilling-planner (#38), nieuws als krant, kaart met producten en Runecraft-altaren, kaartopties als dropdowns, skill-icoontjes, Discord-setup en changelog-workflow, nieuwe naam Gielinor Guide (0.5.15), verkoopcalculator met slim zoeken (0.5.17 en 0.5.17.1), menu bovenin met uitklapmenu's en nieuw logo (0.5.17.1), kleinere kaart met positiebalk (0.5.17.2), nieuw startscherm met sleepbare blokken en verplicht inloggen met Discord (0.5.17.3 t/m 0.5.17.6). `handleiding/Mac.txt` is uit de repo.
 
 ## 3. Planning
