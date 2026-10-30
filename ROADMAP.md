@@ -25,19 +25,18 @@ Doel: alles wat Jagex uitbrengt komt ook in de app. Elke vrijdag loop ik de lijs
 Regels: alleen wat ik op de wiki of bij de officiële nieuwsberichten kan nalezen; wat ik niet kan controleren, markeer ik als "niet gecontroleerd". Nieuwe plekken en levels komen met bron in de releasenotities. Wat te groot is voor één week gaat als eigen punt op de lijst.
 
 ## 2. Stand
-Klaar: 0.5.18.2 (quest-volgorde, rondleiding, meld een probleem).  Online op GitHub: controleer welke versie de gebruiker als laatste heeft gepubliceerd.
+Klaar: 0.5.19 (begrippen, automatische prijzen, grote prijsmelding, slepen, quest-volgorde, rondleiding, meld een probleem). Online op GitHub: controleer welke versie de gebruiker als laatste heeft gepubliceerd.
 Gedaan sinds 0.5.7: Sailing-stappen, Achievement Diaries, Prijsmeldingen (#39), Skilling-planner (#38), nieuws als krant, kaart met producten en Runecraft-altaren, kaartopties als dropdowns, skill-icoontjes, Discord-setup en changelog-workflow, nieuwe naam Gielinor Guide (0.5.15), verkoopcalculator met slim zoeken (0.5.17 en 0.5.17.1), menu bovenin met uitklapmenu's en nieuw logo (0.5.17.1), kleinere kaart met positiebalk (0.5.17.2), nieuw startscherm met sleepbare blokken en verplicht inloggen met Discord (0.5.17.3 t/m 0.5.17.6). `handleiding/Mac.txt` is uit de repo.
 
 ## 3. Planning
 | Vrijdag | Versie | Inhoud |
 |---|---|---|
-| 13 nov | 0.5.18 | Uitleg bij begrippen (#35); prijzen automatisch vernieuwen op Prijzen (schakelaar, standaard elke minuut) en interval kiezen bij prijsmeldingen (1, 5 of 10 min); grote prijsmelding in de app (ontwerp in het Claude Design-canvas, rij "Prijsmelding") |
-| 6 nov | 0.5.19 | Officiële icoontjes bij alle items, ook capes en uitrusting (zie 4c); zoeken met item-kaarten (4.129 GE-items); snellere opstart |
-| 20 nov | 0.5.20 | Hunter-locaties; hiscores met "opgehaald om"; meer blokken voor het startscherm (Checklist, Nieuws, Live positie, Pets, Diaries) |
-| 27 nov | 0.5.21 | Bufferweek |
+| 20 nov | 0.5.20 | Officiële icoontjes bij alle items, ook capes en uitrusting (zie 4c); zoeken met item-kaarten (4.129 GE-items); snellere opstart |
+| 27 nov | 0.5.21 | Hunter-locaties; hiscores met "opgehaald om"; meer blokken voor het startscherm (Checklist, Nieuws, Live positie, Pets, Diaries) |
+| 4 dec | 0.5.22 | Bufferweek |
 | 18 dec | 0.6.2 | Buffer en opruimen; feestdagenrust |
 | half jan | 0.7.1 | Vergelijken met spelers (#36) |
-| eind jan | 0.8.0 | Over-pagina uitbreiden (rondleiding staat al in 0.5.18.2) |
+| eind jan | 0.8.0 | Over-pagina uitbreiden (rondleiding staat al in 0.5.19) |
 | begin feb | 0.9.0 | Thema's en compacte modus |
 | half feb | 0.9.5 | Bufferweek en opruimen |
 | eind feb | 0.9.8 | Behaalde doelen verdwijnen vanzelf van het startscherm, met terughalen en een Afgerond-lijst (zie 4b) |
@@ -67,7 +66,7 @@ Data na eind november zijn een schatting. Schuift iets, dan schuift het laatste 
 ## 4b. Startscherm: wat nog moet
 Gedaan: banner met naam en volgende stap, blokken Mijn doel, Quests, Prijsmelding, Train hierna en Snel naar, slepen, pijltjes, verbergen en terugzetten (0.5.17.4). Nog te doen (0.9.8): een behaald doel verdwijnt vanzelf van het startscherm, met een felicitatie, een Afgerond-lijst, een schakelaar per blok (Verbergen als klaar / Laten staan) en Ongedaan maken. Ontwerpregels: de app kent alleen wat de gebruiker invult; "gehaald" is een afvinkmoment plus automatische controle; verdwijnen mag nooit verrassen en moet altijd terug te halen zijn. Het ontwerp met doel gehaald staat nog niet in Claude Design.
 
-## 4c. Officiële item-icoontjes overal (0.5.19, wens van de gebruiker)
+## 4c. Officiële item-icoontjes overal (0.5.20, wens van de gebruiker)
 Doel: overal waar een item, cape of stuk uitrusting staat, het officiële icoontje uit het spel tonen (GE-lijst, recepten, drops, Gear, Schade, Geld verdienen, Quests, Skilling-planner, nieuws).
 Aanpak (nog te bevestigen bij het bouwen):
 - De prijs-API van de OSRS Wiki (`prices.runescape.wiki/api/v2/osrs/mapping`) geeft per verhandelbaar item de bestandsnaam van het icoon. Het plaatje komt dan van de wiki-afbeeldingenserver.
@@ -84,18 +83,18 @@ OAuth2 implicit grant met een localhost-terugkeer (`http://127.0.0.1:53682/callb
 
 ## 4d. Onderzoek 25 okt: wat bestaat er al en wat kan beter
 Bekeken: de OSRS Wiki, RuneLite, Wise Old Man, TempleOSRS, GE Tracker, OSRS Toolkit, Theoatrix, OldSchool.tools. Bruikbare ideeën voor ons, met prioriteit en moeite:
-- **Prijsgrafieken per item** (uur, dag, maand, jaar) via de prijs-API van de wiki; past bij de item-kaarten in 0.5.18 en 0.5.19 – A, M
+- **Prijsgrafieken per item** (uur, dag, maand, jaar) via de prijs-API van de wiki; past bij de item-kaarten in 0.5.20 – A, M
 - **Buy limits en high alch-winst** in de item-kaart (komt uit dezelfde mapping) – A, S
 - **Buy limits-teller:** wanneer je weer mag kopen – B, M
 - **Best in Slot en Gear-kiezer** per activiteit – B, L
-- **Quest-helper-achtig overzicht:** volgorde voor de quest cape en wat je nog mist – A, M (eerste versie staat in 0.5.18.2)
+- **Quest-helper-achtig overzicht:** volgorde voor de quest cape en wat je nog mist – A, M (eerste versie staat in 0.5.19)
 - **Accountvoortgang** met doelen en XP-winst per dag, week, maand (eerst eigen momentopnames; Wise Old Man later) – A, M
 - **Ironman-hulp** (Herblore, Farming, Hunter), **House planner** – C, L
 - **Handmatige import van je bank** (csv uit RuneLite) om te zien wat je al hebt voor een recept – B, M
 Wat we zelf nog moeten verbeteren: snellere opstart; Windows-testlijst na elke release; automatische tests; uiterlijke punten uit de review van 24 okt; quest-eisen van alle recepten aanvullen; coördinaten van een paar altaren controleren.
 
 ## 5. Open beslissingen
-- Snellere opstart (grote data apart laden, laadscherm) en de uiterlijke punten uit de review van 24 okt. Voorstel: opstart in 0.5.19.
+- Snellere opstart (grote data apart laden, laadscherm) en de uiterlijke punten uit de review van 24 okt. Voorstel: opstart in 0.5.20.
 - Hoeveel tijd heeft de gebruiker per week om te testen?
 - Repo publiek maken (gratis ondertekenen via SignPath)?
 - Discord-login: wat moet er gebeuren als iemand offline is na 7 dagen (nu: de app blijft op het inlogscherm)? Voorstel: een extra respijtperiode van enkele dagen zonder internet.

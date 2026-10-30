@@ -1,7 +1,10 @@
-# 🗺️ Op weg naar de quest cape
+# 🗺️ Quest cape, begrippen en slimme prijzen
 
 Beste avonturiers,
 
+- **Begrippen:** wijs op een term en de uitleg verschijnt.
+- **Prijzen vernieuwen vanzelf** en een **grote melding** als je prijs wordt gehaald.
+- **Slepen** op het startscherm werkt nu goed.
 - **Quest-volgorde:** de app zegt in welke volgorde je quests het slimst doet en welke levels je nog mist.
 - **Rondleiding** voor nieuwe spelers, in zes stappen.
 - **Meld een probleem** met één klik, met je versie en logboek erbij.
