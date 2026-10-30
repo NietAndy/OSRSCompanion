@@ -25,7 +25,7 @@ Doel: alles wat Jagex uitbrengt komt ook in de app. Elke vrijdag loop ik de lijs
 Regels: alleen wat ik op de wiki of bij de officiële nieuwsberichten kan nalezen; wat ik niet kan controleren, markeer ik als "niet gecontroleerd". Nieuwe plekken en levels komen met bron in de releasenotities. Wat te groot is voor één week gaat als eigen punt op de lijst.
 
 ## 2. Stand
-Klaar: 0.5.17.2 (kleinere kaart, positiebalk onder de kaart). Online: 0.5.17.1 (menu bovenin, slimmer zoeken, nieuw logo). Gedaan sinds 0.5.7: Sailing-stappen, Achievement Diaries, Prijsmeldingen (#39), Skilling-planner (#38) met quest-eisen, nieuws als krant, kaart met producten en Runecraft-altaren, kaartopties als dropdowns, zijbalk met klapbare groepen, skill-icoontjes, Discord-setup en changelog-workflow.
+Klaar: 0.5.17.3 (nieuw startscherm met kiesbare blokken, inloggen met Discord). Online: 0.5.17.2 (kleinere kaart, positiebalk). Gedaan sinds 0.5.7: Sailing-stappen, Achievement Diaries, Prijsmeldingen (#39), Skilling-planner (#38) met quest-eisen, nieuws als krant, kaart met producten en Runecraft-altaren, kaartopties als dropdowns, zijbalk met klapbare groepen, skill-icoontjes, Discord-setup en changelog-workflow.
 
 ## 3. Planning
 | Vrijdag | Versie | Inhoud |
@@ -33,7 +33,8 @@ Klaar: 0.5.17.2 (kleinere kaart, positiebalk onder de kaart). Online: 0.5.17.1 (
 | 24 okt (klaar) | 0.5.15 | Nieuwe naam: Gielinor Guide; gegevens blijven in dezelfde map |
 | 30 okt | 0.5.17 | Verkoopcalculator op de Prijzen-pagina (zie 4e) |
 | 29 okt (online) | 0.5.17.1 | Menu bovenin met uitklapmenu's (Mijn speler, Opzoeken, Vechten, Geld en verzamelen, Info) in plaats van de zijbalk, ontwerp in het Claude Design-canvas "zo kan het eruitzien"; verkoopcalculator zoekt slimmer ("Bedoelde je Coal?", Enter kiest het eerste resultaat); logo "RuneScape Helper" wordt Gielinor Guide; `handleiding/Mac.txt` uit de repo |
-| 29 okt (klaar) | 0.5.17.2 | Kaart wat kleiner dan in 0.5.17.1; positiebalk onder de kaart ("In Motherlode Mine", x, y, vlak) |
+| 29 okt (online) | 0.5.17.2 | Kaart wat kleiner dan in 0.5.17.1; positiebalk onder de kaart ("In Motherlode Mine", x, y, vlak) |
+| 30 okt (klaar) | 0.5.17.3 | Nieuw startscherm (volgende stap, Mijn doel, Prijsmelding, blokken kiezen) en vrijwillig inloggen met Discord met controle of je in de server zit (vervroegd uit 0.9.8 en 0.8.1; verslepen van blokken blijft voor 0.9.8) |
 | 6 nov | 0.5.18 | Officiële icoontjes bij alle items, ook capes en uitrusting (zie 4c); zoeken met item-kaarten (4.129 GE-items); snellere opstart |
 | 13 nov | 0.5.19 | Uitleg bij begrippen (#35); prijzen automatisch vernieuwen op Prijzen (schakelaar, standaard elke minuut) en interval kiezen bij prijsmeldingen (1, 5 of 10 min); grote prijsmelding in de app (venster midden in de app met item, prijs, verschil en knoppen; ontwerp in het Claude Design-canvas, rij "Prijsmelding") |
 | 20 nov | 0.5.20 | Hunter-locaties; hiscores met "opgehaald om" |
