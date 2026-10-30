@@ -25,14 +25,14 @@ Doel: alles wat Jagex uitbrengt komt ook in de app. Elke vrijdag loop ik de lijs
 Regels: alleen wat ik op de wiki of bij de officiële nieuwsberichten kan nalezen; wat ik niet kan controleren, markeer ik als "niet gecontroleerd". Nieuwe plekken en levels komen met bron in de releasenotities. Wat te groot is voor één week gaat als eigen punt op de lijst.
 
 ## 2. Stand
-Klaar: 0.5.17.6. Online op GitHub: controleer welke versie de gebruiker als laatste heeft gepubliceerd.
+Klaar: 0.5.18. Online op GitHub: controleer welke versie de gebruiker als laatste heeft gepubliceerd.
 Gedaan sinds 0.5.7: Sailing-stappen, Achievement Diaries, Prijsmeldingen (#39), Skilling-planner (#38), nieuws als krant, kaart met producten en Runecraft-altaren, kaartopties als dropdowns, skill-icoontjes, Discord-setup en changelog-workflow, nieuwe naam Gielinor Guide (0.5.15), verkoopcalculator met slim zoeken (0.5.17 en 0.5.17.1), menu bovenin met uitklapmenu's en nieuw logo (0.5.17.1), kleinere kaart met positiebalk (0.5.17.2), nieuw startscherm met sleepbare blokken en verplicht inloggen met Discord (0.5.17.3 t/m 0.5.17.6). `handleiding/Mac.txt` is uit de repo.
 
 ## 3. Planning
 | Vrijdag | Versie | Inhoud |
 |---|---|---|
-| 6 nov | 0.5.18 | Officiële icoontjes bij alle items, ook capes en uitrusting (zie 4c); zoeken met item-kaarten (4.129 GE-items); snellere opstart |
-| 13 nov | 0.5.19 | Uitleg bij begrippen (#35); prijzen automatisch vernieuwen op Prijzen (schakelaar, standaard elke minuut) en interval kiezen bij prijsmeldingen (1, 5 of 10 min); grote prijsmelding in de app (ontwerp in het Claude Design-canvas, rij "Prijsmelding") |
+| 13 nov | 0.5.18 | Uitleg bij begrippen (#35); prijzen automatisch vernieuwen op Prijzen (schakelaar, standaard elke minuut) en interval kiezen bij prijsmeldingen (1, 5 of 10 min); grote prijsmelding in de app (ontwerp in het Claude Design-canvas, rij "Prijsmelding") |
+| 6 nov | 0.5.19 | Officiële icoontjes bij alle items, ook capes en uitrusting (zie 4c); zoeken met item-kaarten (4.129 GE-items); snellere opstart |
 | 20 nov | 0.5.20 | Hunter-locaties; hiscores met "opgehaald om"; meer blokken voor het startscherm (Checklist, Nieuws, Live positie, Pets, Diaries) |
 | 27 nov | 0.5.21 | Bufferweek |
 | 11 dec | 0.6.1 | Quest-volgorde (#37) |
@@ -68,7 +68,7 @@ Data na eind november zijn een schatting. Schuift iets, dan schuift het laatste 
 ## 4b. Startscherm: wat nog moet
 Gedaan: banner met naam en volgende stap, blokken Mijn doel, Quests, Prijsmelding, Train hierna en Snel naar, slepen, pijltjes, verbergen en terugzetten (0.5.17.4). Nog te doen (0.9.8): een behaald doel verdwijnt vanzelf van het startscherm, met een felicitatie, een Afgerond-lijst, een schakelaar per blok (Verbergen als klaar / Laten staan) en Ongedaan maken. Ontwerpregels: de app kent alleen wat de gebruiker invult; "gehaald" is een afvinkmoment plus automatische controle; verdwijnen mag nooit verrassen en moet altijd terug te halen zijn. Het ontwerp met doel gehaald staat nog niet in Claude Design.
 
-## 4c. Officiële item-icoontjes overal (0.5.18, wens van de gebruiker)
+## 4c. Officiële item-icoontjes overal (0.5.19, wens van de gebruiker)
 Doel: overal waar een item, cape of stuk uitrusting staat, het officiële icoontje uit het spel tonen (GE-lijst, recepten, drops, Gear, Schade, Geld verdienen, Quests, Skilling-planner, nieuws).
 Aanpak (nog te bevestigen bij het bouwen):
 - De prijs-API van de OSRS Wiki (`prices.runescape.wiki/api/v2/osrs/mapping`) geeft per verhandelbaar item de bestandsnaam van het icoon. Het plaatje komt dan van de wiki-afbeeldingenserver.
@@ -96,7 +96,7 @@ Bekeken: de OSRS Wiki, RuneLite, Wise Old Man, TempleOSRS, GE Tracker, OSRS Tool
 Wat we zelf nog moeten verbeteren: snellere opstart; Windows-testlijst na elke release; automatische tests; uiterlijke punten uit de review van 24 okt; quest-eisen van alle recepten aanvullen; coördinaten van een paar altaren controleren.
 
 ## 5. Open beslissingen
-- Snellere opstart (grote data apart laden, laadscherm) en de uiterlijke punten uit de review van 24 okt. Voorstel: opstart in 0.5.18.
+- Snellere opstart (grote data apart laden, laadscherm) en de uiterlijke punten uit de review van 24 okt. Voorstel: opstart in 0.5.19.
 - Hoeveel tijd heeft de gebruiker per week om te testen?
 - Repo publiek maken (gratis ondertekenen via SignPath)?
 - Discord-login: wat moet er gebeuren als iemand offline is na 7 dagen (nu: de app blijft op het inlogscherm)? Voorstel: een extra respijtperiode van enkele dagen zonder internet.
