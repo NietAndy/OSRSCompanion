@@ -25,7 +25,7 @@ Doel: alles wat Jagex uitbrengt komt ook in de app. Elke vrijdag loop ik de lijs
 Regels: alleen wat ik op de wiki of bij de officiële nieuwsberichten kan nalezen; wat ik niet kan controleren, markeer ik als "niet gecontroleerd". Nieuwe plekken en levels komen met bron in de releasenotities. Wat te groot is voor één week gaat als eigen punt op de lijst.
 
 ## 2. Stand
-Klaar: 0.5.18. Online op GitHub: controleer welke versie de gebruiker als laatste heeft gepubliceerd.
+Klaar: 0.5.18.2 (quest-volgorde, rondleiding, meld een probleem).  Online op GitHub: controleer welke versie de gebruiker als laatste heeft gepubliceerd.
 Gedaan sinds 0.5.7: Sailing-stappen, Achievement Diaries, Prijsmeldingen (#39), Skilling-planner (#38), nieuws als krant, kaart met producten en Runecraft-altaren, kaartopties als dropdowns, skill-icoontjes, Discord-setup en changelog-workflow, nieuwe naam Gielinor Guide (0.5.15), verkoopcalculator met slim zoeken (0.5.17 en 0.5.17.1), menu bovenin met uitklapmenu's en nieuw logo (0.5.17.1), kleinere kaart met positiebalk (0.5.17.2), nieuw startscherm met sleepbare blokken en verplicht inloggen met Discord (0.5.17.3 t/m 0.5.17.6). `handleiding/Mac.txt` is uit de repo.
 
 ## 3. Planning
@@ -35,10 +35,9 @@ Gedaan sinds 0.5.7: Sailing-stappen, Achievement Diaries, Prijsmeldingen (#39), 
 | 6 nov | 0.5.19 | Officiële icoontjes bij alle items, ook capes en uitrusting (zie 4c); zoeken met item-kaarten (4.129 GE-items); snellere opstart |
 | 20 nov | 0.5.20 | Hunter-locaties; hiscores met "opgehaald om"; meer blokken voor het startscherm (Checklist, Nieuws, Live positie, Pets, Diaries) |
 | 27 nov | 0.5.21 | Bufferweek |
-| 11 dec | 0.6.1 | Quest-volgorde (#37) |
 | 18 dec | 0.6.2 | Buffer en opruimen; feestdagenrust |
 | half jan | 0.7.1 | Vergelijken met spelers (#36) |
-| eind jan | 0.8.0 | Eerste-start-uitleg en Over-pagina (de privacytekst staat al in het inlogscherm) |
+| eind jan | 0.8.0 | Over-pagina uitbreiden (rondleiding staat al in 0.5.18.2) |
 | begin feb | 0.9.0 | Thema's en compacte modus |
 | half feb | 0.9.5 | Bufferweek en opruimen |
 | eind feb | 0.9.8 | Behaalde doelen verdwijnen vanzelf van het startscherm, met terughalen en een Afgerond-lijst (zie 4b) |
@@ -89,7 +88,7 @@ Bekeken: de OSRS Wiki, RuneLite, Wise Old Man, TempleOSRS, GE Tracker, OSRS Tool
 - **Buy limits en high alch-winst** in de item-kaart (komt uit dezelfde mapping) – A, S
 - **Buy limits-teller:** wanneer je weer mag kopen – B, M
 - **Best in Slot en Gear-kiezer** per activiteit – B, L
-- **Quest-helper-achtig overzicht:** volgorde voor de quest cape en wat je nog mist – A, M (past bij 0.6.1)
+- **Quest-helper-achtig overzicht:** volgorde voor de quest cape en wat je nog mist – A, M (eerste versie staat in 0.5.18.2)
 - **Accountvoortgang** met doelen en XP-winst per dag, week, maand (eerst eigen momentopnames; Wise Old Man later) – A, M
 - **Ironman-hulp** (Herblore, Farming, Hunter), **House planner** – C, L
 - **Handmatige import van je bank** (csv uit RuneLite) om te zien wat je al hebt voor een recept – B, M
