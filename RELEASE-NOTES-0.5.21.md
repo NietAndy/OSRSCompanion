@@ -4,6 +4,8 @@
 - **Prijsinzicht** onder de grafiek van een item bij Prijzen: de trend in de gekozen periode, hoe wild de prijs schommelt, of hij hoger of lager is dan gemiddeld, en hoeveel er wordt gehandeld.
 - **Winst na belasting:** wat je per stuk overhoudt als je koopt voor de lage en verkoopt voor de hoge prijs, na de 2% belasting van de Grand Exchange.
 - **In de grafiek:** het gemiddelde als streeplijn en het normale bereik als gouden vlak.
+- **Beste moment om te kopen en te verkopen:** per uur van de dag zie je wanneer een item meestal het goedkoopst en het duurst is, en soms ook welke dag het best is. Gebaseerd op de laatste twee weken, in jouw tijd.
+- **Op het Overzicht** staat bij je prijsmelding het moment dat bij je melding past: kopen als je onder een prijs wilt komen, verkopen als je boven een prijs wilt komen.
 - Een korte uitleg dat dit laat zien wat er al gebeurd is en geen voorspelling is.
 
 ## Verbeterd
