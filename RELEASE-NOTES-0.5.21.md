@@ -6,6 +6,7 @@
 - **In de grafiek:** het gemiddelde als streeplijn en het normale bereik als gouden vlak.
 - **Beste moment om te kopen en te verkopen:** per uur van de dag zie je wanneer een item meestal het goedkoopst en het duurst is, en soms ook welke dag het best is. Gebaseerd op de laatste twee weken, in jouw tijd.
 - **Op het Overzicht** staat bij je prijsmelding het moment dat bij je melding past: kopen als je onder een prijs wilt komen, verkopen als je boven een prijs wilt komen.
+- **Tijdstippen onder de grafiek** van je prijsmelding op het Overzicht: het begin, het midden en aan het eind de tijd van nu.
 - Een korte uitleg dat dit laat zien wat er al gebeurd is en geen voorspelling is.
 
 ## Verbeterd
