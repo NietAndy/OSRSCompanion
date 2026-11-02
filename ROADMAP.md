@@ -1,6 +1,6 @@
 # OSRS Companion – roadmap (voor ons)
 
-Bijgewerkt 2026-10-25. Werkdocument voor de gebruiker en Claude. Een bewerkbare kopie staat als Claude Doc; deze file is wat Claude aan het begin van een sessie leest.
+Bijgewerkt 2026-11-02. Werkdocument voor de gebruiker en Claude. Een bewerkbare kopie staat als Claude Doc; deze file is wat Claude aan het begin van een sessie leest.
 
 ## 1. Werkafspraken
 - Eén release per vrijdag, kleine versiestappen (0.5.x). Extra cijfer = hotfix (0.5.16.1). Middelgrote stap (0.6, 0.7) alleen als opslag of naam verandert.
@@ -32,34 +32,37 @@ Gedaan sinds 0.5.7: Sailing-stappen, Achievement Diaries, Prijsmeldingen (#39), 
 | Vrijdag | Versie | Inhoud |
 |---|---|---|
 | 20 nov | 0.5.21 | Gedaan op 2 nov: prijsinzicht en iconen onthouden. Nog te doen: zoeken met item-kaarten (4.129 GE-items); snellere opstart; welkomstblok op het Overzicht en route naast de kaart (ontwerp staat klaar) |
-| 27 nov | 0.5.22 | Hunter-locaties; hiscores met "opgehaald om"; meer blokken voor het startscherm (Checklist, Nieuws, Live positie, Pets, Diaries) |
-| 4 dec | 0.5.23 | Bufferweek |
-| 18 dec | 0.6.2 | Buffer en opruimen; feestdagenrust |
-| half jan | 0.7.1 | Vergelijken met spelers (#36) |
-| eind jan | 0.8.0 | Over-pagina uitbreiden (rondleiding staat al in 0.5.19) |
-| begin feb | 0.9.0 | Thema's en compacte modus |
-| half feb | 0.9.5 | Bufferweek en opruimen |
-| eind feb | 0.9.8 | Behaalde doelen verdwijnen vanzelf van het startscherm, met terughalen en een Afgerond-lijst (zie 4b) |
-| begin mrt | 0.9.9-rc1 | Test op schone pc, updatetest |
-| half mrt | 1.0.0 | Release met checksums |
+| 27 nov | 0.5.22 | **Timers** voor farming (kruiden, bomen, vogelhuisjes) en terugkerende taken (dagelijks en wekelijks), met Windows-melding en geluid zoals bij prijsmeldingen; hiscores met "opgehaald om" |
+| 4 dec | 0.5.23 | **Voortgang over tijd:** eigen momentopname bij elke hiscores-ophaling, xp per dag en week per skill, wanneer je 99 haalt in je huidige tempo, grafiek per skill |
+| 11 dec | 0.5.24 | **Slayer-hulp:** opdracht invullen, dan waar je heen moet, welke gear en spullen je nodig hebt, en advies wat je blokkeert of overslaat |
+| 18 dec | 0.6.2 | Buffer en opruimen; feestdagenrust. Als er tijd is: Hunter-locaties en meer blokken voor het startscherm (Checklist, Nieuws, Live positie, Pets, Diaries) |
+| begin jan | 0.6.3 | **Bossen en drops:** eisen, gear, waarde per kill, kans op een unieke drop en een droog-rekenaar |
+| half jan | 0.6.4 | **Ironman-modus:** soort account kiezen (gewoon, Ironman, Hardcore, Ultimate, Group); bij Ironman geen GE-prijzen en flip-tips, wel waar je een item zelf haalt |
+| eind jan | 0.7.1 | Vergelijken met spelers (#36) |
+| begin feb | 0.8.0 | Over-pagina uitbreiden (rondleiding staat al in 0.5.19) |
+| half feb | 0.9.0 | Thema's en compacte modus |
+| eind feb | 0.9.5 | Bufferweek en opruimen |
+| begin mrt | 0.9.8 | Behaalde doelen verdwijnen vanzelf van het startscherm, met terughalen en een Afgerond-lijst (zie 4b) |
+| half mrt | 0.9.9-rc1 | Test op schone pc, updatetest |
+| eind mrt | 1.0.0 | Release met checksums |
 
 Data na eind november zijn een schatting. Schuift iets, dan schuift het laatste item door; de afwerking blijft.
 
 ## 4. Na 1.0 (prioriteit A/B/C, moeite S/M/L)
 - Verdere interface-uitbreidingen (meer thema's, de vier cijfers en de banner van het startscherm sleepbaar) – A, M
 - Sneltoetsen en slimmer zoekveld – A, M
-- Timers voor farm runs en birdhouses – A, M
 - Collection log en Combat Achievements – A, M
-- Ironman-modus – A, M
 - Money-making vergelijker met live prijzen – A, M
 - Code opdelen en automatische tests – A, L
 - DPS-calculator met sets – B, M
-- Slayer-hulp en boss-gids – B, L
 - Clue-gids – B, M
 - Quest-routes op de kaart – B, M
 - Plannen delen – B, S
 - Offline kopie van wiki-gegevens – B, M
-- Engelse taal – B, M
+- Engelse taal (grootste stap voor meer gebruikers; alle teksten staan nu in de code) – A, L
+- Flippen: GE-limiet per 4 uur en een logboek van eigen aan- en verkopen met winst – B, M
+- Doelen als Quest cape, Max cape en alle Achievement Diaries, met voortgangsbalk – B, M
+- Installatieprogramma met automatische updates – A, M
 - RuneLite-koppeling (officiële plugins) – C, L
 - Synchronisatie tussen computers (alleen als er vraag naar is; vraagt een databasedienst, zie 4f) – C, L
 
