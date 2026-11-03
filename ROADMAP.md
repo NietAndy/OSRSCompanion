@@ -6,7 +6,7 @@ Bijgewerkt 2026-11-03. Werkdocument voor de gebruiker en Claude. Een bewerkbare 
 - Eén release per vrijdag, kleine versiestappen (0.5.x). Extra cijfer = hotfix (0.5.16.1). Middelgrote stap (0.6, 0.7) alleen als opslag of naam verandert.
 - Elke wijziging: aanpassen, testen in Linux-Chromium met mocks, exe bouwen, sturen, `RELEASE-NOTES-x.y.z.md` in de repo.
 - Claude test niet op Windows; de gebruiker wel. Dat bepaalt de bufferweken.
-- Releasetag `vX.Y.Z`, titel "Weekly update <dag> <datum> (X.Y.Z)", bijvoorbeeld "Weekly update zaterdag 25 oktober (0.5.16.3)". De tag bepaalt de versie, de titel is voor mensen en voor Discord. Het bestand moet op .exe eindigen.
+- Releasetag `vX.Y.Z`, titel "Weekly update <dag> <datum> (X.Y.Z)", bijvoorbeeld "Weekly update zaterdag 25 oktober (0.5.16.3)". Bij een hotfix (vier cijfers, zoals 0.5.22.2) staat er in Discord "Hotfix" in plaats van "Weekly release", en in de titel "Hotfix" in plaats van "Weekly update". De tag bepaalt de versie, de titel is voor mensen en voor Discord. Het bestand moet op .exe eindigen.
 - Release notes bevatten alleen wat er gewijzigd is (Nieuw, Opgelost, Verbeterd). Geen kopje "Let op" met beperkingen of "niet getest"; die melding gaat alleen in het gesprek.
 - Alleen Windows. Niets betaalds. Geen automatisering of uitlezen van het spel (Jagex).
 - De broncode staat in `app/` (sinds 3 nov). Werkafspraken voor Claude staan in `CLAUDE.md`.
