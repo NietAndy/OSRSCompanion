@@ -1,0 +1,111 @@
+name: Windows-exe bouwen
+
+# Bouwt de Windows-exe uit de map app/ en zet hem bij de draft-release.
+#  - Start vanzelf nadat "Draft-release bij nieuwe releasenotities" klaar is (nieuwe RELEASE-NOTES op main).
+#  - Of met de knop "Run workflow". Leeg laten = versie uit appVersie in app/package.json.
+# Het webhook-adres komt uit de secret DISCORD_BUG_WEBHOOK en wordt tijdens het bouwen in app/bug-config.js gezet.
+# Dat bestand staat in .gitignore en komt nooit in de repo.
+# Bouw je een versie opnieuw, dan wordt de exe in de draft vervangen. Is de release al gepubliceerd, dan stopt de workflow.
+on:
+  workflow_run:
+    workflows: ["Draft-release bij nieuwe releasenotities"]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      versie:
+        description: "Versie, bijvoorbeeld 0.5.22.1 (leeg = appVersie uit app/package.json)"
+        required: false
+        default: ""
+
+permissions:
+  contents: write
+
+jobs:
+  bouw:
+    # Bij workflow_run alleen doorgaan als de draft-workflow gelukt is
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.sha }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Versie bepalen
+        env:
+          INPUT_VERSIE: ${{ inputs.versie }}
+        run: |
+          set -euo pipefail
+          VERSIE="${INPUT_VERSIE:-}"
+          if [ -z "$VERSIE" ]; then
+            if [ "${{ github.event_name }}" = "workflow_run" ]; then
+              # Dezelfde keuze als de draft-workflow: de nieuwste releasenotities
+              VERSIE=$(ls RELEASE-NOTES-*.md | sed -E 's/RELEASE-NOTES-(.*)\.md/\1/' | sort -t. -k1,1n -k2,2n -k3,3n -k4,4n | tail -1)
+            else
+              VERSIE=$(node -p "require('./app/package.json').appVersie")
+            fi
+          fi
+          [ -f "RELEASE-NOTES-$VERSIE.md" ] || { echo "::error::RELEASE-NOTES-$VERSIE.md bestaat niet."; exit 1; }
+          echo "VERSIE=$VERSIE" >> "$GITHUB_ENV"
+          echo "Versie: $VERSIE"
+
+      - name: Controleer dat appVersie klopt
+        run: |
+          set -euo pipefail
+          APP=$(node -p "require('./app/package.json').appVersie")
+          if [ "$APP" != "$VERSIE" ]; then
+            echo "::error::appVersie in app/package.json is $APP, maar er wordt $VERSIE gebouwd. Pas package.json aan."
+            exit 1
+          fi
+
+      - name: Webhook-adres in bug-config.js zetten
+        env:
+          WEBHOOK: ${{ secrets.DISCORD_BUG_WEBHOOK }}
+        run: |
+          set -euo pipefail
+          if [ -z "${WEBHOOK:-}" ]; then
+            echo "::warning::Secret DISCORD_BUG_WEBHOOK is leeg of ontbreekt. De exe wordt gebouwd, maar Meld een probleem werkt dan niet."
+          fi
+          node -e 'require("fs").writeFileSync("app/bug-config.js", "module.exports = " + JSON.stringify({ webhook: process.env.WEBHOOK || "" }) + ";\n")'
+          # Alleen tonen of er iets in staat, nooit de inhoud
+          node -e 'console.log("Webhook ingesteld:", require("./app/bug-config").webhook !== "")'
+
+      - name: Exe bouwen
+        working-directory: build
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: "false"
+        run: npx --yes electron-builder@25.1.8 --win portable --config companion.yml --publish never
+
+      - name: Exe klaarzetten
+        run: |
+          set -euo pipefail
+          ls -la build/uitcomp
+          EXE="build/uitcomp/Gielinor Guide.exe"
+          [ -f "$EXE" ] || { echo "::error::Geen exe gevonden in build/uitcomp."; exit 1; }
+          mkdir -p dist
+          cp "$EXE" "dist/Gielinor-Guide-$VERSIE.exe"
+
+      - name: Exe bij de draft-release zetten
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          TAG="v$VERSIE"
+          if ! gh release view "$TAG" >/dev/null 2>&1; then
+            echo "Nog geen draft voor $TAG; die wordt nu gemaakt."
+            tail -n +2 "RELEASE-NOTES-$VERSIE.md" | sed '1{/^$/d}' > body.md
+            gh release create "$TAG" --draft --target main --title "Versie $VERSIE" --notes-file body.md
+          fi
+          if [ "$(gh release view "$TAG" --json isDraft -q .isDraft)" != "true" ]; then
+            echo "::error::Release $TAG is al gepubliceerd. Exe niet vervangen. Gebruik een nieuw versienummer (x.y.z.1)."
+            exit 1
+          fi
+          gh release upload "$TAG" "dist/Gielinor-Guide-$VERSIE.exe" --clobber
+          echo "Exe bij draft $TAG gezet."
