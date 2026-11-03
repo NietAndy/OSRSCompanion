@@ -15,5 +15,4 @@
 - Bij 17 nieuwere quests staan nu de moeilijkheid en de lengte.
 
 ## Opgelost
-- Startte de app op de Quest-volgorde (omdat je daar de vorige keer was), dan bleef het scherm leeg tot je een andere pagina koos (#2).
 - The Blood Moon Rises gaf 0 quest points; dat zijn er 4.
