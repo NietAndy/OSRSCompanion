@@ -35,22 +35,24 @@ Gedaan sinds 0.5.7: Sailing-stappen, Achievement Diaries, Prijsmeldingen (#39), 
 ## 3. Planning
 | Vrijdag | Versie | Inhoud |
 |---|---|---|
-| 20 nov | 0.5.21 | Gedaan op 2 nov: prijsinzicht en iconen onthouden. Nog te doen: zoeken met item-kaarten (4.129 GE-items); snellere opstart; welkomstblok op het Overzicht en route naast de kaart (ontwerp staat klaar) |
-| 27 nov | 0.5.22 | Gedaan op 3 nov. **Timers** voor farming (kruiden, bomen, vogelhuisjes) en terugkerende taken (dagelijks en wekelijks), met Windows-melding en geluid zoals bij prijsmeldingen; hiscores met "opgehaald om" |
-| 4 dec | 0.5.23 | **Exe bouwen op GitHub:** GitHub Actions bouwt de Windows-exe uit `app/` (met de secret DISCORD_BUG_WEBHOOK) en zet hem bij de draft. Quest Month: de overige nieuwe quests van november toevoegen zodra ze uit zijn (The Graveyard en de verrassingsquests; Mudfoot's Big Adventure en The Writing's on the Wall staan er al in). **Voortgang over tijd:** eigen momentopname bij elke hiscores-ophaling, xp per dag en week per skill, wanneer je 99 haalt in je huidige tempo, grafiek per skill |
-| 11 dec | 0.5.24 | **Slayer-hulp:** opdracht invullen, dan waar je heen moet, welke gear en spullen je nodig hebt, en advies wat je blokkeert of overslaat |
-| 18 dec | 0.6.2 | Buffer en opruimen; feestdagenrust. Als er tijd is: Hunter-locaties en meer blokken voor het startscherm (Checklist, Nieuws, Live positie, Pets, Diaries) |
-| begin jan | 0.6.3 | **Bossen en drops:** eisen, gear, waarde per kill, kans op een unieke drop en een droog-rekenaar |
-| half jan | 0.6.4 | **Ironman-modus:** soort account kiezen (gewoon, Ironman, Hardcore, Ultimate, Group); bij Ironman geen GE-prijzen en flip-tips, wel waar je een item zelf haalt |
-| eind jan | 0.7.1 | Vergelijken met spelers (#36) |
-| begin feb | 0.8.0 | Over-pagina uitbreiden (rondleiding staat al in 0.5.19) |
-| half feb | 0.9.0 | Thema's en compacte modus |
-| eind feb | 0.9.5 | Bufferweek en opruimen |
-| begin mrt | 0.9.8 | Behaalde doelen verdwijnen vanzelf van het startscherm, met terughalen en een Afgerond-lijst (zie 4b) |
-| half mrt | 0.9.9-rc1 | Test op schone pc, updatetest |
-| eind mrt | 1.0.0 | Release met checksums |
+| ma 2 nov | 0.5.21 | Klaar: prijsinzicht, beste moment om te kopen en te verkopen, iconen onthouden |
+| di 3 nov | 0.5.22 en 0.5.22.1 | Klaar: timers met melding en geluid, Meld een probleem naar #bugs en GitHub, hoek linksonder, twee nieuwe quests, leeg scherm verholpen (#2) |
+| 6 nov | 0.5.23 | **Exe bouwen op GitHub:** GitHub Actions bouwt de Windows-exe uit `app/` (met de secret DISCORD_BUG_WEBHOOK) en zet hem bij de draft. Nieuwe quests van Quest Month die deze week uitkomen. **Voortgang over tijd:** eigen momentopname bij elke hiscores-ophaling, xp per dag en week per skill, wanneer je 99 haalt in je huidige tempo, grafiek per skill |
+| 13 nov | 0.5.24 | **Slayer-hulp:** opdracht invullen, dan waar je heen moet, welke gear en spullen je nodig hebt, en advies wat je blokkeert of overslaat. Nieuwe quests van Quest Month |
+| 20 nov | 0.5.25 | Wat nog openstond uit 0.5.21: zoeken met item-kaarten (4.129 GE-items), snellere opstart, welkomstblok op het Overzicht en route naast de kaart (ontwerp staat klaar). Nieuwe quests van Quest Month |
+| 27 nov | 0.6.2 | Bufferweek en opruimen; de laatste quests van Quest Month (onder andere The Graveyard). Als er tijd is: Hunter-locaties en meer blokken voor het startscherm (Nieuws, Live positie, Pets, Diaries) |
+| 4 dec | 0.6.3 | **Bossen en drops:** eisen, gear, waarde per kill, kans op een unieke drop en een droog-rekenaar |
+| 11 dec | 0.6.4 | **Ironman-modus:** soort account kiezen (gewoon, Ironman, Hardcore, Ultimate, Group); bij Ironman geen GE-prijzen en flip-tips, wel waar je een item zelf haalt |
+| 18 dec | 0.6.5 | Buffer en opruimen; daarna feestdagenrust |
+| half jan | 0.7.1 | Vergelijken met spelers (#36) |
+| eind jan | 0.8.0 | Over-pagina uitbreiden (rondleiding staat al in 0.5.19) |
+| begin feb | 0.9.0 | Thema's en compacte modus |
+| half feb | 0.9.5 | Bufferweek en opruimen |
+| eind feb | 0.9.8 | Behaalde doelen verdwijnen vanzelf van het startscherm, met terughalen en een Afgerond-lijst (zie 4b) |
+| begin mrt | 0.9.9-rc1 | Test op schone pc, updatetest |
+| half mrt | 1.0.0 | Release met checksums |
 
-Data na eind november zijn een schatting. Schuift iets, dan schuift het laatste item door; de afwerking blijft.
+Data na eind november zijn een schatting. Een release komt elke vrijdag om 19:00 (de geplande release). Schuift iets, dan schuift het laatste item door; de afwerking blijft.
 
 ## 4. Na 1.0 (prioriteit A/B/C, moeite S/M/L)
 - Verdere interface-uitbreidingen (meer thema's, de vier cijfers en de banner van het startscherm sleepbaar) – A, M
