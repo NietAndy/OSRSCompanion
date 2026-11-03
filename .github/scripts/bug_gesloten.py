@@ -35,6 +35,24 @@ def dc(method, pad, data=None):
         return e.code, e.read()[:300]
 
 
+def oplossing_versie(nummer):
+    """Zoekt de nieuwste versie waarvan de releasenotities naar dit issue verwijzen, bijvoorbeeld (#5). Geen gevonden: None."""
+    import glob
+    gevonden = []
+    for pad in glob.glob("RELEASE-NOTES-*.md"):
+        v = re.match(r"RELEASE-NOTES-(\d+(?:\.\d+)*)\.md$", os.path.basename(pad))
+        if not v:
+            continue
+        try:
+            with open(pad, encoding="utf-8") as f:
+                tekst = f.read()
+        except OSError:
+            continue
+        if re.search(r"(?<![\w#])#" + str(nummer) + r"(?!\d)", tekst):
+            gevonden.append((tuple(int(x) for x in v.group(1).split(".")), v.group(1)))
+    return max(gevonden)[1] if gevonden else None
+
+
 def main():
     if not BOT:
         print("DISCORD_BOT_TOKEN ontbreekt.")
@@ -65,7 +83,9 @@ def main():
                      "Denk je dat dit niet klopt, of heb je meer informatie? Reageer dan op het issue, dan kijken we er opnieuw naar.\n\n"
                      "Details: <" + url + ">")
         else:
-            tekst = (tag + "✅ Goed nieuws: je melding is opgelost! De oplossing zit in een volgende versie van de app. Zodra die uit is, zie je dat via **Controleer op updates** linksonder in de app.\n\n"
+            versie = oplossing_versie(iss.get("number"))
+            waar = ("in versie " + versie) if versie else "in een volgende versie"
+            tekst = (tag + "✅ Goed nieuws: je melding is opgelost! De oplossing zit " + waar + " van de app. Zodra die uit is, zie je dat via **Controleer op updates** linksonder in de app.\n\n"
                      "Werkt het bij jou na de update toch nog niet goed, laat het ons dan weten via een nieuwe melding.\n\n"
                      "Details: <" + url + ">")
         if dc("PATCH", "/channels/" + thread, {"archived": False})[0] not in (200, 201):
