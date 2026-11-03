@@ -1,0 +1,22 @@
+name: Bug gesloten naar Discord
+
+# Wordt een issue uit de app gesloten of heropend, dan komt dat in de thread van de melding in #bugs.
+on:
+  issues:
+    types: [closed, reopened]
+
+permissions:
+  contents: read
+
+jobs:
+  discord:
+    if: contains(github.event.issue.labels.*.name, 'uit-de-app')
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Thread bijwerken
+        env:
+          DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
+          DISCORD_BUGS_KANAAL: ${{ secrets.DISCORD_BUGS_KANAAL }}
+        run: python3 .github/scripts/bug_gesloten.py
