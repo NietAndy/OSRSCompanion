@@ -129,7 +129,7 @@ def citaat(t):
 def issue_tekst(m, e, v, uitw, log):
     rijen = [("Versie", v.get("Versie", "?")), ("Pagina", v.get("Pagina", "?")), ("Systeem", v.get("Systeem", "?"))]
     if TOON_MELDER:
-        rijen.append(("Melder", v.get("Melder", "?")))
+        rijen.append(("Melder", re.sub(r"\s*\(<@\d+>\)", "", v.get("Melder", "?"))))
     tabel = "| | |\n|---|---|\n" + "\n".join("| " + a + " | " + str(b).replace("|", "/") + " |" for a, b in rijen)
     delen = []
     if uitw:
@@ -143,6 +143,24 @@ def issue_tekst(m, e, v, uitw, log):
     link = "https://discord.com/channels/" + str(m.get("guild_id") or "@me") + "/" + KANAAL + "/" + m["id"]
     delen.append("Gemeld via de app op " + m.get("timestamp", "")[:16].replace("T", " ") + " UTC. [Melding in Discord](" + link + ")\n\n<!-- discord-bericht: " + m["id"] + " -->")
     return "\n\n".join(delen)
+
+
+def antwoord(m, v, url):
+    """Maakt een thread onder de melding en tagt de melder daarin. Lukt de thread niet, dan een gewoon antwoord."""
+    mid = re.search(r"<@(\d{15,25})>", v.get("Melder", ""))
+    tag = ("<@" + mid.group(1) + "> ") if mid else ""
+    tekst = tag + "Bedankt voor je melding! Hij staat nu op GitHub: <" + url + ">\nWe laten het hier weten als er nieuws is. Heb je meer informatie, zoals een screenshot, zet die dan in deze thread."
+    mentions = {"parse": [], "users": [mid.group(1)] if mid else []}
+    naam = ("Bug: " + ((m.get("embeds") or [{}])[0].get("title") or "melding"))[:95]
+    st, th = dc("POST", "/channels/" + KANAAL + "/messages/" + m["id"] + "/threads", {"name": naam, "auto_archive_duration": 10080})
+    if st in (200, 201) and isinstance(th, dict) and th.get("id"):
+        st2, r2 = dc("POST", "/channels/" + th["id"] + "/messages", {"content": tekst, "allowed_mentions": mentions})
+        if st2 in (200, 201):
+            return
+        print("Bericht in thread mislukt:", st2, str(r2)[:200])
+    else:
+        print("Thread maken mislukt (geeft de bot het recht Openbare threads creeren?):", st, str(th)[:200])
+    dc("POST", "/channels/" + KANAAL + "/messages", {"content": tekst, "message_reference": {"message_id": m["id"]}, "allowed_mentions": mentions})
 
 
 def zorg_labels():
@@ -205,7 +223,7 @@ def main():
         url = r.get("html_url", "")
         print("Issue gemaakt:", url)
         dc("PUT", "/channels/" + KANAAL + "/messages/" + m["id"] + "/reactions/" + urllib.parse.quote(VINK) + "/@me")
-        dc("POST", "/channels/" + KANAAL + "/messages", {"content": "Bedankt! Deze melding staat nu op GitHub: <" + url + ">", "message_reference": {"message_id": m["id"]}, "allowed_mentions": {"parse": []}})
+        antwoord(m, v, url)
     return 0
 
 
