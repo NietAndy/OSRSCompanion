@@ -149,7 +149,12 @@ def antwoord(m, v, url):
     """Maakt een thread onder de melding en tagt de melder daarin. Lukt de thread niet, dan een gewoon antwoord."""
     mid = re.search(r"<@(\d{15,25})>", v.get("Melder", ""))
     tag = ("<@" + mid.group(1) + "> ") if mid else ""
-    tekst = tag + "Bedankt voor je melding! Hij staat nu op GitHub: <" + url + ">\nWe laten het hier weten als er nieuws is. Heb je meer informatie, zoals een screenshot, zet die dan in deze thread."
+    tekst = (tag + "Bedankt voor je melding! We hebben hem vastgelegd op GitHub, zodat hij niet verloren gaat: <" + url + ">\n\n"
+             "**Wat er nu gebeurt**\n"
+             "- We bekijken je melding en proberen het probleem na te bootsen.\n"
+             "- Zodra er nieuws is, zoals een vraag, een oplossing of een besluit, laten we het je hier weten.\n\n"
+             "**Kun je helpen?**\n"
+             "Zet in deze thread alles wat je nog weet: de stappen waarmee het probleem terugkomt, wat je had verwacht en eventueel een screenshot. Hoe meer we weten, hoe sneller we het kunnen oplossen.")
     mentions = {"parse": [], "users": [mid.group(1)] if mid else []}
     naam = ("Bug: " + ((m.get("embeds") or [{}])[0].get("title") or "melding"))[:95]
     st, th = dc("POST", "/channels/" + KANAAL + "/messages/" + m["id"] + "/threads", {"name": naam, "auto_archive_duration": 10080})

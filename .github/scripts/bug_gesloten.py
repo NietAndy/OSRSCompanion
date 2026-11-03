@@ -61,9 +61,13 @@ def main():
     if actie == "closed":
         reden = iss.get("state_reason")
         if reden == "not_planned":
-            tekst = tag + "Deze melding is gesloten zonder aanpassing (bijvoorbeeld omdat het geen bug is of al bekend was). Details: <" + url + ">"
+            tekst = (tag + "Update over je melding: we hebben deze afgesloten zonder de app aan te passen. Dat kan zijn omdat het geen bug is, het al bekend was of de app bewust zo werkt. Je melding is wel gelezen en bijgehouden.\n\n"
+                     "Denk je dat dit niet klopt, of heb je meer informatie? Reageer dan op het issue, dan kijken we er opnieuw naar.\n\n"
+                     "Details: <" + url + ">")
         else:
-            tekst = tag + "✅ Opgelost! De oplossing komt in een volgende versie van de app. Details: <" + url + ">"
+            tekst = (tag + "✅ Goed nieuws: je melding is opgelost! De oplossing zit in een volgende versie van de app. Zodra die uit is, zie je dat via **Controleer op updates** linksonder in de app.\n\n"
+                     "Werkt het bij jou na de update toch nog niet goed, laat het ons dan weten via een nieuwe melding.\n\n"
+                     "Details: <" + url + ">")
         if dc("PATCH", "/channels/" + thread, {"archived": False})[0] not in (200, 201):
             pass
         st, r = dc("POST", "/channels/" + thread + "/messages", {"content": tekst, "allowed_mentions": {"parse": [], "users": users}})
@@ -75,7 +79,8 @@ def main():
             print("Archiveren:", st)
     elif actie == "reopened":
         dc("PATCH", "/channels/" + thread, {"archived": False, "locked": False})
-        st, r = dc("POST", "/channels/" + thread + "/messages", {"content": tag + "Deze melding is weer geopend. Details: <" + url + ">", "allowed_mentions": {"parse": [], "users": users}})
+        st, r = dc("POST", "/channels/" + thread + "/messages", {"content": (tag + "Update over je melding: we hebben deze weer geopend, omdat er nog werk aan is of er nieuwe informatie is bijgekomen. Zodra er nieuws is, laten we het je hier weten.\n\n"
+                                                                                  "Details: <" + url + ">"), "allowed_mentions": {"parse": [], "users": users}})
         print("Heropend, bericht:", st)
     return 0
 
