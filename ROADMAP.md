@@ -25,15 +25,15 @@ Doel: alles wat Jagex uitbrengt komt ook in de app. Elke vrijdag loop ik de lijs
 Regels: alleen wat ik op de wiki of bij de officiële nieuwsberichten kan nalezen; wat ik niet kan controleren, markeer ik als "niet gecontroleerd". Nieuwe plekken en levels komen met bron in de releasenotities. Wat te groot is voor één week gaat als eigen punt op de lijst.
 
 ## 2. Stand
-Klaar: 0.5.21 (prijsinzicht bij de grafiek, iconen onthouden), 0.5.20.1 (nieuw uiterlijk: menu, overzicht, volgorde, prijsmeldingen, kaart; eerder 0.5.19.x) (begrippen, automatische prijzen, grote prijsmelding, slepen, quest-volgorde, rondleiding, meld een probleem). Online op GitHub: controleer welke versie de gebruiker als laatste heeft gepubliceerd.
+Klaar: 0.5.22 (timers op het Overzicht met melding en geluid, hiscores opgehaald om, questgegevens aangevuld), 0.5.21 (prijsinzicht bij de grafiek, iconen onthouden), 0.5.20.1 (nieuw uiterlijk: menu, overzicht, volgorde, prijsmeldingen, kaart; eerder 0.5.19.x) (begrippen, automatische prijzen, grote prijsmelding, slepen, quest-volgorde, rondleiding, meld een probleem). Online op GitHub: controleer welke versie de gebruiker als laatste heeft gepubliceerd.
 Gedaan sinds 0.5.7: Sailing-stappen, Achievement Diaries, Prijsmeldingen (#39), Skilling-planner (#38), nieuws als krant, kaart met producten en Runecraft-altaren, kaartopties als dropdowns, skill-icoontjes, Discord-setup en changelog-workflow, nieuwe naam Gielinor Guide (0.5.15), verkoopcalculator met slim zoeken (0.5.17 en 0.5.17.1), menu bovenin met uitklapmenu's en nieuw logo (0.5.17.1), kleinere kaart met positiebalk (0.5.17.2), nieuw startscherm met sleepbare blokken en verplicht inloggen met Discord (0.5.17.3 t/m 0.5.17.6). `handleiding/Mac.txt` is uit de repo.
 
 ## 3. Planning
 | Vrijdag | Versie | Inhoud |
 |---|---|---|
 | 20 nov | 0.5.21 | Gedaan op 2 nov: prijsinzicht en iconen onthouden. Nog te doen: zoeken met item-kaarten (4.129 GE-items); snellere opstart; welkomstblok op het Overzicht en route naast de kaart (ontwerp staat klaar) |
-| 27 nov | 0.5.22 | **Timers** voor farming (kruiden, bomen, vogelhuisjes) en terugkerende taken (dagelijks en wekelijks), met Windows-melding en geluid zoals bij prijsmeldingen; hiscores met "opgehaald om" |
-| 4 dec | 0.5.23 | **Voortgang over tijd:** eigen momentopname bij elke hiscores-ophaling, xp per dag en week per skill, wanneer je 99 haalt in je huidige tempo, grafiek per skill |
+| 27 nov | 0.5.22 | Gedaan op 3 nov. **Timers** voor farming (kruiden, bomen, vogelhuisjes) en terugkerende taken (dagelijks en wekelijks), met Windows-melding en geluid zoals bij prijsmeldingen; hiscores met "opgehaald om" |
+| 4 dec | 0.5.23 | Quest Month: nieuwe quests van november toevoegen zodra ze uit zijn (The Graveyard en de verrassingsquests). **Voortgang over tijd:** eigen momentopname bij elke hiscores-ophaling, xp per dag en week per skill, wanneer je 99 haalt in je huidige tempo, grafiek per skill |
 | 11 dec | 0.5.24 | **Slayer-hulp:** opdracht invullen, dan waar je heen moet, welke gear en spullen je nodig hebt, en advies wat je blokkeert of overslaat |
 | 18 dec | 0.6.2 | Buffer en opruimen; feestdagenrust. Als er tijd is: Hunter-locaties en meer blokken voor het startscherm (Checklist, Nieuws, Live positie, Pets, Diaries) |
 | begin jan | 0.6.3 | **Bossen en drops:** eisen, gear, waarde per kill, kans op een unieke drop en een droog-rekenaar |
