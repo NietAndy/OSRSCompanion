@@ -1,0 +1,31 @@
+name: Bugs naar issues
+
+# Elke 15 minuten: nieuwe meldingen uit #bugs op Discord worden een issue met het label "bug",
+# met een uitwerking door GitHub Models (gratis). Zie .github/scripts/bugs_naar_issues.py.
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch:     # knop "Run workflow": nu meteen controleren
+
+permissions:
+  contents: read
+  issues: write
+  models: read
+
+concurrency:
+  group: bugs-naar-issues
+  cancel-in-progress: false
+
+jobs:
+  bugs:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Meldingen omzetten
+        env:
+          DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
+          DISCORD_BUGS_KANAAL: ${{ secrets.DISCORD_BUGS_KANAAL }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TOON_MELDER: ${{ vars.TOON_MELDER }}
+        run: python3 .github/scripts/bugs_naar_issues.py
