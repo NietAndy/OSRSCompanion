@@ -6,4 +6,4 @@ Nooit meer een vergeten herb run. Op het Overzicht staat nu het blok Timers met 
 
 Bij Levels en account zie je nu ook wanneer je levels voor het laatst zijn opgehaald.
 
-In november is het Quest Month: elke week een nieuwe quest. Die komen in de app zodra ze uit zijn.
+Quest Month is begonnen! De eerste twee nieuwe quests staan al in de app: Mudfoot's Big Adventure en The Writing's on the Wall. In november komt er elke week een nieuwe quest bij.
