@@ -1,4 +1,4 @@
-# Gielinor Guide 0.5.22.2 – Meld een probleem werkt weer
+# Gielinor Guide 0.5.22.2 – hotfix: Meld een probleem werkt weer
 
 ## Opgelost
-- Meld een probleem: een melding via de knop linksonder kwam niet aan. Nu komt hij in ons kanaal #bugs terecht en wordt er een issue van gemaakt.
+- **Hotfix:** Meld een probleem kwam niet aan. Een melding via de knop linksonder komt nu in ons kanaal #bugs terecht en wordt er een issue van gemaakt. Verder is er niets veranderd ten opzichte van 0.5.22.1.
