@@ -1,6 +1,6 @@
 # OSRS Companion – roadmap (voor ons)
 
-Bijgewerkt 2026-11-02. Werkdocument voor de gebruiker en Claude. Een bewerkbare kopie staat als Claude Doc; deze file is wat Claude aan het begin van een sessie leest.
+Bijgewerkt 2026-11-03. Werkdocument voor de gebruiker en Claude. Een bewerkbare kopie staat als Claude Doc; deze file is wat Claude aan het begin van een sessie leest.
 
 ## 1. Werkafspraken
 - Eén release per vrijdag, kleine versiestappen (0.5.x). Extra cijfer = hotfix (0.5.16.1). Middelgrote stap (0.6, 0.7) alleen als opslag of naam verandert.
@@ -9,6 +9,10 @@ Bijgewerkt 2026-11-02. Werkdocument voor de gebruiker en Claude. Een bewerkbare 
 - Releasetag `vX.Y.Z`, titel "Weekly update <dag> <datum> (X.Y.Z)", bijvoorbeeld "Weekly update zaterdag 25 oktober (0.5.16.3)". De tag bepaalt de versie, de titel is voor mensen en voor Discord. Het bestand moet op .exe eindigen.
 - Release notes bevatten alleen wat er gewijzigd is (Nieuw, Opgelost, Verbeterd). Geen kopje "Let op" met beperkingen of "niet getest"; die melding gaat alleen in het gesprek.
 - Alleen Windows. Niets betaalds. Geen automatisering of uitlezen van het spel (Jagex).
+- De broncode staat in `app/` (sinds 3 nov). Werkafspraken voor Claude staan in `CLAUDE.md`.
+- Elke exe die naar de gebruiker gaat, krijgt een eigen versienummer. Na het versturen nooit dezelfde versie opnieuw bouwen met andere inhoud: dan x.y.z.1, x.y.z.2.
+- Een nieuwe `RELEASE-NOTES-x.y.z.md` op main maakt vanzelf een draft-release (titel "Versie x.y.z"). De gebruiker voegt de exe toe en publiceert, of de geplande release doet het vrijdag om 19:00 (nooit zonder exe).
+- Bugs: Meld een probleem in de app → #bugs op Discord → elke 15 minuten een issue met de labels `bug` en `uit-de-app`, met een thread en tag voor de melder. Een gesloten issue meldt "Opgelost" in die thread. Verwijs in releasenotities naar het issuenummer, bijvoorbeeld (#2).
 - Gegevens van OSRS Wiki, Shortest Path (BSD) en RuneLite (BSD), met bron.
 - `package.json`: driedelig `version` plus eigen `appVersie`; de updater leest `appVersie`.
 
@@ -25,7 +29,7 @@ Doel: alles wat Jagex uitbrengt komt ook in de app. Elke vrijdag loop ik de lijs
 Regels: alleen wat ik op de wiki of bij de officiële nieuwsberichten kan nalezen; wat ik niet kan controleren, markeer ik als "niet gecontroleerd". Nieuwe plekken en levels komen met bron in de releasenotities. Wat te groot is voor één week gaat als eigen punt op de lijst.
 
 ## 2. Stand
-Klaar: 0.5.22.1 (leeg scherm bij opstarten op de Quest-volgorde, #2), 0.5.22 (timers op het Overzicht met melding en geluid, hiscores opgehaald om, questgegevens aangevuld), 0.5.21 (prijsinzicht bij de grafiek, iconen onthouden), 0.5.20.1 (nieuw uiterlijk: menu, overzicht, volgorde, prijsmeldingen, kaart; eerder 0.5.19.x) (begrippen, automatische prijzen, grote prijsmelding, slepen, quest-volgorde, rondleiding, meld een probleem). Online op GitHub: controleer welke versie de gebruiker als laatste heeft gepubliceerd.
+Klaar: 0.5.22.1 (Meld een probleem naar #bugs met issues op GitHub, hoek linksonder met versie en updates; leeg scherm bij opstarten op de Quest-volgorde, #2), 0.5.22 (timers op het Overzicht met melding en geluid, hiscores opgehaald om, questgegevens aangevuld), 0.5.21 (prijsinzicht bij de grafiek, iconen onthouden), 0.5.20.1 (nieuw uiterlijk: menu, overzicht, volgorde, prijsmeldingen, kaart; eerder 0.5.19.x) (begrippen, automatische prijzen, grote prijsmelding, slepen, quest-volgorde, rondleiding, meld een probleem). Online op GitHub: controleer welke versie de gebruiker als laatste heeft gepubliceerd.
 Gedaan sinds 0.5.7: Sailing-stappen, Achievement Diaries, Prijsmeldingen (#39), Skilling-planner (#38), nieuws als krant, kaart met producten en Runecraft-altaren, kaartopties als dropdowns, skill-icoontjes, Discord-setup en changelog-workflow, nieuwe naam Gielinor Guide (0.5.15), verkoopcalculator met slim zoeken (0.5.17 en 0.5.17.1), menu bovenin met uitklapmenu's en nieuw logo (0.5.17.1), kleinere kaart met positiebalk (0.5.17.2), nieuw startscherm met sleepbare blokken en verplicht inloggen met Discord (0.5.17.3 t/m 0.5.17.6). `handleiding/Mac.txt` is uit de repo.
 
 ## 3. Planning
@@ -33,7 +37,7 @@ Gedaan sinds 0.5.7: Sailing-stappen, Achievement Diaries, Prijsmeldingen (#39), 
 |---|---|---|
 | 20 nov | 0.5.21 | Gedaan op 2 nov: prijsinzicht en iconen onthouden. Nog te doen: zoeken met item-kaarten (4.129 GE-items); snellere opstart; welkomstblok op het Overzicht en route naast de kaart (ontwerp staat klaar) |
 | 27 nov | 0.5.22 | Gedaan op 3 nov. **Timers** voor farming (kruiden, bomen, vogelhuisjes) en terugkerende taken (dagelijks en wekelijks), met Windows-melding en geluid zoals bij prijsmeldingen; hiscores met "opgehaald om" |
-| 4 dec | 0.5.23 | Quest Month: nieuwe quests van november toevoegen zodra ze uit zijn (The Graveyard en de verrassingsquests). **Voortgang over tijd:** eigen momentopname bij elke hiscores-ophaling, xp per dag en week per skill, wanneer je 99 haalt in je huidige tempo, grafiek per skill |
+| 4 dec | 0.5.23 | **Exe bouwen op GitHub:** GitHub Actions bouwt de Windows-exe uit `app/` (met de secret DISCORD_BUG_WEBHOOK) en zet hem bij de draft. Quest Month: de overige nieuwe quests van november toevoegen zodra ze uit zijn (The Graveyard en de verrassingsquests; Mudfoot's Big Adventure en The Writing's on the Wall staan er al in). **Voortgang over tijd:** eigen momentopname bij elke hiscores-ophaling, xp per dag en week per skill, wanneer je 99 haalt in je huidige tempo, grafiek per skill |
 | 11 dec | 0.5.24 | **Slayer-hulp:** opdracht invullen, dan waar je heen moet, welke gear en spullen je nodig hebt, en advies wat je blokkeert of overslaat |
 | 18 dec | 0.6.2 | Buffer en opruimen; feestdagenrust. Als er tijd is: Hunter-locaties en meer blokken voor het startscherm (Checklist, Nieuws, Live positie, Pets, Diaries) |
 | begin jan | 0.6.3 | **Bossen en drops:** eisen, gear, waarde per kill, kans op een unieke drop en een droog-rekenaar |
