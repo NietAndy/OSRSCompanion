@@ -7845,16 +7845,92 @@ d.setAttribute("data-g", g.t);
 
   function zeg(t, soort) { note.textContent = t; note.className = "hsnote" + (soort ? " " + soort : ""); }
 
+  /* Voortgang over tijd: bij elke ophaling bewaren we een momentopname (tijd en xp per skill) op deze pc.
+     Meer dan één per uur bewaren we niet; een tweede ophaling binnen een uur vervangt de vorige. */
+  var SKEY = "osrs-gids-hs-snap", XP99 = 13034431, DAG = 864e5;
+  var vp = document.createElement("div");
+  vp.className = "hsvoort"; vp.hidden = true;
+  note.parentNode.insertBefore(vp, note.nextSibling);
+  var st = document.createElement("style");
+  st.textContent = ".hsvoort{margin:10px 0;padding:10px 12px;border:1px solid var(--line,#8886);border-radius:8px}.hsvoort h3{margin:0 0 6px;font-size:1rem}.hsvoort table{border-collapse:collapse;width:100%;max-width:520px}.hsvoort th,.hsvoort td{text-align:right;padding:2px 8px;font-size:.9rem}.hsvoort th:first-child,.hsvoort td:first-child{text-align:left}.hsvoort .hsuitleg{margin:4px 0;font-size:.85rem;opacity:.85}.hsvoort svg{display:block;max-width:100%;margin-top:6px}";
+  document.head.appendChild(st);
+  function snaps() { try { var a = JSON.parse(localStorage.getItem(SKEY) || "[]"); return Array.isArray(a) ? a : []; } catch (e) { return []; } }
+  function bewaar(naam, xp) {
+    var a = snaps(), nu = Date.now(), l = a[a.length - 1];
+    if (l && l.n === naam && nu - l.t < 3600000) a.pop();
+    a.push({ t: nu, n: naam, xp: xp });
+    if (a.length > 500) a = a.slice(-500);
+    try { localStorage.setItem(SKEY, JSON.stringify(a)); } catch (e) {}
+  }
+  function getal(n) { return Math.round(n).toLocaleString("nl-NL"); }
+  function duur(ms) { return ms < DAG ? Math.max(1, Math.round(ms / 36e5)) + " uur" : (Math.round(ms / DAG * 10) / 10).toLocaleString("nl-NL") + " dagen"; }
+  function toonVoortgang(naam) {
+    vp.textContent = "";
+    var s = snaps().filter(function (x) { return x && x.n === naam && x.xp; });
+    if (!s.length) { vp.hidden = true; return; }
+    vp.hidden = false;
+    var h = document.createElement("h3"); h.textContent = "Voortgang over tijd"; vp.appendChild(h);
+    var last = s[s.length - 1], base = s[0];
+    for (var i = s.length - 1; i >= 0; i--) if (s[i].t <= last.t - 7 * DAG) { base = s[i]; break; }
+    var span = last.t - base.t;
+    var u = document.createElement("p"); u.className = "hsuitleg"; vp.appendChild(u);
+    if (span < 3600000) {
+      u.textContent = "Eén momentopname bewaard (" + tijdTxt(last.t) + "). Haal je levels later nog eens op; dan zie je hier hoeveel xp je wint, per dag en per week.";
+      return;
+    }
+    u.textContent = "Gerekend over " + duur(span) + " (" + tijdTxt(base.t) + " tot " + tijdTxt(last.t) + "), maximaal de laatste week. Het tempo is een gemiddelde en verandert als je anders gaat spelen.";
+    var rij = [];
+    ORDER.forEach(function (sk) {
+      if (last.xp[sk] === undefined || base.xp[sk] === undefined) return;
+      var w = last.xp[sk] - base.xp[sk];
+      if (w > 0) rij.push({ sk: sk, w: w, dag: w / (span / DAG), xp: last.xp[sk] });
+    });
+    if (!rij.length) { var g0 = document.createElement("p"); g0.className = "hsuitleg"; g0.textContent = "In deze periode is er geen xp bijgekomen."; vp.appendChild(g0); return; }
+    rij.sort(function (a, b) { return b.w - a.w; });
+    var t = document.createElement("table");
+    t.innerHTML = "<thead><tr><th>Skill</th><th>xp erbij</th><th>per dag</th><th>99 over</th></tr></thead>";
+    var tb = document.createElement("tbody");
+    rij.forEach(function (r) {
+      var tr = document.createElement("tr"), c99;
+      if (r.xp >= XP99) c99 = "99 gehaald"; else c99 = duur((XP99 - r.xp) / r.dag * DAG);
+      [r.sk, "+" + getal(r.w), getal(r.dag), c99].forEach(function (x) { var td = document.createElement("td"); td.textContent = x; tr.appendChild(td); });
+      tb.appendChild(tr);
+    });
+    t.appendChild(tb); vp.appendChild(t);
+    var kies = document.createElement("select"); kies.setAttribute("aria-label", "Grafiek van skill");
+    rij.forEach(function (r) { var o = document.createElement("option"); o.value = r.sk; o.textContent = "Grafiek: " + r.sk; kies.appendChild(o); });
+    vp.appendChild(kies);
+    var grafiek = document.createElement("div"); vp.appendChild(grafiek);
+    function teken() {
+      var sk = kies.value, pts = s.filter(function (x) { return x.xp[sk] !== undefined; });
+      grafiek.textContent = "";
+      if (pts.length < 2) return;
+      var W = 320, H = 110, P = 8, t0 = pts[0].t, t1 = pts[pts.length - 1].t, lo = Infinity, hi = -Infinity;
+      pts.forEach(function (x) { lo = Math.min(lo, x.xp[sk]); hi = Math.max(hi, x.xp[sk]); });
+      var d = pts.map(function (x) {
+        var px = P + (t1 === t0 ? 0 : (x.t - t0) / (t1 - t0)) * (W - 2 * P), py = H - P - (hi === lo ? 0 : (x.xp[sk] - lo) / (hi - lo)) * (H - 2 * P);
+        return px.toFixed(1) + "," + py.toFixed(1);
+      }).join(" ");
+      grafiek.innerHTML = '<svg viewBox="0 0 ' + W + " " + H + '" width="' + W + '" role="img" aria-label="xp van ' + sk + ' over tijd"><polyline fill="none" stroke="currentColor" stroke-width="2" points="' + d + '"/></svg>';
+      var sub = document.createElement("p"); sub.className = "hsuitleg";
+      sub.textContent = sk + ": " + getal(lo) + " xp op " + tijdTxt(t0) + " tot " + getal(hi) + " xp op " + tijdTxt(t1) + ".";
+      grafiek.appendChild(sub);
+    }
+    kies.addEventListener("change", teken); teken();
+  }
+  toonVoortgang(inp.value.trim());
+
   /* De tekst van de hiscores: regel 1 is het totaal, daarna per skill "rang,level,xp". Rang -1 betekent niet gerangschikt. */
   function lees(tekst) {
     var regels = String(tekst).trim().split(/\r?\n/);
     if (regels.length < ORDER.length + 1) return null;
-    var uit = {}, over = [];
+    var uit = {}, over = [], xp = {};
     ORDER.forEach(function (skill, i) {
-      var deel = regels[i + 1].split(","), lv = parseInt(deel[1], 10);
+      var deel = regels[i + 1].split(","), lv = parseInt(deel[1], 10), x = parseInt(deel[2], 10);
       if (lv >= 1) uit[skill] = Math.min(99, lv); else over.push(skill);
+      if (x >= 0) xp[skill] = x;
     });
-    return Object.keys(uit).length ? { lv: uit, over: over } : null;
+    return Object.keys(uit).length ? { lv: uit, over: over, xp: xp } : null;
   }
 
   async function haal() {
@@ -7876,6 +7952,8 @@ d.setAttribute("data-g", g.t);
     try { localStorage.setItem(NAAM, naam); } catch (e) {}
     var aantal = Object.keys(g.lv).length;
     try { localStorage.setItem(TKEY, JSON.stringify({ t: Date.now(), n: naam })); } catch (e) {}
+    bewaar(naam, g.xp);
+    toonVoortgang(naam);
     zeg("Opgehaald " + tijdTxt(Date.now()) + ": " + aantal + " skills overgenomen van " + naam + "." + (g.over.length ? " Niet gerangschikt op de hiscores, dus ongewijzigd gelaten: " + g.over.join(", ") + "." : ""), "ok");
   }
 
