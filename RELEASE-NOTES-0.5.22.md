@@ -7,6 +7,7 @@
 - **Opgehaald om:** bij Levels en account zie je wanneer je levels voor het laatst van de hiscores zijn opgehaald.
 
 - **Twee nieuwe quests van Quest Month:** Mudfoot's Big Adventure (Novice, start bij Captain Harlan in Lumbridge) en The Writing's on the Wall (Intermediate, 22 Agility en 20 Thieving, start bij Betty bij Land's End).
+- **Meld een probleem direct in Discord:** vul een titel en een beschrijving in en de app stuurt je melding naar het kanaal #bugs, met je versie, je Windows-versie en (als je wilt) het logboek. Te vinden bij Info → Logboek en Info → Over en bronnen.
 
 ## Verbeterd
 - De Checklist heet nu **Timers en checklist**.
