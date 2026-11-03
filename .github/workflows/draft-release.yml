@@ -1,12 +1,20 @@
-name: Draft-release bij een nieuwe tag
+name: Draft-release bij nieuwe releasenotities
 
-# Push je (of Claude) een tag zoals v0.5.22.1, dan maakt deze workflow een draft-release
-# met de titel "Versie 0.5.22.1" en de tekst uit RELEASE-NOTES-0.5.22.1.md.
+# Komt er een nieuw bestand RELEASE-NOTES-x.y.z.md op main (zoals Claude doet bij elke versie),
+# dan maakt deze workflow een draft-release met tag vx.y.z, titel "Versie x.y.z" en die tekst.
+# De tag wordt pas echt aangemaakt als de draft gepubliceerd wordt.
 # Daarna hoef je alleen nog het .exe-bestand in de draft te slepen en op Publish te klikken
-# (of te wachten op de geplande release van vrijdag).
+# (of te wachten op de geplande release van vrijdag; die publiceert nooit zonder .exe).
 on:
   push:
-    tags: ["v*"]
+    branches: [main]
+    paths: ["RELEASE-NOTES-*.md"]
+  workflow_dispatch:
+    inputs:
+      versie:
+        description: "Versie, bijvoorbeeld 0.5.22.1 (leeg = de nieuwste releasenotities)"
+        required: false
+        default: ""
 
 permissions:
   contents: write
@@ -19,20 +27,19 @@ jobs:
       - name: Draft maken
         env:
           GH_TOKEN: ${{ github.token }}
-          TAG: ${{ github.ref_name }}
+          VERSIE: ${{ inputs.versie }}
         run: |
           set -euo pipefail
-          VERSIE="${TAG#v}"
+          if [ -z "${VERSIE:-}" ]; then
+            VERSIE=$(ls RELEASE-NOTES-*.md | sed -E 's/RELEASE-NOTES-(.*)\.md/\1/' | sort -t. -k1,1n -k2,2n -k3,3n -k4,4n | tail -1)
+          fi
+          TAG="v$VERSIE"
+          NOTES="RELEASE-NOTES-$VERSIE.md"
+          [ -f "$NOTES" ] || { echo "::error::$NOTES bestaat niet."; exit 1; }
           if gh release view "$TAG" >/dev/null 2>&1; then
-            echo "Er bestaat al een release voor $TAG. Niets te doen."
+            echo "Er bestaat al een release of draft voor $TAG. Niets te doen."
             exit 0
           fi
-          NOTES="RELEASE-NOTES-$VERSIE.md"
-          if [ -f "$NOTES" ]; then
-            tail -n +2 "$NOTES" | sed '1{/^$/d}' > body.md
-          else
-            echo "Releasenotities volgen." > body.md
-            echo "::warning::$NOTES niet gevonden; de draft heeft een lege tekst."
-          fi
-          gh release create "$TAG" --draft --verify-tag --title "Versie $VERSIE" --notes-file body.md
+          tail -n +2 "$NOTES" | sed '1{/^$/d}' > body.md
+          gh release create "$TAG" --draft --target main --title "Versie $VERSIE" --notes-file body.md
           echo "Draft-release $TAG gemaakt. Sleep nu het .exe-bestand erin."
