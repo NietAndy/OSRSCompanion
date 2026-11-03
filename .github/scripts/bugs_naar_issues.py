@@ -44,7 +44,12 @@ def http(method, url, headers=None, data=None, raw=False, timeout=30):
             b = r.read()
             if raw:
                 return r.status, b
-            return r.status, (json.loads(b) if b else None)
+            if not b:
+                return r.status, None
+            try:
+                return r.status, json.loads(b)
+            except ValueError:
+                return r.status, b.decode("utf-8", "replace")[:500]
     except urllib.error.HTTPError as e:
         try:
             txt = e.read().decode("utf-8", "replace")[:500]
@@ -109,7 +114,7 @@ def ai_uitwerking(titel, tekst, v, log):
         "messages": [{"role": "system", "content": "Je bent een zorgvuldige assistent die bugmeldingen uitwerkt. Je antwoordt alleen met de gevraagde Markdown."},
                      {"role": "user", "content": prompt}]}, timeout=60)
     if st != 200 or not isinstance(r, dict):
-        print("AI niet gelukt:", st, str(r)[:200])
+        print("AI niet gelukt (het issue komt er zonder uitwerking):", st, str(r)[:300])
         return ""
     try:
         return r["choices"][0]["message"]["content"].strip()
@@ -183,7 +188,11 @@ def main():
         if not (e.get("description") or "").strip():
             print("Lege beschrijving bij", m["id"], "- de bot heeft waarschijnlijk geen Message Content Intent.")
         log = logboek(m)
-        uitw = ai_uitwerking(e.get("title", ""), e.get("description", ""), v, log)
+        try:
+            uitw = ai_uitwerking(e.get("title", ""), e.get("description", ""), v, log)
+        except Exception as x:
+            print("AI niet gelukt (het issue komt er zonder uitwerking):", x)
+            uitw = ""
         titel = "[Bug] " + e.get("title", "Melding uit de app")[:110]
         body = issue_tekst(m, e, v, uitw, log)
         if DROOG:
