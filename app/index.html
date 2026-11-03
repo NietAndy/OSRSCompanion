@@ -2191,6 +2191,11 @@ QUESTS.forEach(function (q) { var x = RECX[q.n]; if (x) q.rec = (q.rec ? q.rec +
   window.OSRSQuest = {
     get: function () { return state; },
     keys: SK.slice(),
+    setDone: function (n, v) {
+      if (!QUESTS.some(function (q) { return q.n === n; })) return;
+      if (v) state.done[n] = 1; else delete state.done[n];
+      save(); render();
+    },
     evalAll: function () { var qp = qpTotal(); return QUESTS.map(function (q) { var e = evalQ(q, qp); return { n: q.n, st: e.st, miss: e.miss }; }); },
     setLevel: function (k, v) {
       v = parseInt(v, 10);
@@ -9913,6 +9918,7 @@ window.OSRSPath = (function () {
     var vast = rest.filter(function (q) { return !plaats[q.n]; });
     return { cb: cb, gat: gat, cbNodig: cbNodig, totaal: Q.length, gedaan: Q.length - rest.length, qp: qp, qpAlles: Q.reduce(function (a, q) { return a + q.qp; }, 0), rondes: rondes, trein: trein, nodig: nodig, vast: vast, opent: opent, st: st };
   }
+  function vink(q) { return '<input type="checkbox" class="qv-cb" data-q="' + esc(q.n) + '" aria-label="Quest gedaan: ' + esc(q.n) + '"> '; }
   function li(q, d) {
     var w = d.opent[q.n], g = d.gat(q), extra = [], body = [];
     if (w > 0) extra.push("opent " + w + " andere quest" + (w === 1 ? "" : "s"));
@@ -9922,7 +9928,7 @@ window.OSRSPath = (function () {
     if (q.ki) body.push("<b>Verslaan:</b> " + esc(q.ki));
     if (q.rec) body.push("<b>Aanbevolen:</b> " + esc(q.rec));
     if (q.w) body.push("<b>Start:</b> " + esc(q.w) + (q.st ? ", " + esc(q.st) : ""));
-    return "<li><details><summary><b>" + esc(q.n) + '</b> <span class="qv-why">' + esc(extra.join(" \u00b7 ")) + "</span></summary>" + (body.length ? '<div class="qv-body"><p>' + body.join("</p><p>") + "</p></div>" : "") + "</details></li>";
+    return "<li><details><summary>" + vink(q) + "<b>" + esc(q.n) + '</b> <span class="qv-why">' + esc(extra.join(" \u00b7 ")) + "</span></summary>" + (body.length ? '<div class="qv-body"><p>' + body.join("</p><p>") + "</p></div>" : "") + "</details></li>";
   }
   function skMis(q, st) { var m = []; Object.keys(q.sk).forEach(function (k) { if ((st.lv[k] || 1) < q.sk[k]) m.push(k + " " + q.sk[k] + " (nu " + (st.lv[k] || 1) + ")"); }); return m.join(", "); }
   function toon() {
@@ -9947,11 +9953,21 @@ window.OSRSPath = (function () {
     }
     if (d.vast.length) {
       h += "<h3>Eerst trainen <small>(" + d.vast.length + ")</small></h3><details><summary>Quests die je levels nog niet toelaten</summary><ol>" +
-        d.vast.map(function (q) { var m = skMis(q, d.st); var voor = q.q.filter(function (p) { return !d.st.done[p] && !(d.st.mini || {})[p]; }); return "<li><b>" + esc(q.n) + '</b> <span class="qv-why">' + esc((m ? "mist " + m : "") + (voor.length ? (m ? "; " : "") + "eerst " + voor.join(", ") : "") + (!m && !voor.length ? "nog niet genoeg quest points" : "")) + "</span></li>"; }).join("") + "</ol></details>";
+        d.vast.map(function (q) { var m = skMis(q, d.st); var voor = q.q.filter(function (p) { return !d.st.done[p] && !(d.st.mini || {})[p]; }); return "<li>" + vink(q) + "<b>" + esc(q.n) + '</b> <span class="qv-why">' + esc((m ? "mist " + m : "") + (voor.length ? (m ? "; " : "") + "eerst " + voor.join(", ") : "") + (!m && !voor.length ? "nog niet genoeg quest points" : "")) + "</span></li>"; }).join("") + "</ol></details>";
     }
-    h += '<p class="qnote">Vink gedane quests af bij Quests, dan schuift deze lijst vanzelf op.</p>';
+    h += '<p class="qnote">Vink een quest hier af als je hem hebt gedaan, dan schuift deze lijst vanzelf op. Dat kan ook bij Quests.</p>';
     sec.innerHTML = h;
   }
+  sec.addEventListener("change", function (e) {
+    var cb = e.target && e.target.closest ? e.target.closest(".qv-cb") : null;
+    if (!cb || !window.OSRSQuest) return;
+    window.OSRSQuest.setDone(cb.getAttribute("data-q"), cb.checked);
+  });
+  /* Verandert er iets aan je quests (hier of bij Quests), dan tekenen we de lijst opnieuw, op dezelfde plek in de pagina. */
+  window.addEventListener("osrs-state", function () {
+    if (sec.hidden) return;
+    var y = window.pageYOffset; toon(); window.scrollTo(0, y);
+  });
   window.OSRSQuestVolgorde = { toon: toon, bereken: bereken };
   /* De app kan al op deze pagina openen voordat dit script geladen is: dan nu alsnog tekenen. */
   try { if (window.OSRSShell && window.OSRSShell.current() === "questvolgorde") toon(); } catch (e) {}
@@ -10138,6 +10154,7 @@ window.OSRSPath = (function () {
 #questvolgorde ol > li > details[open] summary::before { background: var(--gold, #f2c14e); color: #111a26; }
 #questvolgorde .qv-body { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 24px; padding: 4px 16px 16px 56px; }
 #questvolgorde .qv-body p { margin: 0; margin-left: 0 !important; font-size: .9rem; line-height: 1.5; }
+#questvolgorde .qv-cb { flex: none; width: 22px; height: 22px; margin: 0 4px 0 0; accent-color: var(--gold, #f2c14e); cursor: pointer; }
 #questvolgorde .qv-body b { display: block; font-size: .72rem; letter-spacing: .06em; text-transform: uppercase; opacity: .7; font-weight: 600; }
 @media (max-width: 40rem) { #questvolgorde .qv-body { grid-template-columns: 1fr; padding-left: 16px; } }
 /* Prijsmeldingen: instellingen naast de lijst */
