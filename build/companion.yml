@@ -1,0 +1,13 @@
+appId: nl.eigen.gielinorguide
+productName: Gielinor Guide
+directories:
+  app: ../app
+  output: uitcomp
+electronVersion: 33.4.11
+compression: maximum
+win:
+  target: portable
+  icon: ../app/icon.ico
+portable:
+  artifactName: Gielinor Guide.exe
+  requestExecutionLevel: user

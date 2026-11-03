@@ -1,0 +1,9 @@
+{
+  "name": "gielinor-guide",
+  "productName": "Gielinor Guide",
+  "version": "0.5.17",
+  "main": "main.js",
+  "description": "Nederlandse Old School RuneScape-gids met advies en kaart",
+  "appVersie": "0.5.22.1",
+  "appBouw": "02-11 22:54"
+}

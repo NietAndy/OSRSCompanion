@@ -1,2 +1,6 @@
 __pycache__/
 *.pyc
+app/bug-config.js
+build/uitcomp/
+node_modules/
+tests/uit/
