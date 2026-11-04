@@ -7,13 +7,14 @@ await ctx.addInitScript(()=>{
   window.__gevraagd=[];
   window.osrsWin={titel(){},discordInfo:async()=>({ingesteld:false}),discordLogin:async()=>({}),icoon:async(n)=>{window.__gevraagd.push(n);return {url:PNG};}};
   localStorage.setItem('osrs-gids-login','skip');localStorage.setItem('osrs-gids-tour','1');localStorage.setItem('osrs-gids-page','map');
-  localStorage.setItem('osrs-gids-mapui',JSON.stringify({poi:{bank:true,altaar:true,aambeeld:true,winkel:true}}));
+  localStorage.setItem('osrs-gids-mapui',JSON.stringify({poi:{bank:false,altaar:false,aambeeld:false,winkel:false}}));
 });
 const p=await ctx.newPage();const errs=[];p.on('pageerror',e=>errs.push(e.message));
 await p.goto('file://'+require('path').resolve(__dirname,'../app/index.html'));await p.waitForTimeout(3000);
 // in Lumbridge/Varrock kijken: zoom in op een plek met bank
 const r=await p.evaluate(()=>({kic:document.querySelectorAll('.kic').length,ok:document.querySelectorAll('.kic.ok').length,cirkels:document.querySelectorAll('path.leaflet-interactive').length,gevraagd:[...new Set(window.__gevraagd)].sort()}));
 console.log(JSON.stringify(r));
+eis('standaard aan, ook als ze eerder uitstonden (eenmalig)',r.kic>0);
 eis('er staan icoon-markers op de kaart',r.kic>0,'kic='+r.kic);
 eis('de iconen zijn geladen (stip wordt icoon)',r.ok>0,'ok='+r.ok);
 eis('alleen de gecontroleerde namen worden opgevraagd',r.gevraagd.length>0&&r.gevraagd.every(n=>/ icon$/.test(n)),r.gevraagd.join(', '));

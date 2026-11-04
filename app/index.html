@@ -6139,10 +6139,13 @@ window.OSRS_GEBIEDEN = [["Abandoned Mine",3439,3232,"d"],["Abandoned Mine (secre
   /* ---------- Wat is waar: banken, altaren, aambeelden, queststarts en clues ---------- */
   var PLEKKEN = window.OSRS_PLEKKEN || {};
   var poiOn = {};
-  Object.keys(PLEKKEN).forEach(function (k) { poiOn[k] = mapUi.poi ? mapUi.poi[k] === true : false; });
+  /* bank, altaar, aambeeld en winkel staan standaard aan (met het officiele icoon). Eenmalig voor iedereen aan; daarna houdt wie ze zelf uitzet ze uit. */
+  var POI_STANDAARD = { bank: 1, altaar: 1, aambeeld: 1, winkel: 1 };
+  var iconenAl = false; try { iconenAl = localStorage.getItem("osrs-gids-kaarticonen") === "1"; localStorage.setItem("osrs-gids-kaarticonen", "1"); } catch (e) {}
+  Object.keys(PLEKKEN).forEach(function (k) { poiOn[k] = (mapUi.poi && mapUi.poi[k] !== undefined && (iconenAl || !POI_STANDAARD[k])) ? mapUi.poi[k] === true : !!POI_STANDAARD[k]; });
   poiOn.queststart = mapUi.poi ? mapUi.poi.queststart === true : false;
   poiOn.clue = mapUi.poi ? mapUi.poi.clue === true : false;
-  poiOn.winkel = mapUi.poi ? mapUi.poi.winkel === true : false;
+  poiOn.winkel = (mapUi.poi && mapUi.poi.winkel !== undefined && iconenAl) ? mapUi.poi.winkel === true : true;
   poiOn.npc = mapUi.poi ? mapUi.poi.npc === true : false;
   poiOn.ambacht = mapUi.poi ? mapUi.poi.ambacht === true : false;
   ["erts", "boom", "vis", "rune", "farm"].forEach(function (k) { poiOn[k] = mapUi.poi ? mapUi.poi[k] === true : false; });
