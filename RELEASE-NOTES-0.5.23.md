@@ -12,3 +12,4 @@
 
 ## Opgelost
 - Miniquests als Enter the Abyss telden niet mee als eis voor andere quests, ook als je ze had afgevinkt. Nu gebruiken de miniquests dezelfde opslag als de eisen van de quests en het blokje bij Levels en account, dus een vinkje geldt overal. Eerdere vinkjes worden overgenomen (#12).
+- Voortgang over tijd liet bijna niets zien als je twee keer kort na elkaar ophaalde: er werd maar één momentopname bewaard. Nu zie je de winst meteen. De app legt ook uit dat de hiscores van Jagex pas bijwerken als je uitlogt in het spel, en zegt het als er geen xp bij is gekomen (#17).

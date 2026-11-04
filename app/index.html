@@ -7849,7 +7849,7 @@ d.setAttribute("data-g", g.t);
   var note = document.createElement("p");
   note.className = "hsnote";
   note.setAttribute("aria-live", "polite");
-  note.textContent = "Haalt je levels op van de hiscores van Jagex. Hiervoor is internet nodig.";
+  note.textContent = "Haalt je levels op van de hiscores van Jagex. Hiervoor is internet nodig. De hiscores worden pas bijgewerkt als je uitlogt in het spel.";
   var anker = document.getElementById("skills") || row;
   anker.parentNode.insertBefore(wrap, anker);
   anker.parentNode.insertBefore(note, anker);
@@ -7861,7 +7861,7 @@ d.setAttribute("data-g", g.t);
   function zeg(t, soort) { note.textContent = t; note.className = "hsnote" + (soort ? " " + soort : ""); }
 
   /* Voortgang over tijd: bij elke ophaling bewaren we een momentopname (tijd en xp per skill) op deze pc.
-     Meer dan één per uur bewaren we niet; een tweede ophaling binnen een uur vervangt de vorige. */
+     Is de xp sinds de vorige ophaling niet veranderd, dan komt er geen nieuwe bij: we onthouden alleen wanneer we voor het laatst keken (c). */
   var SKEY = "osrs-gids-hs-snap", XP99 = 13034431, DAG = 864e5;
   var vp = document.createElement("div");
   vp.className = "hsvoort"; vp.hidden = true;
@@ -7870,10 +7870,14 @@ d.setAttribute("data-g", g.t);
   st.textContent = ".hsvoort{margin:10px 0;padding:10px 12px;border:1px solid var(--line,#8886);border-radius:8px}.hsvoort h3{margin:0 0 6px;font-size:1rem}.hsvoort table{border-collapse:collapse;width:100%;max-width:520px}.hsvoort th,.hsvoort td{text-align:right;padding:2px 8px;font-size:.9rem}.hsvoort th:first-child,.hsvoort td:first-child{text-align:left}.hsvoort .hsuitleg{margin:4px 0;font-size:.85rem;opacity:.85}.hsvoort svg{display:block;max-width:100%;margin-top:6px}";
   document.head.appendChild(st);
   function snaps() { try { var a = JSON.parse(localStorage.getItem(SKEY) || "[]"); return Array.isArray(a) ? a : []; } catch (e) { return []; } }
+  function gelijkXp(a, b) {
+    var ka = Object.keys(a || {}), kb = Object.keys(b || {});
+    return ka.length === kb.length && ka.every(function (k) { return a[k] === b[k]; });
+  }
   function bewaar(naam, xp) {
     var a = snaps(), nu = Date.now(), l = a[a.length - 1];
-    if (l && l.n === naam && nu - l.t < 3600000) a.pop();
-    a.push({ t: nu, n: naam, xp: xp });
+    if (l && l.n === naam && gelijkXp(l.xp, xp)) l.c = nu;
+    else a.push({ t: nu, n: naam, xp: xp, c: nu });
     if (a.length > 500) a = a.slice(-500);
     try { localStorage.setItem(SKEY, JSON.stringify(a)); } catch (e) {}
   }
@@ -7889,26 +7893,30 @@ d.setAttribute("data-g", g.t);
     for (var i = s.length - 1; i >= 0; i--) if (s[i].t <= last.t - 7 * DAG) { base = s[i]; break; }
     var span = last.t - base.t;
     var u = document.createElement("p"); u.className = "hsuitleg"; vp.appendChild(u);
-    if (span < 3600000) {
-      u.textContent = "Eén momentopname bewaard (" + tijdTxt(last.t) + "). Haal je levels later nog eens op; dan zie je hier hoeveel xp je wint, per dag en per week.";
+    var UIT = "De hiscores van Jagex worden pas bijgewerkt als je uitlogt in het spel.";
+    if (s.length < 2) {
+      u.textContent = "Eén momentopname bewaard (" + tijdTxt(last.c || last.t) + "). Haal je levels later nog eens op; dan zie je hier hoeveel xp je wint. " + UIT + " Log dus eerst uit in het spel en haal daarna op.";
       return;
     }
-    u.textContent = "Gerekend over " + duur(span) + " (" + tijdTxt(base.t) + " tot " + tijdTxt(last.t) + "), maximaal de laatste week. Het tempo is een gemiddelde en verandert als je anders gaat spelen.";
+    var genoeg = span >= 3600000;
+    u.textContent = genoeg
+      ? "Gerekend over " + duur(span) + " (" + tijdTxt(base.t) + " tot " + tijdTxt(last.t) + "), maximaal de laatste week. Het tempo is een gemiddelde en verandert als je anders gaat spelen. Laatst opgehaald " + tijdTxt(last.c || last.t) + ". " + UIT
+      : "Sinds " + tijdTxt(base.t) + ". Per dag en de schatting voor 99 verschijnen zodra er minstens een uur tussen twee momentopnames zit. Laatst opgehaald " + tijdTxt(last.c || last.t) + ". " + UIT;
     var rij = [];
     ORDER.forEach(function (sk) {
       if (last.xp[sk] === undefined || base.xp[sk] === undefined) return;
       var w = last.xp[sk] - base.xp[sk];
-      if (w > 0) rij.push({ sk: sk, w: w, dag: w / (span / DAG), xp: last.xp[sk] });
+      if (w > 0) rij.push({ sk: sk, w: w, dag: genoeg ? w / (span / DAG) : 0, xp: last.xp[sk] });
     });
-    if (!rij.length) { var g0 = document.createElement("p"); g0.className = "hsuitleg"; g0.textContent = "In deze periode is er geen xp bijgekomen."; vp.appendChild(g0); return; }
+    if (!rij.length) { var g0 = document.createElement("p"); g0.className = "hsuitleg"; g0.textContent = "Sinds " + tijdTxt(base.t) + " is er geen xp bijgekomen. " + UIT; vp.appendChild(g0); return; }
     rij.sort(function (a, b) { return b.w - a.w; });
     var t = document.createElement("table");
     t.innerHTML = "<thead><tr><th>Skill</th><th>xp erbij</th><th>per dag</th><th>99 over</th></tr></thead>";
     var tb = document.createElement("tbody");
     rij.forEach(function (r) {
       var tr = document.createElement("tr"), c99;
-      if (r.xp >= XP99) c99 = "99 gehaald"; else c99 = duur((XP99 - r.xp) / r.dag * DAG);
-      [r.sk, "+" + getal(r.w), getal(r.dag), c99].forEach(function (x) { var td = document.createElement("td"); td.textContent = x; tr.appendChild(td); });
+      if (r.xp >= XP99) c99 = "99 gehaald"; else c99 = genoeg ? duur((XP99 - r.xp) / r.dag * DAG) : "–";
+      [r.sk, "+" + getal(r.w), genoeg ? getal(r.dag) : "–", c99].forEach(function (x) { var td = document.createElement("td"); td.textContent = x; tr.appendChild(td); });
       tb.appendChild(tr);
     });
     t.appendChild(tb); vp.appendChild(t);
@@ -9301,6 +9309,7 @@ window.OSRSPath = (function () {
   var LOG = [
     ["2026-11-03", "JE VOORTGANG IN BEELD", "Hoeveel xp win je per dag, en wanneer haal je 99?", [
       ["Account", "Voortgang over tijd", "Elke keer dat je bij Levels en account je levels ophaalt, bewaart de app een momentopname op jouw pc. Na twee keer zie je per skill hoeveel xp je erbij hebt en hoeveel per dag.", "09:00"],
+      ["Account", "Duidelijker bij voortgang", "Haal je levels twee keer kort na elkaar op, dan zie je de winst nu meteen. De app zegt ook dat de hiscores van Jagex pas bijwerken als je uitlogt in het spel.", "09:05"],
       ["Account", "Wanneer haal je 99?", "Op basis van je tempo rekent de app uit over hoeveel dagen je level 99 haalt, en je ziet een grafiek van je xp per skill.", "09:10"],
       ["App", "Beta-updates voor testers", "Heb je de Beta-rol op onze Discord-server, dan toont Controleer op updates ook beta-versies, met een BETA-label. Je installeert ze met één klik.", "09:30"],
       ["Quests", "Miniquests in de lijst", "De miniquests staan nu open onder de lijst bij Quests. Een vinkje bij Enter the Abyss telt voortaan ook mee als eis voor andere quests. Gemeld via Meld een probleem, bedankt!", "09:20"]
