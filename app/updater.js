@@ -90,4 +90,23 @@ function vervangWin(oud, nieuw, scriptDir, spawnFn) {
   return script;
 }
 
-module.exports = { OK_URL, kiesAsset, haalOp, isExe, cmdTekst, vervangWin };
+/* Welke release is de nieuwste? Gewone gebruikers: alleen releases die geen pre-release zijn. Beta-testers: alle, dus de hoogste versie wint
+   (een beta 0.5.22.92 verliest dus van de gewone release 0.5.23). Concepten tellen nooit mee. */
+function versieDelen(tag) {
+  const t = String(tag || "").trim().replace(/^(versie|version|v)[\s.]*/i, "");
+  return /^\d+(\.\d+){0,3}$/.test(t) ? t.split(".").map(Number) : null;
+}
+function hoger(a, b) { for (let i = 0; i < 4; i++) { const p = a[i] || 0, q = b[i] || 0; if (p !== q) return p > q; } return false; }
+function kiesRelease(lijst, beta) {
+  let beste = null, bd = null;
+  for (const r of Array.isArray(lijst) ? lijst : []) {
+    if (!r || r.draft) continue;
+    if (r.prerelease && !beta) continue;
+    const d = versieDelen(r.tag_name);
+    if (!d) continue;
+    if (!bd || hoger(d, bd)) { beste = r; bd = d; }
+  }
+  return beste;
+}
+
+module.exports = { OK_URL, kiesAsset, haalOp, isExe, cmdTekst, vervangWin, kiesRelease };

@@ -7884,6 +7884,7 @@ d.setAttribute("data-g", g.t);
 })();
 </script>
 <style>
+.updbeta { display: inline-block; padding: 1px 8px; border-radius: 6px; background: var(--gold, #f2c14e); color: #111a26; font-size: .75rem; font-weight: 700; letter-spacing: .06em; }
 .plink { background: none; border: 0; padding: 0 1px; font: inherit; color: var(--link); cursor: pointer; border-bottom: 1px dotted currentColor; }
 .plink:hover, .plink:focus { color: var(--gold-ink); }
 .plink::after { content: " \1F4CD"; font-size: .8em; opacity: .75; }
@@ -9149,15 +9150,16 @@ window.OSRSPath = (function () {
     var r; try { r = await W.updateCheck(); } catch (e) { r = { error: "Het controleren is niet gelukt." }; }
     btn.disabled = false;
     var v = (r && r.huidig) || "";
-    var vt = document.getElementById("verTag"); if (vt && v) { vt.textContent = "Versie " + v + (r.bouw ? " · " + r.bouw : ""); vt.classList.add("heeft"); }
+    var vt = document.getElementById("verTag"); if (vt && v) { vt.textContent = "Versie " + v + (r.bouw ? " · " + r.bouw : "") + (r.betaTester ? " · Beta-tester" : ""); vt.classList.add("heeft"); }
     if (!r || r.error) { zeg(stil ? "Versie " + v : r && r.error || "Het controleren is niet gelukt."); return; }
     if (r.geen) { zeg("Versie " + v + ". Er staat nog geen release op GitHub."); return; }
     if (nieuwer(r.nieuwste, v)) {
-      laatst = r; if (stil && later === r.nieuwste) { zeg("Versie " + v + ", nieuw: " + r.nieuwste); return; } zeg("Versie " + v + ", nieuw: " + r.nieuwste);
+      laatst = r; var bt = r.beta ? " (beta)" : "";
+      if (stil && later === r.nieuwste) { zeg("Versie " + v + ", nieuw: " + r.nieuwste + bt); return; } zeg("Versie " + v + ", nieuw: " + r.nieuwste + bt);
       bar.hidden = false;
       var kan = !!(r.install && W.updateInstall), lab = !kan ? "Downloaden" : (r.platform === "win32" ? "Nu bijwerken" : "Downloaden en uitpakken");
       var mb = r.grootte ? " (" + Math.round(r.grootte / 1048576) + " MB)" : "";
-      bar.innerHTML = '<b>Nieuwe versie ' + esc(r.nieuwste) + ' beschikbaar.</b> Je hebt nu ' + esc(v) + '. <span id="updAct"><button type="button" class="btn" id="updGo">' + lab + esc(kan ? mb : "") + '</button> <button type="button" class="btn ghost" id="updNo">Later</button>' + (kan ? ' <button type="button" class="btn ghost" id="updPage">Releasepagina</button>' : "") + '</span> <span id="updMsg" aria-live="polite"></span>' +
+      bar.innerHTML = '<b>Nieuwe ' + (r.beta ? "beta-" : "") + 'versie ' + esc(r.nieuwste) + ' beschikbaar.</b>' + (r.beta ? ' <span class="updbeta">BETA</span> Je ziet dit omdat je de Beta-rol hebt.' : "") + ' Je hebt nu ' + esc(v) + '. <span id="updAct"><button type="button" class="btn" id="updGo">' + lab + esc(kan ? mb : "") + '</button> <button type="button" class="btn ghost" id="updNo">Later</button>' + (kan ? ' <button type="button" class="btn ghost" id="updPage">Releasepagina</button>' : "") + '</span> <span id="updMsg" aria-live="polite"></span>' +
         (r.notities ? '<details><summary>Wat is er nieuw?</summary><pre class="updn">' + esc(r.notities) + "</pre></details>" : "");
       var pg = document.getElementById("updPage"); if (pg) pg.onclick = function () { W.updateOpen(r.url); };
       document.getElementById("updNo").onclick = function () { bar.hidden = true; later = r.nieuwste; };
@@ -9176,7 +9178,21 @@ window.OSRSPath = (function () {
           var pg2 = document.getElementById("updPage"); if (!pg2) { var b2 = document.createElement("button"); b2.type = "button"; b2.className = "btn ghost"; b2.textContent = "Releasepagina"; b2.onclick = function () { W.updateOpen(r.url); }; act.appendChild(b2); }
         }
       };
-    } else { zeg("Versie " + v + ". Dit is de nieuwste."); if (!stil) bar.hidden = true; }
+    } else {
+      zeg("Versie " + v + ". Dit is de nieuwste."); if (!stil) bar.hidden = true;
+      /* Eenmalig: de rolgegevens ontbreken nog (ingelogd vóór de Beta-rol bestond). Een keer opnieuw inloggen lost dat op. */
+      var nietNog = false; try { nietNog = sessionStorage.getItem("osrs-gids-betavraag") === "nee"; } catch (e) {}
+      if (r.inlogOpnieuw && W.discordLogin && !nietNog) {
+        bar.hidden = false;
+        bar.innerHTML = '<b>Wil je beta-updates zien?</b> Log één keer opnieuw in met Discord, dan ziet de app of je de Beta-rol hebt. <button type="button" class="btn" id="betaGo">Opnieuw inloggen met Discord</button> <button type="button" class="btn ghost" id="betaNee">Niet nu</button> <span id="betaMsg" aria-live="polite"></span>';
+        document.getElementById("betaNee").onclick = function () { bar.hidden = true; try { sessionStorage.setItem("osrs-gids-betavraag", "nee"); } catch (e) {} };
+        document.getElementById("betaGo").onclick = async function () {
+          var m = document.getElementById("betaMsg"); m.textContent = " Bezig met inloggen...";
+          var res; try { res = await W.discordLogin(); } catch (e) { res = { error: "Inloggen is niet gelukt." }; }
+          if (res && res.ok) { bar.hidden = true; check(false); } else { m.textContent = " " + ((res && res.error) || "Inloggen is niet gelukt."); }
+        };
+      }
+    }
   }
   btn.addEventListener("click", function () { check(false); });
   setTimeout(function () { check(true); }, 2500);
@@ -9190,6 +9206,10 @@ window.OSRSPath = (function () {
   function esc(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
   /* editie: [datum, kop, onderkop, artikelen [rubriek, kop, tekst, tijd], kader [titel, tekst], advertentie] */
   var LOG = [
+    ["2026-11-04", "HOTFIX: BETA-UPDATES", "Testers krijgen een nieuwe versie sneller, rechtstreeks in de app.", [
+      ["App", "Beta-updates in de app", "Heb je de Beta-rol op onze Discord-server, dan toont Controleer op updates ook beta-versies, met een BETA-label. Je installeert ze met één klik, zonder zelf te downloaden.", "12:00"],
+      ["App", "Eenmalig opnieuw inloggen", "Om je rol te kunnen zien, vraagt de app één keer om opnieuw in te loggen met Discord. De app bewaart alleen of je de Beta-rol hebt.", "12:10"]
+    ], ["Het kader", "Beta-tester worden?", "Vraag het op de Discord-server. Wie de rol krijgt, ziet de betas vanzelf in de app."], "GEZOCHT: testers met een scherp oog."],
     ["2026-11-03", "HOTFIX: MELDEN WERKT WEER", "Een snelle reparatie: een probleem doorgeven kan nu ook echt.", [
       ["App", "Meld een probleem komt weer aan", "In de vorige versie kwam een melding via Meld een probleem linksonder niet aan. Dat is hersteld: je melding komt nu in ons kanaal #bugs, en wij maken er een issue van.", "21:00"]
     ], ["Het kader", "Jouw melding telt", "Zie je iets raars? Klik linksonder op Meld een probleem. Alleen met jouw hulp wordt de app beter."], "GEZOCHT: oplettende avonturiers."],

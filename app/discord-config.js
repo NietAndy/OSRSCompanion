@@ -9,5 +9,8 @@ module.exports = {
   /* true: de app is alleen te gebruiken als je met Discord bent ingelogd en in de server zit (alleen actief zodra clientId is ingevuld) */
   verplicht: true,
   /* na zoveel dagen moet je opnieuw inloggen, zodat de controle op serverlidmaatschap vers blijft */
-  geldigDagen: 7
+  geldigDagen: 7,
+  /* Het ID van de rol "Beta" op de server (geen geheim). Leeg: de app zoekt niet naar beta-updates.
+     Te vinden in Discord: Ontwikkelaarsmodus aan, rechtsklik op de rol, Rol-ID kopiëren. */
+  betaRolId: ""
 };
