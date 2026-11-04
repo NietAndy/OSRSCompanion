@@ -12,29 +12,33 @@ import time
 import urllib.error
 import urllib.request
 
+import discord_opmaak as o
+
 DC = "https://discord.com/api/v10"
 MAX_NOTITIES = 1100
 
 
 def bouw_bericht(versie, url, notities, rol):
-    tekst = (notities or "").replace("\r\n", "\n").strip()
-    if len(tekst) > MAX_NOTITIES:
-        tekst = tekst[:MAX_NOTITIES].rsplit("\n", 1)[0] + "\n…"
-    delen = []
-    if rol:
-        delen.append("<@&" + rol + "> **Nieuwe beta: versie " + versie + "**")
-    else:
-        delen.append("**Nieuwe beta: versie " + versie + "**")
-    if tekst:
-        delen.append(tekst)
-    delen.append(
-        "**Zo krijg je hem:** open Gielinor Guide. Binnen ongeveer 10 minuten staat er een melding bij Controleer op updates "
-        "linksonder, met een BETA-label. Klik op Nu bijwerken, meer hoef je niet te doen.\n"
-        "Iets gevonden? Gebruik Meld een probleem linksonder in de app, of reageer hier."
-    )
+    """De aankondiging van een testversie: BETA-label, wat er nieuw is, wat je kunt testen, hoe je hem krijgt en waar je feedback geeft."""
+    intro, onderdelen = o.secties(notities)
+    velden = o.velden(onderdelen, hernoem={"Nieuw": "Nieuw in deze testversie"})
+    velden = velden[:4]
+    velden.append({"name": "Zo krijg je hem", "inline": False, "value":
+                   "Open Gielinor Guide. Binnen ongeveer 10 minuten staat er een melding bij Controleer op updates linksonder, met het label BETA. Klik op Nu bijwerken."})
+    velden.append({"name": "Iets gevonden?", "inline": False, "value":
+                   "Gebruik Meld een probleem linksonder in de app, of schrijf het hier."})
+    beschrijving = intro or "Dit is een testversie. De gewone release volgt en vervangt deze versie vanzelf."
     return {
         "username": "Beta Bot",
-        "content": "\n\n".join(delen)[:1990],
+        "content": ("<@&" + rol + ">") if rol else "",
+        "embeds": [{
+            "author": {"name": "BETA"},
+            "title": ("Testversie " + versie)[:250],
+            "description": o.kort(beschrijving, 3000),
+            "color": o.KLEUR["beta"],
+            "fields": velden,
+            "footer": {"text": "Beta · alleen voor testers · versie " + versie + " · " + o.datum_nl()},
+        }],
         "allowed_mentions": {"parse": [], "roles": [rol] if rol else []},
     }
 
