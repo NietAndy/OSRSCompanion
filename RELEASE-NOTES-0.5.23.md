@@ -1,4 +1,4 @@
-# Gielinor Guide 0.5.23 – voortgang over tijd
+# Gielinor Guide 0.5.23 – voortgang over tijd en miniquests
 
 ## Nieuw
 - **Voortgang over tijd:** elke keer dat je bij Levels en account je levels ophaalt, bewaart de app een momentopname van je xp op jouw pc. Na twee keer ophalen zie je per skill hoeveel xp je erbij hebt en hoeveel xp per dag.
@@ -6,4 +6,8 @@
 - **Grafiek per skill:** kies een skill en zie hoe je xp over tijd is gegaan.
 
 ## Verbeterd
+- **Miniquests staan nu open onder de lijst bij Quests,** met "x van 24 gedaan" in de kop, en je kunt ze zoeken met het zoekveld bij Quests.
 - De Windows-exe wordt nu door GitHub gebouwd en bij de draft-release gezet.
+
+## Opgelost
+- Miniquests als Enter the Abyss telden niet mee als eis voor andere quests, ook als je ze had afgevinkt. Nu gebruiken de miniquests dezelfde opslag als de eisen van de quests en het blokje bij Levels en account, dus een vinkje geldt overal. Eerdere vinkjes worden overgenomen (#12).
