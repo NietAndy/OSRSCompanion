@@ -6231,7 +6231,7 @@ window.OSRS_GEBIEDEN = [["Abandoned Mine",3439,3232,"d"],["Abandoned Mine (secre
     if (wikiCache.winkel) return wikiCache.winkel;
     wikiCache.winkel = (WP.winkel || []).map(function (w) {
       var t = w[3] + (w[4] ? " — " + w[4] : "") + (w[5] ? " (" + w[5] + ")" : "");
-      return [w[0], w[1], w[2], t];
+      return [w[0], w[1], w[2], t, undefined, w[4] || ""];
     });
     return wikiCache.winkel;
   }
@@ -6270,6 +6270,42 @@ window.OSRS_GEBIEDEN = [["Abandoned Mine",3439,3232,"d"],["Abandoned Mine (secre
   }
   function cluepunten() {
     return (window.OSRS_CLUES || []).map(function (c) { return [c.x, c.y, c.p, c.s + ": " + c.v]; });
+  }
+  /* Officiele kaarticonen van de OSRS Wiki. Alleen soorten waarvan het icoon bestaat en niet dubbelzinnig is; de rest blijft een gekleurde stip. */
+  var KAART_ICOON = { bank: "Bank icon", altaar: "Altar icon", aambeeld: "Anvil icon" };
+  var WINKEL_ICOON = {
+    "general store": "General store icon", "pub": "Pub icon", "fishing shop": "Fishing shop icon", "food shop": "Food shop icon",
+    "archery shop": "Archery shop icon", "farming shop": "Farming shop icon", "clothes shop": "Clothes shop icon", "clothing": "Clothes shop icon",
+    "magic shop": "Magic shop icon", "sword shop": "Sword shop icon", "crafting shop": "Crafting shop icon", "cookery shop": "Cookery shop icon",
+    "mining shop": "Mining shop icon", "gem shop": "Gem shop icon", "herbalist": "Herbalist icon", "hunter shop": "Hunter shop icon",
+    "spice shop": "Spice shop icon", "axe shop": "Axe shop icon", "fur trader": "Fur trader icon", "staff shop": "Staff shop icon",
+    "vegetable shop": "Vegetable shop icon", "helmet shop": "Helmet shop icon", "platebody shop": "Platebody shop icon",
+    "platelegs shop": "Platelegs shop icon", "silver shop": "Silver shop icon", "candle shop": "Candle shop icon", "shield shop": "Shield shop icon",
+    "jewellery shop": "Jewellery shop icon", "scimitar shop": "Scimitar shop icon", "mace shop": "Mace shop icon",
+    "sawmill": "Sawmill icon", "slayer master": "Slayer Master icon"
+  };
+  function kaartIcoonNaam(k, p) {
+    if (k === "winkel") return WINKEL_ICOON[String(p[5] || "").trim().toLowerCase()] || "";
+    return KAART_ICOON[k] || "";
+  }
+  var kaartIcoonUrl = {}, kaartIcoonBezig = {};
+  function kaartIcoonLaad(naam) {
+    if (kaartIcoonUrl[naam] || kaartIcoonBezig[naam]) return;
+    kaartIcoonBezig[naam] = 1;
+    var klaar = function (url) {
+      if (!url) return;
+      kaartIcoonUrl[naam] = url;
+      Array.prototype.forEach.call(document.querySelectorAll('img[data-kic="' + naam + '"]'), function (im) { im.src = url; });
+    };
+    if (window.osrsWin && window.osrsWin.icoon) window.osrsWin.icoon(naam).then(function (r) { klaar(r && r.url); }).catch(function () {});
+    else klaar("https://oldschool.runescape.wiki/images/" + encodeURIComponent(naam.replace(/ /g, "_")) + ".png");
+  }
+  function kaartIcoonMarker(naam, kleur, p) {
+    kaartIcoonLaad(naam);
+    var u = kaartIcoonUrl[naam] || "";
+    var html = '<span class="kic" style="background:' + kleur + '"><img data-kic="' + naam + '" alt=""' + (u ? ' src="' + u + '"' : "") +
+      ' onload="this.parentNode.className=\'kic ok\'" onerror="this.style.display=\'none\'"></span>';
+    return L.marker([p[1], p[0]], { icon: L.divIcon({ className: "kic-wrap", html: html, iconSize: [22, 22], iconAnchor: [11, 11], popupAnchor: [0, -10] }), keyboard: false });
   }
   function poiPunten(k) {
     if (k === "queststart") return queststarts();
@@ -6627,9 +6663,10 @@ window.OSRS_GEBIEDEN = [["Abandoned Mine",3439,3232,"d"],["Abandoned Mine (secre
         var kleur = poiKleur(k), naam = poiNaam(k);
         poiPunten(k).forEach(function (p) {
           if (layerOfY(p[1]) !== curLayer || (p[2] || 0) !== floor) return;
-          var m = L.circleMarker([p[1], p[0]], { radius: 6, weight: 2, color: "#ffffff", fillColor: kleur, fillOpacity: 0.95 });
+          var icn = kaartIcoonNaam(k, p);
+          var m = icn ? kaartIcoonMarker(icn, kleur, p) : L.circleMarker([p[1], p[0]], { radius: 6, weight: 2, color: "#ffffff", fillColor: kleur, fillOpacity: 0.95 });
           var bij = dichtstbij(p[0], p[1]);
-          if (p[4] === false) m.setStyle({ fillColor: "#8497ad" });
+          if (p[4] === false && !icn) m.setStyle({ fillColor: "#8497ad" });
           m.bindPopup("<b>" + esc(naam) + "</b>" + (p[3] ? "<br>" + (BRON_SKILL[k] ? String(p[3]) : esc(String(p[3]).slice(0, 160))) : "") +
             (bij && String(p[3] || "").indexOf(bij) < 0 ? '<br><span class="loc">bij ' + esc(bij) + "</span>" : "") +
             '<br><span class="loc">x ' + p[0] + ", y " + p[1] + "</span>" + routeBtn(p[0], p[1], p[2], naam + (bij ? " bij " + bij : "")));
@@ -9308,6 +9345,7 @@ window.OSRSPath = (function () {
   /* editie: [datum, kop, onderkop, artikelen [rubriek, kop, tekst, tijd], kader [titel, tekst], advertentie] */
   var LOG = [
     ["2026-11-03", "JE VOORTGANG IN BEELD", "Hoeveel xp win je per dag, en wanneer haal je 99?", [
+      ["Kaart", "Icoontjes zoals in het spel", "Banken, altaren, aambeelden en winkels hebben op de kaart nu hetzelfde icoontje als in OSRS. Bij winkels zie je het soort, zoals een zwaardwinkel of kruidenwinkel.", "09:40"],
       ["Account", "Voortgang over tijd", "Elke keer dat je bij Levels en account je levels ophaalt, bewaart de app een momentopname op jouw pc. Na twee keer zie je per skill hoeveel xp je erbij hebt en hoeveel per dag.", "09:00"],
       ["Account", "Duidelijker bij voortgang", "Haal je levels twee keer kort na elkaar op, dan zie je de winst nu meteen. De app zegt ook dat de hiscores van Jagex pas bijwerken als je uitlogt in het spel.", "09:05"],
       ["Account", "Wanneer haal je 99?", "Op basis van je tempo rekent de app uit over hoeveel dagen je level 99 haalt, en je ziet een grafiek van je xp per skill.", "09:10"],
@@ -10292,4 +10330,9 @@ window.OSRSPath = (function () {
 .hoek .hk-t:empty { display: none; }
 .hoek .hk-t { color: var(--muted, #9fb0c4); padding: 0 8px 0 4px; max-width: 26rem; }
 .content { padding-bottom: 64px; }
+/* kaarticonen van de OSRS Wiki: een stip in de kleur van de soort, met het icoon erover zodra het geladen is */
+.kic-wrap { background: transparent; border: 0; }
+.kic { display: flex; align-items: center; justify-content: center; box-sizing: border-box; width: 22px; height: 22px; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,.45); }
+.kic img { width: 18px; height: 18px; object-fit: contain; }
+.kic.ok { background: rgba(14,20,28,.78) !important; border-color: rgba(255,255,255,.85); }
 </style>
