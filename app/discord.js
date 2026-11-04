@@ -1,6 +1,6 @@
 /* Inloggen met Discord (OAuth2, implicit grant, geen client secret en geen eigen server).
    De app ontvangt het toegangstoken op 127.0.0.1, vraagt je naam, avatar en serverlijst op, en gooit het token weg.
-   Alleen scopes "identify" en "guilds": geen berichten, geen e-mail, geen vrienden. */
+   Scopes "identify", "guilds" en "guilds.members.read" (alleen om te zien of je de Beta-rol hebt): geen berichten, geen e-mail, geen vrienden. */
 const http = require("http");
 const crypto = require("crypto");
 
@@ -9,7 +9,7 @@ const AUTH = "https://discord.com/oauth2/authorize";
 
 function authUrl(cfg, state, auth) {
   const redirect = "http://127.0.0.1:" + cfg.poort + "/callback";
-  return (auth || AUTH) + "?" + new URLSearchParams({ client_id: cfg.clientId, response_type: "token", redirect_uri: redirect, scope: "identify guilds", state, prompt: "consent" }).toString();
+  return (auth || AUTH) + "?" + new URLSearchParams({ client_id: cfg.clientId, response_type: "token", redirect_uri: redirect, scope: "identify guilds guilds.members.read", state, prompt: "consent" }).toString();
 }
 
 const PAGINA = '<!doctype html><meta charset="utf-8"><title>Gielinor Guide</title><body style="font:16px system-ui;background:#0b121b;color:#e8eef6;display:grid;place-items:center;height:100vh;margin:0"><p id="t">Even geduld...</p><script>' +
@@ -76,9 +76,17 @@ async function login(cfg, open, fetchFn, opt) {
   try { const inv = await json(fetchFn, api + "/invites/" + encodeURIComponent(cfg.uitnodiging)); guildId = String((inv.guild && inv.guild.id) || (inv.guild_id) || ""); } catch (e) {}
   if (!guildId) throw new Error("Kon de Discord-server van de uitnodiging niet vinden.");
   const inServer = Array.isArray(guilds) && guilds.some((g) => g && String(g.id) === guildId);
+  /* Heeft de gebruiker de Beta-rol? Alleen bekijken als er een rol-ID is ingesteld en de gebruiker in de server zit. Lukt het niet, dan geen beta. */
+  let beta = false;
+  if (inServer && cfg.betaRolId && /^\d{15,25}$/.test(String(cfg.betaRolId))) {
+    try {
+      const lid = await json(fetchFn, api + "/users/@me/guilds/" + guildId + "/member", token);
+      beta = Array.isArray(lid && lid.roles) && lid.roles.map(String).includes(String(cfg.betaRolId));
+    } catch (e) { beta = false; }
+  }
   const naam = String(me.global_name || me.username || "Onbekend").slice(0, 40);
   const avatar = await avatarData(fetchFn, me.id, me.avatar, opt.cdn);
-  return { id: String(me.id), naam, avatar, inServer, ts: Date.now() };
+  return { id: String(me.id), naam, avatar, inServer, beta, ts: Date.now() };
 }
 
 module.exports = { authUrl, wachtOpToken, login, avatarData };

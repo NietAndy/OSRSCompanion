@@ -85,24 +85,31 @@ ipcMain.handle("hiscores", async (e, naam) => {
 const upd = require("./updater");
 let laatsteAsset = null, laatsteTag = "", bezigUpdate = false;
 const UPDATE_API = "https://api.github.com/repos/NietAndy/OSRSCompanion/releases/latest";
+const UPDATE_LIJST = "https://api.github.com/repos/NietAndy/OSRSCompanion/releases?per_page=20";
 ipcMain.handle("updateCheck", async () => {
   let huidig = app.getVersion();
   let bouwTekst = ""; try { bouwTekst = String(require("./package.json").appBouw || "").slice(0, 30); } catch (e) {}
   try { const pv = require("./package.json").appVersie; if (/^\d+(\.\d+){1,3}$/.test(String(pv))) huidig = String(pv); } catch (e) {}
+  /* Beta-testers (rol Beta op de Discord-server, bij het inloggen vastgelegd) zien ook pre-releases. Wie nog geen rolgegevens heeft, krijgt de vraag opnieuw in te loggen. */
+  const dcU = dcLees();
+  const betaTester = !!(dcU && dcU.beta);
+  let betaIngesteld = false; try { betaIngesteld = !!require("./discord-config").betaRolId; } catch (e) {}
+  const inlogOpnieuw = betaIngesteld && !!dcU && dcU.beta === undefined;
   const ctrl = new AbortController();
   const t = setTimeout(() => ctrl.abort(), 10000);
   try {
-    const r = await net.fetch(UPDATE_API, { signal: ctrl.signal, headers: { "User-Agent": "Gielinor Guide (persoonlijke app voor eigen gebruik)", "Accept": "application/vnd.github+json" } });
+    const r = await net.fetch(betaTester ? UPDATE_LIJST : UPDATE_API, { signal: ctrl.signal, headers: { "User-Agent": "Gielinor Guide (persoonlijke app voor eigen gebruik)", "Accept": "application/vnd.github+json" } });
     if (r.status === 404) return { bouw: bouwTekst, huidig, geen: true };
     if (!r.ok) return { bouw: bouwTekst, huidig, error: "GitHub reageerde niet (code " + r.status + ")." };
-    const j = JSON.parse(await r.text());
+    let j = JSON.parse(await r.text());
+    if (betaTester) { j = upd.kiesRelease(j, true); if (!j) return { bouw: bouwTekst, huidig, geen: true, betaTester }; }
     const tag = String(j.tag_name || "").trim().replace(/^(versie|version|v)[\s.]*/i, "");
     if (!/^\d+(\.\d+){0,3}$/.test(tag)) return { bouw: bouwTekst, huidig, error: "De nieuwste release heeft geen leesbaar versienummer." };
     const url = /^https:\/\/github\.com\/(?:NietAndy|OSRS-HeroKoen)\/(?:OSRSCompanion|GielinorGuide)\//.test(j.html_url || "") ? j.html_url : "https://github.com/NietAndy/OSRSCompanion/releases/latest";
     laatsteAsset = upd.kiesAsset(j.assets, process.platform); laatsteTag = tag;
-    return { bouw: bouwTekst, huidig, nieuwste: tag, url, naam: String(j.name || "").slice(0, 120), notities: String(j.body || "").slice(0, 1500), platform: process.platform, install: !!laatsteAsset, grootte: laatsteAsset ? laatsteAsset.size : 0 };
+    return { bouw: bouwTekst, huidig, betaTester, inlogOpnieuw, beta: !!j.prerelease, nieuwste: tag, url, naam: String(j.name || "").slice(0, 120), notities: String(j.body || "").slice(0, 1500), platform: process.platform, install: !!laatsteAsset, grootte: laatsteAsset ? laatsteAsset.size : 0 };
   } catch (err) {
-    return { bouw: bouwTekst, huidig, error: "Geen verbinding met GitHub. Staat je internet aan?" };
+    return { bouw: bouwTekst, huidig, betaTester, error: "Geen verbinding met GitHub. Staat je internet aan?" };
   } finally {
     clearTimeout(t);
   }
