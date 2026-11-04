@@ -21,6 +21,7 @@ KLEUR = {
     "opgelost": 0x3BA55D,   # groen
     "afgesloten": 0x8E9297, # grijs
     "heropend": 0xE8743B,   # oranje
+    "gepland": 0x43B5A0,    # groenblauw
 }
 VOLGORDE = ["Nieuw", "Verbeterd", "Opgelost"]
 ROUTE = "Werk bij via Controleer op updates linksonder in de app."
@@ -57,6 +58,39 @@ def versie_uit(*teksten):
 def is_hotfix(versie):
     """Vier of meer cijfers (zoals 0.5.22.3) is een hotfix."""
     return len((versie or "").split(".")) >= 4
+
+
+MAAND_KORT = {"jan": 1, "feb": 2, "mrt": 3, "apr": 4, "mei": 5, "jun": 6, "jul": 7, "aug": 8, "sep": 9, "okt": 10, "nov": 11, "dec": 12}
+
+
+def release_datum(versie, pad="ROADMAP.md", nu=None):
+    """De geplande datum van een versie, uit de planning in de roadmap (bijvoorbeeld '6 nov' bij 0.5.23).
+    Geeft (tekst, verleden) terug, zoals ("vrijdag 6 november", False), of (None, False) als de datum niet te vinden is."""
+    try:
+        with open(pad, encoding="utf-8") as f:
+            regels = f.read().splitlines()
+    except OSError:
+        return None, False
+    nu = nu or vandaag()
+    for r in regels:
+        cellen = [c.strip() for c in r.strip().strip("|").split("|")]
+        if len(cellen) < 2:
+            continue
+        versies = [v.strip() for v in re.split(r"\s+en\s+|,", cellen[1])]
+        if versie not in versies:
+            continue
+        m = re.search(r"(\d{1,2})\s+([a-z]{3})", cellen[0].lower())
+        if not m or m.group(2) not in MAAND_KORT:
+            return None, False
+        maand = MAAND_KORT[m.group(2)]
+        jaar = nu.year + (1 if maand < nu.month - 6 else 0)
+        try:
+            d = datetime.date(jaar, maand, int(m.group(1)))
+        except ValueError:
+            return None, False
+        verleden = d < (nu.date() if hasattr(nu, "date") else nu)
+        return DAGEN[d.weekday()] + " " + str(d.day) + " " + MAANDEN[d.month - 1], verleden
+    return None, False
 
 
 def schoon(tekst):

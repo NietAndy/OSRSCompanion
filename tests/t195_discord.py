@@ -89,4 +89,36 @@ for naam, (a, rr, nr, label, kleur) in {"bug afgesloten": ("closed", "not_planne
     eis(naam + ": label en kleur, melder getagd", e["author"]["name"] == label and e["color"] == o.KLEUR[kleur] and b["content"] == "<@123456789012345678>", e["title"])
 b = run("closed", "completed", 2)
 eis("bug opgelost met een versie in de releasenotes: kop noemt de versie", b["embeds"][0]["title"].startswith("Opgelost in versie "), b["embeds"][0]["title"])
+
+# roadmap-datums en de geplande versie
+import datetime
+nu = datetime.datetime(2026, 11, 4, 12, 0)
+eis("roadmap: 0.5.23 komt vrijdag 6 november", o.release_datum("0.5.23", nu=nu) == ("vrijdag 6 november", False), o.release_datum("0.5.23", nu=nu))
+eis("roadmap: 0.5.24 komt vrijdag 13 november", o.release_datum("0.5.24", nu=nu) == ("vrijdag 13 november", False))
+eis("roadmap: een eerdere versie is verleden tijd", o.release_datum("0.5.22.1", nu=nu)[1] is True)
+eis("roadmap: een onbekende versie geeft geen datum", o.release_datum("9.9.9", nu=nu) == (None, False))
+b = run("closed", "completed", 17)
+eis("opgelost (issue 17): noemt versie 0.5.23 en de datum", b["embeds"][0]["title"] == "Opgelost in versie 0.5.23" and "vrijdag 6 november" in b["embeds"][0]["description"], b["embeds"][0]["description"][:90])
+# handmatig: een thread afsluiten met een geplande versie, zonder het issue te sluiten
+def handm(issue, versie="", datum="", body="<!-- discord-bericht: 123 -->"):
+    os.environ.update(GITHUB_EVENT_NAME="workflow_dispatch", INPUT_ISSUE=str(issue), INPUT_VERSIE=versie, INPUT_DATUM=datum)
+    uit = []
+    def d3(method, pad, data=None):
+        if method == "GET": return 200, [{"content": "<@123456789012345678>"}]
+        uit.append((method, pad, data)); return 200, {}
+    bg.dc = d3; bg.gh_issue = lambda n: {"body": body}
+    rc = bg.main(); os.environ.pop("GITHUB_EVENT_NAME"); return rc, uit
+rc, uit = handm(9, "0.5.24")
+post = [u for u in uit if u[0] == "POST"][0][2]; patch = [u for u in uit if u[0] == "PATCH"][0][2]
+geldig("gepland (issue 9, versie 0.5.24)", post)
+e = post["embeds"][0]
+eis("gepland: label GEPLAND, kop met versie, datum uit de roadmap", e["author"]["name"] == "GEPLAND" and e["title"] == "Komt in versie 0.5.24" and "gepland voor vrijdag 13 november" in e["description"], e["description"][:80])
+eis("gepland: de melder wordt getagd", post["content"] == "<@123456789012345678>")
+eis("gepland: de thread wordt gearchiveerd maar niet vergrendeld", patch == {"archived": True})
+rc, uit = handm(9, "0.5.24", "maandag 16 november")
+eis("gepland: een zelf ingevulde datum wint van de roadmap", "gepland voor maandag 16 november" in [u for u in uit if u[0] == "POST"][0][2]["embeds"][0]["description"])
+rc, uit = handm(9)
+eis("gepland zonder versie en zonder verwijzing in de notes: geen bericht, duidelijke fout", rc == 1 and not [u for u in uit if u[0] == "POST"])
+rc, uit = handm(17)
+eis("gepland: de versie komt uit de releasenotities als je hem niet invult", rc == 0 and "versie 0.5.23" in [u for u in uit if u[0] == "POST"][0][2]["embeds"][0]["description"])
 print("\n" + (str(fouten) + " test(s) mislukt" if fouten else "Alles gelukt")); sys.exit(1 if fouten else 0)

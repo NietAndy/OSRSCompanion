@@ -1,16 +1,31 @@
 name: Bug gesloten naar Discord
 
 # Wordt een issue uit de app gesloten of heropend, dan komt dat in de thread van de melding in #bugs.
+# Met de knop "Run workflow" kun je een thread afsluiten met de versie en datum waarin de oplossing komt, zonder het issue te sluiten.
 on:
   issues:
     types: [closed, reopened]
+  workflow_dispatch:
+    inputs:
+      issue:
+        description: "Nummer van het issue, bijvoorbeeld 9"
+        required: true
+      versie:
+        description: "Versie waarin het komt, bijvoorbeeld 0.5.24 (leeg: uit de releasenotities)"
+        required: false
+        default: ""
+      datum:
+        description: "Datum, bijvoorbeeld vrijdag 13 november (leeg: uit de planning in de roadmap)"
+        required: false
+        default: ""
 
 permissions:
   contents: read
+  issues: read
 
 jobs:
   discord:
-    if: contains(github.event.issue.labels.*.name, 'uit-de-app')
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.issue.labels.*.name, 'uit-de-app')
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -19,4 +34,8 @@ jobs:
         env:
           DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
           DISCORD_BUGS_KANAAL: ${{ secrets.DISCORD_BUGS_KANAAL }}
+          GITHUB_TOKEN: ${{ github.token }}
+          INPUT_ISSUE: ${{ inputs.issue }}
+          INPUT_VERSIE: ${{ inputs.versie }}
+          INPUT_DATUM: ${{ inputs.datum }}
         run: python3 .github/scripts/bug_gesloten.py

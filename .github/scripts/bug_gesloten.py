@@ -55,10 +55,67 @@ def oplossing_versie(nummer):
     return max(gevonden)[1] if gevonden else None
 
 
+def gh_issue(nummer):
+    """Haalt een issue op via de GitHub-API (alleen voor de handmatige variant)."""
+    req = urllib.request.Request("https://api.github.com/repos/" + REPO + "/issues/" + str(nummer),
+                                 headers={"Authorization": "Bearer " + os.environ.get("GITHUB_TOKEN", ""), "Accept": "application/vnd.github+json", "User-Agent": "gielinor-guide-bugs"})
+    with urllib.request.urlopen(req, timeout=30) as r:
+        return json.loads(r.read())
+
+
+def handmatig():
+    """Handmatig gestart: laat in de thread weten in welke versie en op welke datum de oplossing komt, en sluit de thread af (archiveren, niet vergrendelen).
+    Het issue zelf blijft open tot het echt is opgelost."""
+    nummer = (os.environ.get("INPUT_ISSUE") or "").strip().lstrip("#")
+    if not nummer.isdigit():
+        print("Geen geldig issuenummer opgegeven.")
+        return 1
+    try:
+        iss = gh_issue(nummer)
+    except Exception as e:
+        print("Het issue ophalen lukte niet:", e)
+        return 1
+    m = re.search(r"discord-bericht: (\d+)", iss.get("body") or "")
+    if not m:
+        print("Geen Discord-bericht in dit issue.")
+        return 1
+    thread = m.group(1)
+    versie = (os.environ.get("INPUT_VERSIE") or "").strip().lstrip("vV") or oplossing_versie(nummer) or ""
+    if not versie:
+        print("Geen versie bekend. Vul de versie in, of zet het issuenummer in de releasenotities.")
+        return 1
+    datum = (os.environ.get("INPUT_DATUM") or "").strip()
+    verleden = False
+    if not datum:
+        datum, verleden = o.release_datum(versie)
+    tag, users = "", []
+    st, msgs = dc("GET", "/channels/" + thread + "/messages?limit=20")
+    if st == 200 and isinstance(msgs, list):
+        for x in reversed(msgs):
+            t = re.search(r"<@(\d{15,25})>", x.get("content") or "")
+            if t:
+                tag, users = "<@" + t.group(1) + "> ", [t.group(1)]
+                break
+    wanneer = (", gepland voor " + datum) if (datum and not verleden) else ((", verschenen op " + datum) if datum else "")
+    tekst = ("We hebben dit opgepakt. De oplossing komt met versie " + versie + wanneer + ". "
+             "Werk dan bij via Controleer op updates linksonder in de app.\n\n"
+             "Werkt het daarna nog niet goed, dan horen we dat graag via een nieuwe melding.")
+    bericht = o.status_bericht("GEPLAND", o.KLEUR["gepland"], "Komt in versie " + versie, tekst, tag, users)
+    st, r = dc("POST", "/channels/" + thread + "/messages", bericht)
+    print("Bericht:", st)
+    if st not in (200, 201):
+        return 1
+    st, r = dc("PATCH", "/channels/" + thread, {"archived": True})
+    print("Thread afgesloten (gearchiveerd):", st)
+    return 0
+
+
 def main():
     if not BOT:
         print("DISCORD_BOT_TOKEN ontbreekt.")
         return 0
+    if os.environ.get("GITHUB_EVENT_NAME") == "workflow_dispatch":
+        return handmatig()
     with open(os.environ["GITHUB_EVENT_PATH"], encoding="utf-8") as f:
         ev = json.load(f)
     actie = ev.get("action")
@@ -87,7 +144,13 @@ def main():
         else:
             versie = oplossing_versie(iss.get("number"))
             titel = ("Opgelost in versie " + versie) if versie else "Opgelost"
-            waar = ("Je krijgt de oplossing met versie " + versie + ". ") if versie else "De oplossing komt in een volgende versie van de app. "
+            datum, verleden = o.release_datum(versie) if versie else (None, False)
+            if versie and datum:
+                waar = "Je krijgt de oplossing met versie " + versie + ", die " + datum + (" is verschenen. " if verleden else " verschijnt. ")
+            elif versie:
+                waar = "Je krijgt de oplossing met versie " + versie + ". "
+            else:
+                waar = "De oplossing komt in een volgende versie van de app. "
             bericht = o.status_bericht("OPGELOST", o.KLEUR["opgelost"], titel,
                 waar + "Werk bij via Controleer op updates linksonder in de app.\n\n"
                 "Werkt het daarna nog niet goed, dan horen we dat graag via een nieuwe melding.", tag, users)
