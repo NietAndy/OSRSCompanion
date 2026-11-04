@@ -19,7 +19,7 @@ Bijgewerkt 2026-11-03. Werkdocument voor de gebruiker en Claude. Een bewerkbare 
 ### Wekelijkse controle op nieuwe OSRS-inhoud (elke vrijdag, vóór het bouwen)
 Doel: alles wat Jagex uitbrengt komt ook in de app. Elke vrijdag loop ik de lijst hieronder langs en zet wat nieuw is in de release van die week. Is er niets nieuw, dan staat dat in de releasenotities.
 1. **Nieuws:** de laatste OSRS-nieuwsberichten en de updatepost van de week (nieuwe content, aanpassingen aan bestaande content, balanswijzigingen).
-2. **Quests en miniquests:** nieuwe quests en wijzigingen in eisen of beloningen. Aantal in de app vergelijken met de wiki (nu 184 quests).
+2. **Quests en miniquests:** nieuwe quests en wijzigingen in eisen of beloningen. Aantal in de app vergelijken met de wiki (nu 187 quests; laatste controle 4 november 2026: nieuws, quests, miniquests en items nagelopen, drops en quest-xp nog niet).
 3. **Items:** nieuwe handelbare items voor de Grand Exchange-lijst en de prijzen, plus nieuwe uitrusting voor Gear en Schade.
 4. **Skills en bronnen:** nieuwe trainingsmethoden, vispotten, ertsen, bomen, patches en altaren; wijzigingen in levelsvereisten.
 5. **Monsters en drops:** nieuwe bazen en vijanden, aangepaste drops en drop-kansen, nieuwe pets.
