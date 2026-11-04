@@ -8,3 +8,5 @@
 - Geen geheimen in de repo: de repo is openbaar. Het webhook-adres staat in `app/bug-config.js` (genegeerd door git).
 - Niets betaalds, alleen Windows, geen automatisering of uitlezen van het spel (regels van Jagex).
 - Bugs komen binnen als issue met het label `uit-de-app`. Verwijs in releasenotities naar het nummer, bijvoorbeeld (#2).
+- Bij elke release (ook beta en hotfix met nieuwe inhoud) eerst de wekelijkse controle uit `ROADMAP.md` doen: nieuws, nieuwe quests en miniquests, items, drops en monsters, kaart en vervoer, diaries en clues. Wat nieuw is komt in die versie; is er niets nieuw, dan staat dat in de releasenotities. Wat niet te controleren is, markeren als "niet gecontroleerd".
+- Gegevens met een datum in de app (zoals de drops van januari 2024 en de Grand Exchange-momentopname) horen bij die controle: noem in de releasenotities wat ververst is en wat nog oud is.
