@@ -30,7 +30,7 @@ def bouw(naam, tag, url, body):
     # Koppen worden vet, dat leest in Discord overal goed
     tekst = re.sub(r"^#{1,6}\s*(.+?)\s*$", r"**\1**", tekst, flags=re.M)
     if not tekst:
-        tekst = "Er staat een nieuwe versie klaar. Zie de release voor de details."
+        tekst = "Er staat een nieuwe versie klaar. Werk bij via Controleer op updates linksonder in de app."
     if len(tekst) > 3800:
         tekst = tekst[:3800].rsplit("\n", 1)[0] + "\n…"
     # Titel is "Weekly release", bij een hotfix (vier of meer cijfers, zoals 0.5.22.2) "Hotfix";
@@ -44,10 +44,9 @@ def bouw(naam, tag, url, body):
         "username": "Changelog Bot",
         "embeds": [{
             "title": titel,
-            "url": url or None,
             "description": tekst,
             "color": 0xF2C14E,
-            "footer": {"text": "Download de nieuwste versie via de release, of laat de app zichzelf bijwerken."},
+            "footer": {"text": "Laat de app zichzelf bijwerken via Controleer op updates linksonder."},
         }],
         "allowed_mentions": {"parse": []},
     }

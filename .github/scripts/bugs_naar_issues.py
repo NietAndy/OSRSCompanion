@@ -167,7 +167,7 @@ def antwoord(m, v, url):
     """Maakt een thread onder de melding en tagt de melder daarin. Lukt de thread niet, dan een gewoon antwoord."""
     mid = re.search(r"<@(\d{15,25})>", v.get("Melder", ""))
     tag = ("<@" + mid.group(1) + "> ") if mid else ""
-    tekst = (tag + "Bedankt voor je melding! We hebben hem vastgelegd op GitHub, zodat hij niet verloren gaat: <" + url + ">\n\n"
+    tekst = (tag + "Bedankt voor je melding! We hebben hem vastgelegd, zodat hij niet verloren gaat.\n\n"
              "**Wat er nu gebeurt**\n"
              "- We bekijken je melding en proberen het probleem na te bootsen.\n"
              "- Zodra er nieuws is, zoals een vraag, een oplossing of een besluit, laten we het je hier weten.\n\n"
