@@ -8,8 +8,12 @@
 - **Beta-updates voor testers:** heb je de rol Beta op onze Discord-server, dan toont Controleer op updates ook beta-versies, met een BETA-label. Je installeert ze met één klik. De eerste keer vraagt de app om opnieuw in te loggen met Discord, zodat hij je rol kan zien.
 
 ## Verbeterd
+- **Daddy's Home is nu een gewone quest** (dat is hij sinds de update van 3 november ook in het spel). Hij staat bij Quests in plaats van bij de miniquests, en telt dus mee voor je quest points.
+- **544 nieuwe items** in de lijst bij Prijzen, zoals Obligator, Zorya's tome, de Ascension-bolts en -crossbows, Amulet of sight en de Wyrmscraig-kleding. Een prijs zie je na Vernieuw prijzen.
 - **Miniquests staan nu open onder de lijst bij Quests,** met "x van 24 gedaan" in de kop, en je kunt ze zoeken met het zoekveld bij Quests.
 - De Windows-exe wordt nu door GitHub gebouwd en bij de draft-release gezet.
+
+- Niet gecontroleerd: welke oudere quests sinds 3 november ook xp als beloning geven (bijvoorbeeld Shield of Arrav, Romeo and Juliet, Ernest the Chicken, Demon Slayer). Dat volgt in 0.5.24. Ook de drops zijn nog van januari 2024.
 
 ## Opgelost
 - Miniquests als Enter the Abyss telden niet mee als eis voor andere quests, ook als je ze had afgevinkt. Nu gebruiken de miniquests dezelfde opslag als de eisen van de quests en het blokje bij Levels en account, dus een vinkje geldt overal. Eerdere vinkjes worden overgenomen (#12).
