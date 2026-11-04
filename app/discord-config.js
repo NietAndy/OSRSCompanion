@@ -12,5 +12,5 @@ module.exports = {
   geldigDagen: 7,
   /* Het ID van de rol "Beta" op de server (geen geheim). Leeg: de app zoekt niet naar beta-updates.
      Te vinden in Discord: Ontwikkelaarsmodus aan, rechtsklik op de rol, Rol-ID kopiëren. */
-  betaRolId: ""
+  betaRolId: "1567484253640331264"
 };
