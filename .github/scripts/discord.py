@@ -1,5 +1,6 @@
 """Stuurt de releasenotities van een GitHub-release naar een Discord-webhook (#changelog)."""
 import glob, json, os, re, sys, urllib.request, urllib.error
+import discord_opmaak as o
 
 def versie_van(pad):
     m = re.search(r"RELEASE-NOTES-([\d.]+)\.md$", pad)
@@ -24,30 +25,24 @@ def notities(versie):
         return versie_van(kies), f.read()
 
 def bouw(naam, tag, url, body):
-    tekst = (body or "").replace("\r\n", "\n").strip()
-    # De eerste kop (de versietitel) staat al als titel van het bericht
-    tekst = re.sub(r"\A#\s+.*\n+", "", tekst)
-    # Koppen worden vet, dat leest in Discord overal goed
-    tekst = re.sub(r"^#{1,6}\s*(.+?)\s*$", r"**\1**", tekst, flags=re.M)
-    if not tekst:
-        tekst = "Er staat een nieuwe versie klaar. Zie de release voor de details."
-    if len(tekst) > 3800:
-        tekst = tekst[:3800].rsplit("\n", 1)[0] + "\n…"
-    # Titel is "Weekly release", bij een hotfix (vier of meer cijfers, zoals 0.5.22.2) "Hotfix";
-    # het versienummer staat vet bovenaan de tekst
-    m = re.search(r"\d+(?:\.\d+)+", tag or naam or "")
-    hotfix = bool(m) and len(m.group(0).split(".")) >= 4
-    if m:
-        tekst = "**Versie " + m.group(0) + "**\n\n" + tekst
-    titel = "🛠️ Hotfix" if hotfix else "🚀 Weekly release"
+    """Het changelog-bericht: kop "Versie x" of "Hotfix x", een regel met soort en datum, en de velden Nieuw, Verbeterd en Opgelost."""
+    versie = o.versie_uit(tag, naam)
+    hotfix = o.is_hotfix(versie)
+    intro, onderdelen = o.secties(body)
+    regel = ("Hotfix" if hotfix else "Weekly release") + " · " + o.dag_datum_nl()
+    velden = o.velden(onderdelen)
+    beschrijving = regel + (("\n\n" + intro) if intro else "")
+    if not velden and not intro:
+        beschrijving += "\n\nEr staat een nieuwe versie klaar. " + o.ROUTE
+    titel = (("Hotfix " if hotfix else "Versie ") + versie) if versie else (naam or "Nieuwe versie")
     return {
         "username": "Changelog Bot",
         "embeds": [{
-            "title": titel,
-            "url": url or None,
-            "description": tekst,
-            "color": 0xF2C14E,
-            "footer": {"text": "Download de nieuwste versie via de release, of laat de app zichzelf bijwerken."},
+            "title": titel[:250],
+            "description": o.kort(beschrijving, 3500),
+            "color": o.KLEUR["hotfix" if hotfix else "release"],
+            "fields": velden,
+            "footer": {"text": o.ROUTE},
         }],
         "allowed_mentions": {"parse": []},
     }

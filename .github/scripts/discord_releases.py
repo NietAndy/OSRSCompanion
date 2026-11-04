@@ -1,5 +1,6 @@
 """Stuurt het verhaaltje van een release (RELEASE-STORY-x.y.z.md) naar een Discord-webhook (#releases)."""
 import json, os, re, sys, urllib.request, urllib.error
+import discord_opmaak as o
 
 def lees_verhaal(versie):
     pad = "RELEASE-STORY-" + versie + ".md"
@@ -9,21 +10,26 @@ def lees_verhaal(versie):
         return f.read().replace("\r\n", "\n").strip()
 
 def bouw(versie, repo, tekst):
-    titel = "Gielinor Guide " + versie + " is uit!"
-    m = re.match(r"#\s+(.+?)\s*\n", tekst + "\n")
+    """Het verhaal bij een release: kop "Gielinor Guide x is uit" (of "Hotfix x"), het verhaal zelf, en een voettekst met soort, versie en datum."""
+    hotfix = o.is_hotfix(versie)
+    t = (tekst or "").replace("\r\n", "\n").strip()
+    lead = ""
+    m = re.match(r"#\s+(.+?)\s*\n", t + "\n")
     if m:
-        titel = m.group(1)
-        tekst = tekst[m.end():].strip()
-    if len(tekst) > 3800:
-        tekst = tekst[:3800].rsplit("\n", 1)[0] + "\n…"
+        lead = re.sub(r"^[^\w]+", "", m.group(1)).strip()   # de emoji voor de kop weg
+        t = t[m.end():].strip()
+    t = re.sub(r"\A(?:Beste|Hallo|Hoi)[^\n]*,[ \t]*\n+", "", t, flags=re.I)   # de aanhef staat al in de kop
+    t = o.schoon(t)
+    if lead:
+        t = "**" + lead + "**\n\n" + t
+    titel = ("Hotfix " + versie) if hotfix else ("Gielinor Guide " + versie + " is uit")
     return {
         "username": "Release Bot",
         "embeds": [{
             "title": titel[:250],
-            "url": "https://github.com/" + repo + "/releases/tag/v" + versie if repo else None,
-            "description": tekst,
-            "color": 0xF2C14E,
-            "footer": {"text": ("Hotfix" if len(versie.split(".")) >= 4 else "Weekly release") + " · Gielinor Guide " + versie},
+            "description": o.kort(t, 3800),
+            "color": o.KLEUR["hotfix" if hotfix else "release"],
+            "footer": {"text": ("Hotfix" if hotfix else "Weekly release") + " · versie " + versie + " · " + o.datum_nl()},
         }],
         "allowed_mentions": {"parse": []},
     }

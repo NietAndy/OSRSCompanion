@@ -18,6 +18,8 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
+import discord_opmaak as o
+
 DC = "https://discord.com/api/v10"
 GH = "https://api.github.com"
 AI_URL = "https://models.github.ai/inference/chat/completions"
@@ -167,23 +169,20 @@ def antwoord(m, v, url):
     """Maakt een thread onder de melding en tagt de melder daarin. Lukt de thread niet, dan een gewoon antwoord."""
     mid = re.search(r"<@(\d{15,25})>", v.get("Melder", ""))
     tag = ("<@" + mid.group(1) + "> ") if mid else ""
-    tekst = (tag + "Bedankt voor je melding! We hebben hem vastgelegd op GitHub, zodat hij niet verloren gaat: <" + url + ">\n\n"
-             "**Wat er nu gebeurt**\n"
-             "- We bekijken je melding en proberen het probleem na te bootsen.\n"
-             "- Zodra er nieuws is, zoals een vraag, een oplossing of een besluit, laten we het je hier weten.\n\n"
-             "**Kun je helpen?**\n"
-             "Zet in deze thread alles wat je nog weet: de stappen waarmee het probleem terugkomt, wat je had verwacht en eventueel een screenshot. Hoe meer we weten, hoe sneller we het kunnen oplossen.")
+    tekst = ("We hebben je melding vastgelegd en bekijken hem. Zodra er nieuws is, zoals een vraag, een oplossing of een besluit, lees je dat hier.\n\n"
+             "Kun je meer vertellen? Zet de stappen waarmee het probleem terugkomt, wat je had verwacht en eventueel een screenshot in deze thread.")
+    bericht = o.status_bericht("ONTVANGEN", o.KLEUR["ontvangen"], "Bedankt voor je melding", tekst, tag, [mid.group(1)] if mid else [])
     mentions = {"parse": [], "users": [mid.group(1)] if mid else []}
     naam = ("Bug: " + ((m.get("embeds") or [{}])[0].get("title") or "melding"))[:95]
     st, th = dc("POST", "/channels/" + KANAAL + "/messages/" + m["id"] + "/threads", {"name": naam, "auto_archive_duration": 10080})
     if st in (200, 201) and isinstance(th, dict) and th.get("id"):
-        st2, r2 = dc("POST", "/channels/" + th["id"] + "/messages", {"content": tekst, "allowed_mentions": mentions})
+        st2, r2 = dc("POST", "/channels/" + th["id"] + "/messages", bericht)
         if st2 in (200, 201):
             return
         print("Bericht in thread mislukt:", st2, str(r2)[:200])
     else:
         print("Thread maken mislukt (geeft de bot het recht Openbare threads creeren?):", st, str(th)[:200])
-    dc("POST", "/channels/" + KANAAL + "/messages", {"content": tekst, "message_reference": {"message_id": m["id"]}, "allowed_mentions": mentions})
+    dc("POST", "/channels/" + KANAAL + "/messages", dict(bericht, message_reference={"message_id": m["id"]}))
 
 
 def zorg_labels():
