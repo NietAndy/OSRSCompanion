@@ -1,0 +1,64 @@
+name: Beta publiceren
+
+# Zet een draft-release als BETA online (pre-release) en kondigt hem aan in het testkanaal, met een ping voor de rol Beta.
+# Een pre-release wordt niet als "nieuwste" getoond, dus gewone gebruikers krijgen hem niet. Beta-testers zien hem in de app.
+#
+# Zo gebruik je het:
+#  1. Maak de beta zoals een gewone versie: appVersie in app/package.json, RELEASE-NOTES-x.y.z.md en een exe.
+#     Een beta heeft een nummer vanaf .90 (bijvoorbeeld 0.5.22.91), zodat hij lager is dan de komende release en nooit botst met een hotfix.
+#  2. Bouw de exe met "Windows-exe bouwen" (kies de juiste branch en vul de versie in).
+#  3. Start deze workflow met de tag van de draft, bijvoorbeeld v0.5.22.91.
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag van de draft, bijvoorbeeld v0.5.22.91 (het laatste deel moet 90 of hoger zijn)"
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  beta:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      TAG: ${{ inputs.tag }}
+      # Het kanaal voor testversies en de rol Beta (geen geheimen)
+      BETA_KANAAL: "1563126426448957440"
+      BETA_ROL: "1567484253640331264"
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Controleren en als beta publiceren
+        run: |
+          set -euo pipefail
+          if ! [[ "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+\.([0-9]+)$ ]]; then
+            echo "::error::$TAG is geen betanummer. Een beta heeft vier delen, bijvoorbeeld v0.5.22.91."
+            exit 1
+          fi
+          if [ "${BASH_REMATCH[1]}" -lt 90 ]; then
+            echo "::error::Een beta heeft een nummer vanaf .90 (bijvoorbeeld v0.5.22.91). $TAG zou een hotfix zijn. Niet gepubliceerd."
+            exit 1
+          fi
+          gh release view "$TAG" --json isDraft,assets,body,url > release.json || { echo "::error::Geen release met tag $TAG gevonden."; exit 1; }
+          if [ "$(jq -r .isDraft release.json)" != "true" ]; then
+            echo "::error::$TAG is al gepubliceerd. Niets gedaan."
+            exit 1
+          fi
+          if ! jq -e '.assets | any(.name | test("\\.exe$"; "i"))' release.json >/dev/null; then
+            echo "::error::Er zit geen .exe-bestand bij de draft $TAG. Niet gepubliceerd. Bouw eerst de exe."
+            exit 1
+          fi
+          jq -r .body release.json > notities.md
+          echo "RELEASE_URL=$(jq -r .url release.json)" >> "$GITHUB_ENV"
+          echo "VERSIE=${TAG#v}" >> "$GITHUB_ENV"
+          # Publiceren als pre-release: niet als nieuwste, dus gewone gebruikers krijgen hem niet
+          gh release edit "$TAG" --draft=false --prerelease --latest=false
+          echo "Beta $TAG gepubliceerd als pre-release."
+
+      - name: Aankondigen in het testkanaal
+        env:
+          DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
+          NOTITIES_BESTAND: notities.md
+        run: python3 .github/scripts/beta_aankondiging.py
