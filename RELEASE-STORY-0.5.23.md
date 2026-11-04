@@ -7,3 +7,5 @@ Haal je levels op bij Levels en account, en de app onthoudt hoeveel xp je had. H
 Alles blijft op je eigen pc. Hoe vaker je ophaalt, hoe beter het tempo klopt.
 
 Ook nieuw: de miniquests staan nu open onder de quests, en een vinkje bij een miniquest zoals Enter the Abyss telt eindelijk ook mee als eis voor andere quests. Bedankt voor de melding!
+
+En de kaart is mooier geworden: banken, altaren, aambeelden en winkels hebben nu hetzelfde icoontje als in het spel. Zo zie je in één oogopslag waar de zwaardwinkel of de kruidenwinkel zit.
