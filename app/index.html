@@ -2191,6 +2191,11 @@ QUESTS.forEach(function (q) { var x = RECX[q.n]; if (x) q.rec = (q.rec ? q.rec +
   window.OSRSQuest = {
     get: function () { return state; },
     keys: SK.slice(),
+    setMini: function (n, v) {
+      if (!n) return;
+      if (v) state.mini[n] = 1; else delete state.mini[n];
+      save(); buildAccount(); render();
+    },
     evalAll: function () { var qp = qpTotal(); return QUESTS.map(function (q) { var e = evalQ(q, qp); return { n: q.n, st: e.st, miss: e.miss }; }); },
     setLevel: function (k, v) {
       v = parseInt(v, 10);
@@ -7786,13 +7791,20 @@ d.setAttribute("data-g", g.t);
 /* Miniquests (uit de OSRS Wiki). Afvinken en je eisen zien. De voortgang zit in je back-up. */
 (function () {
   var MQ = [["Alfred Grimhand's Barcrawl",{}],["Architectural Alliance",{Mining:42}],["Barbarian Training",{Fishing:55,Firemaking:35,Strength:35,Agility:15,Farming:15,Crafting:11,Smithing:5,Herblore:4}],["Bear Your Soul",{}],["Curse of the Empty Lord",{Thieving:53,Prayer:31}],["Daddy's Home",{}],["The Enchanted Key",{}],["Enter the Abyss",{}],["Family Pest",{}],["The Frozen Door",{Agility:70,Hitpoints:70,Ranged:70,Strength:70}],["The General's Shadow",{}],["His Faithful Servants",{}],["Hopespear's Will",{Prayer:50}],["In Search of Knowledge",{}],["Into the Tombs",{}],["Lair of Tarn Razorlor",{Slayer:40}],["Lost Lover",{}],["Mage Arena I",{Magic:60}],["Mage Arena II",{Magic:75}],["Rogue Trader",{}],["Skippy and the Mogres",{Cooking:20}],["Spirit of Adventure",{}],["The Fractured Archive",{},"The Fractured Archive (miniquest)"],["Vale Totems",{Fletching:20},"Vale Totems (miniquest)"]];
-  var KEY = "osrs-gids-minis", done = {};
-  try { var d0 = JSON.parse(localStorage.getItem(KEY) || "{}"); if (d0 && typeof d0 === "object" && !Array.isArray(d0)) done = d0; } catch (e) {}
+  var KEY = "osrs-gids-minis";
   var list = document.getElementById("qList");
-  if (!list) return;
+  if (!list || !window.OSRSQuest) return;
+  /* Eén opslag voor miniquests: dezelfde als waar de eisen van quests naar kijken (en je back-up). Oude vinkjes nemen we eenmalig over. */
+  try {
+    var d0 = JSON.parse(localStorage.getItem(KEY) || "{}");
+    if (d0 && typeof d0 === "object" && !Array.isArray(d0)) Object.keys(d0).forEach(function (n) { if (d0[n]) window.OSRSQuest.setMini(n, true); });
+    localStorage.removeItem(KEY);
+  } catch (e) {}
+  function isDone(n) { var q = window.OSRSQuest.get(); return !!(q.mini && q.mini[n]); }
   var box = document.createElement("details");
   box.className = "acct";
-  box.innerHTML = '<summary>Miniquests</summary><div class="acct-in"><p class="qnote">Miniquests geven geen quest points. Vink af wat je gedaan hebt. Groen betekent dat je level hoog genoeg is. Voor de rest van de eisen, zoals andere quests, open je de wiki.</p><div id="mqList"></div></div>';
+  box.innerHTML = '<summary id="mqSum">Miniquests</summary><div class="acct-in"><p class="qnote">Miniquests geven geen quest points. Vink af wat je gedaan hebt; quests die een miniquest als eis hebben, kijken hiernaar. Groen betekent dat je level hoog genoeg is. Voor de rest van de eisen, zoals andere quests, open je de wiki.</p><div id="mqList"></div></div>';
+  box.open = true;
   list.insertAdjacentElement("afterend", box);
   var out = box.querySelector("#mqList");
   function esc(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
@@ -7801,18 +7813,21 @@ d.setAttribute("data-g", g.t);
   function lvl(s, lv) { var n = parseInt(lv[s], 10); return n >= 1 ? n : (s === "Hitpoints" ? 10 : 1); }
   function render() {
     var lv = levels();
+    var zoek = ((document.getElementById("qSearch") || {}).value || "").trim().toLowerCase();
+    var aantal = MQ.filter(function (m) { return isDone(m[0]); }).length;
+    box.querySelector("#mqSum").textContent = "Miniquests (" + aantal + " van " + MQ.length + " gedaan)";
     out.innerHTML = MQ.map(function (m, i) {
+      if (zoek && m[0].toLowerCase().indexOf(zoek) < 0) return "";
       var req = Object.keys(m[1]).map(function (s) { var ok = lvl(s, lv) >= m[1][s]; return '<span class="' + (ok ? "ok" : "no") + '">' + m[1][s] + " " + s + "</span>"; }).join(", ");
-      return '<div class="mq-row' + (done[m[0]] ? " done" : "") + '"><input type="checkbox" data-i="' + i + '"' + (done[m[0]] ? " checked" : "") + ' aria-label="' + esc(m[0]) + ' gedaan"><div><span class="mq-n"><a href="' + wiki(m[2] || m[0]) + '" target="_blank" rel="noopener">' + esc(m[0]) + '</a></span><span class="mq-req">' + (req || "Geen skilleisen") + "</span></div></div>";
+      return '<div class="mq-row' + (isDone(m[0]) ? " done" : "") + '"><input type="checkbox" data-i="' + i + '"' + (isDone(m[0]) ? " checked" : "") + ' aria-label="' + esc(m[0]) + ' gedaan"><div><span class="mq-n"><a href="' + wiki(m[2] || m[0]) + '" target="_blank" rel="noopener">' + esc(m[0]) + '</a></span><span class="mq-req">' + (req || "Geen skilleisen") + "</span></div></div>";
     }).join("");
   }
   out.addEventListener("change", function (e) {
     var i = e.target && e.target.getAttribute("data-i"); if (i === null) return;
-    var n = MQ[+i][0]; if (e.target.checked) done[n] = true; else delete done[n];
-    try { localStorage.setItem(KEY, JSON.stringify(done)); } catch (err) {}
-    render();
+    window.OSRSQuest.setMini(MQ[+i][0], e.target.checked);
   });
   window.addEventListener("osrs-state", function () { setTimeout(render, 200); });
+  var qs = document.getElementById("qSearch"); if (qs) qs.addEventListener("input", render);
   render();
 })();
 </script>
