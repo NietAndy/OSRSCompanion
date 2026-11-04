@@ -30,7 +30,7 @@ def bouw_bericht(versie, url, notities, rol):
     delen.append(
         "**Zo krijg je hem:** open Gielinor Guide. Binnen ongeveer 10 minuten staat er een melding bij Controleer op updates "
         "linksonder, met een BETA-label. Klik op Nu bijwerken, meer hoef je niet te doen.\n"
-        "Iets gevonden? Gebruik Meld een probleem linksonder in de app, of reageer hier. Details: <" + url + ">"
+        "Iets gevonden? Gebruik Meld een probleem linksonder in de app, of reageer hier."
     )
     return {
         "username": "Beta Bot",

@@ -20,7 +20,6 @@ def bouw(versie, repo, tekst):
         "username": "Release Bot",
         "embeds": [{
             "title": titel[:250],
-            "url": "https://github.com/" + repo + "/releases/tag/v" + versie if repo else None,
             "description": tekst,
             "color": 0xF2C14E,
             "footer": {"text": ("Hotfix" if len(versie.split(".")) >= 4 else "Weekly release") + " · Gielinor Guide " + versie},
