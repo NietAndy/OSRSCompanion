@@ -8,6 +8,8 @@
 - **Beta-updates voor testers:** heb je de rol Beta op onze Discord-server, dan toont Controleer op updates ook beta-versies, met een BETA-label. Je installeert ze met één klik. De eerste keer vraagt de app om opnieuw in te loggen met Discord, zodat hij je rol kan zien.
 
 ## Verbeterd
+- **Alle pets hebben nu een afbeelding.** Bij 26 pets ontbrak die (onder andere Aggy, Baron, Bran, Nid, Yami, Wisp en de Abyssal protector).
+- **Ruim 350 items tonen weer hun icoon,** zoals de 3rd Age-uitrusting, de teleports en de pet-items van de bazen. Hun naam in de lijst week af van de naam op de wiki. Een handvol items zonder eenduidige naam (zoals Torch en Potion) en enkele bouwmeubels hebben nog geen icoon.
 - **Daddy's Home is nu een gewone quest** (dat is hij sinds de update van 3 november ook in het spel). Hij staat bij Quests in plaats van bij de miniquests, en telt dus mee voor je quest points.
 - **544 nieuwe items** in de lijst bij Prijzen, zoals Obligator, Zorya's tome, de Ascension-bolts en -crossbows, Amulet of sight en de Wyrmscraig-kleding. Een prijs zie je na Vernieuw prijzen.
 - **Miniquests staan nu open onder de lijst bij Quests,** met "x van 24 gedaan" in de kop, en je kunt ze zoeken met het zoekveld bij Quests.
