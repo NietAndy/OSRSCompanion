@@ -13,6 +13,7 @@ import json
 import os
 import re
 import sys
+import time
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -32,7 +33,17 @@ TOON_MELDER = os.environ.get("TOON_MELDER", "") == "1"
 DROOG = os.environ.get("DROOG", "") == "1"  # alleen tonen wat er zou gebeuren
 
 
-def http(method, url, headers=None, data=None, raw=False, timeout=30):
+def http(method, url, headers=None, data=None, raw=False, timeout=30, tries=1):
+    """Doet een aanvraag. Bij een serverfout (5xx) of een netwerkfout probeert hij het tot `tries` keer, met een pauze ertussen."""
+    for poging in range(tries):
+        st, uit = _http_een(method, url, headers, data, raw, timeout)
+        if (st is not None and st < 500) or poging == tries - 1:
+            return st, uit
+        print("Tijdelijke fout", st, "bij", method, url.split("?")[0], "- nog een poging.")
+        time.sleep(3 * (poging + 1))
+
+
+def _http_een(method, url, headers=None, data=None, raw=False, timeout=30):
     body = None
     h = dict(headers or {})
     if data is not None:
@@ -56,14 +67,21 @@ def http(method, url, headers=None, data=None, raw=False, timeout=30):
         except Exception:
             txt = ""
         return e.code, txt
+    except (urllib.error.URLError, TimeoutError, OSError) as e:
+        return 599, str(e)[:200]
 
 
 def dc(method, pad, data=None):
-    return http(method, DC + pad, {"Authorization": "Bot " + BOT, "User-Agent": "DiscordBot (https://github.com/" + REPO + ", 1.0)"}, data)
+    return http(method, DC + pad, {"Authorization": "Bot " + BOT, "User-Agent": "DiscordBot (https://github.com/" + REPO + ", 1.0)"}, data, tries=herhaal(method))
+
+
+def herhaal(method):
+    """Alleen opvragen en vinkjes zetten mogen we veilig herhalen; iets aanmaken niet, anders komt het dubbel."""
+    return 3 if method in ("GET", "PUT") else 1
 
 
 def gh(method, pad, data=None):
-    return http(method, GH + pad, {"Authorization": "Bearer " + GHTOKEN, "Accept": "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28", "User-Agent": "gielinor-guide-bugs"}, data)
+    return http(method, GH + pad, {"Authorization": "Bearer " + GHTOKEN, "Accept": "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28", "User-Agent": "gielinor-guide-bugs"}, data, tries=herhaal(method))
 
 
 def heeft_vink(m):
@@ -176,12 +194,12 @@ def zorg_labels():
 
 
 def al_gedaan():
-    ids = set()
+    ids = {}
     st, r = gh("GET", "/repos/" + REPO + "/issues?state=all&labels=uit-de-app&per_page=100")
     if st == 200 and isinstance(r, list):
         for i in r:
             for x in re.findall(r"discord-bericht: (\d+)", i.get("body") or ""):
-                ids.add(x)
+                ids[x] = i.get("html_url", "")
     return ids
 
 
@@ -221,12 +239,25 @@ def main():
         if DROOG:
             print("=== zou aanmaken:", titel, "\n", body[:1500])
             continue
-        st, r = gh("POST", "/repos/" + REPO + "/issues", {"title": titel, "body": body[:60000], "labels": ["bug", "uit-de-app"]})
-        if st != 201:
+        url = None
+        for poging in range(3):
+            st, r = gh("POST", "/repos/" + REPO + "/issues", {"title": titel, "body": body[:60000], "labels": ["bug", "uit-de-app"]})
+            if st == 201:
+                url = r.get("html_url", "")
+                print("Issue gemaakt:", url)
+                break
             print("Issue maken mislukt:", st, r)
+            if st < 500 and st != 599:
+                break
+            # Bij een serverfout kan het issue toch zijn aangemaakt: eerst kijken, dan pas opnieuw proberen.
+            time.sleep(5 * (poging + 1))
+            bestaand = al_gedaan().get(m["id"])
+            if bestaand:
+                url = bestaand
+                print("Het issue bestond al:", url)
+                break
+        if not url:
             continue
-        url = r.get("html_url", "")
-        print("Issue gemaakt:", url)
         dc("PUT", "/channels/" + KANAAL + "/messages/" + m["id"] + "/reactions/" + urllib.parse.quote(VINK) + "/@me")
         antwoord(m, v, url)
     return 0

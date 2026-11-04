@@ -2,6 +2,7 @@ name: Draft-release bij nieuwe releasenotities
 
 # Komt er een nieuw bestand RELEASE-NOTES-x.y.z.md op main (zoals Claude doet bij elke versie),
 # dan maakt deze workflow een draft-release met tag vx.y.z, titel "Versie x.y.z" en die tekst.
+# Bestaat de draft al (en is hij nog niet gepubliceerd), dan wordt alleen de tekst bijgewerkt.
 # De tag wordt pas echt aangemaakt als de draft gepubliceerd wordt.
 # Daarna hoef je alleen nog het .exe-bestand in de draft te slepen en op Publish te klikken
 # (of te wachten op de geplande release van vrijdag; die publiceert nooit zonder .exe).
@@ -36,10 +37,15 @@ jobs:
           TAG="v$VERSIE"
           NOTES="RELEASE-NOTES-$VERSIE.md"
           [ -f "$NOTES" ] || { echo "::error::$NOTES bestaat niet."; exit 1; }
+          tail -n +2 "$NOTES" | sed '1{/^$/d}' > body.md
           if gh release view "$TAG" >/dev/null 2>&1; then
-            echo "Er bestaat al een release of draft voor $TAG. Niets te doen."
+            if [ "$(gh release view "$TAG" --json isDraft -q .isDraft)" = "true" ]; then
+              gh release edit "$TAG" --notes-file body.md
+              echo "De draft voor $TAG bestond al; de tekst is bijgewerkt met de nieuwste releasenotities."
+            else
+              echo "Release $TAG is al gepubliceerd. Niets te doen."
+            fi
             exit 0
           fi
-          tail -n +2 "$NOTES" | sed '1{/^$/d}' > body.md
           gh release create "$TAG" --draft --target main --title "Versie $VERSIE" --notes-file body.md
           echo "Draft-release $TAG gemaakt. Sleep nu het .exe-bestand erin."
