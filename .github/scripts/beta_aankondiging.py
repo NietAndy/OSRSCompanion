@@ -1,10 +1,9 @@
 """Kondigt een nieuwe beta aan in het testkanaal van Discord, met een ping voor de rol Beta.
 
-Wordt gestart door de workflow "Beta publiceren". Gebruikt dezelfde bot als de bugmeldingen (DISCORD_BOT_TOKEN).
-De bot heeft in het testkanaal de rechten Kanaal bekijken en Berichten versturen nodig. Om de rol te kunnen pingen
-moet bij die rol "Iedereen mag deze rol vermelden" aan staan.
+Wordt gestart door de workflow "Beta publiceren". Post via een webhook van het testkanaal, net als #releases en #changelog.
+Om de rol te kunnen pingen moet bij die rol "Iedereen mag deze rol vermelden" aan staan.
 
-Benodigd (omgevingsvariabelen): DISCORD_BOT_TOKEN, BETA_KANAAL, BETA_ROL, VERSIE, RELEASE_URL, NOTITIES_BESTAND, GITHUB_REPOSITORY.
+Benodigd (omgevingsvariabelen): DISCORD_BETA_WEBHOOK (secret), BETA_ROL, VERSIE, RELEASE_URL, NOTITIES_BESTAND.
 """
 import json
 import os
@@ -34,18 +33,18 @@ def bouw_bericht(versie, url, notities, rol):
         "Iets gevonden? Gebruik Meld een probleem linksonder in de app, of reageer hier. Details: <" + url + ">"
     )
     return {
+        "username": "Beta Bot",
         "content": "\n\n".join(delen)[:1990],
         "allowed_mentions": {"parse": [], "roles": [rol] if rol else []},
     }
 
 
-def verstuur(token, kanaal, payload, repo):
+def verstuur(hook, payload):
     body = json.dumps(payload).encode("utf-8")
     for poging in range(3):
         req = urllib.request.Request(
-            DC + "/channels/" + kanaal + "/messages", data=body, method="POST",
-            headers={"Authorization": "Bot " + token, "Content-Type": "application/json",
-                     "User-Agent": "DiscordBot (https://github.com/" + repo + ", 1.0)"})
+            hook, data=body, method="POST",
+            headers={"Content-Type": "application/json", "User-Agent": "OSRSCompanion-beta-bot (GitHub Actions)"})
         try:
             with urllib.request.urlopen(req, timeout=30) as r:
                 return r.status, r.read()[:200]
@@ -64,27 +63,29 @@ def verstuur(token, kanaal, payload, repo):
 
 
 def main():
-    token = os.environ.get("DISCORD_BOT_TOKEN", "").strip()
-    kanaal = os.environ.get("BETA_KANAAL", "").strip()
+    hook = os.environ.get("DISCORD_BETA_WEBHOOK", "").strip().strip("'\"").strip()
     rol = os.environ.get("BETA_ROL", "").strip()
     versie = os.environ.get("VERSIE", "").strip()
     url = os.environ.get("RELEASE_URL", "").strip()
-    repo = os.environ.get("GITHUB_REPOSITORY", "")
-    if not token or not kanaal.isdigit() or not versie:
-        print("DISCORD_BOT_TOKEN, BETA_KANAAL of VERSIE ontbreekt. Er is niets aangekondigd.")
+    if not hook:
+        print("De secret DISCORD_BETA_WEBHOOK is leeg of bestaat niet. Zet hem bij Settings > Secrets and variables > Actions > Repository secrets (niet bij Variables of Environment secrets). Niets aangekondigd.")
+        return 1
+    if not hook.startswith(("https://discord.com/api/webhooks/", "https://discordapp.com/api/webhooks/")):
+        print("De secret DISCORD_BETA_WEBHOOK bevat geen Discord-webhook-URL. Hij moet beginnen met https://discord.com/api/webhooks/ . Kopieer hem opnieuw uit Discord. Niets aangekondigd.")
+        return 1
+    if not versie:
+        print("Geen versie opgegeven. Niets aangekondigd.")
         return 1
     notities = ""
     pad = os.environ.get("NOTITIES_BESTAND", "")
     if pad and os.path.isfile(pad):
         with open(pad, encoding="utf-8") as f:
             notities = f.read()
-    st, uit = verstuur(token, kanaal, bouw_bericht(versie, url, notities, rol if rol.isdigit() else ""), repo)
-    if st in (200, 201):
+    st, uit = verstuur(hook, bouw_bericht(versie, url, notities, rol if rol.isdigit() else ""))
+    if st in (200, 201, 204):
         print("Beta aangekondigd in het testkanaal.")
         return 0
     print("Aankondigen mislukt:", st, uit.decode("utf-8", "replace"))
-    if st in (401, 403):
-        print("Geef de bot in het testkanaal de rechten Kanaal bekijken en Berichten versturen.")
     return 1
 
 

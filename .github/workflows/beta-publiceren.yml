@@ -1,6 +1,6 @@
 name: Beta publiceren
 
-# Zet een draft-release als BETA online (pre-release) en kondigt hem aan in het testkanaal, met een ping voor de rol Beta.
+# Zet een draft-release als BETA online (pre-release) en kondigt hem aan in het testkanaal (via een webhook, secret DISCORD_BETA_WEBHOOK), met een ping voor de rol Beta.
 # Een pre-release wordt niet als "nieuwste" getoond, dus gewone gebruikers krijgen hem niet. Beta-testers zien hem in de app.
 #
 # Zo gebruik je het:
@@ -24,15 +24,20 @@ jobs:
     env:
       GH_TOKEN: ${{ github.token }}
       TAG: ${{ inputs.tag }}
-      # Het kanaal voor testversies en de rol Beta (geen geheimen)
-      BETA_KANAAL: "1563126426448957440"
+      # De rol Beta (geen geheim). Het kanaal voor testversies volgt uit de webhook.
       BETA_ROL: "1567484253640331264"
+      DISCORD_BETA_WEBHOOK: ${{ secrets.DISCORD_BETA_WEBHOOK }}
     steps:
       - uses: actions/checkout@v4
 
       - name: Controleren en als beta publiceren
         run: |
           set -euo pipefail
+          # Eerst de webhook controleren: een beta zonder aankondiging wil je niet.
+          if ! [[ "${DISCORD_BETA_WEBHOOK:-}" =~ ^https://(discord|discordapp)\.com/api/webhooks/ ]]; then
+            echo "::error::De secret DISCORD_BETA_WEBHOOK is leeg of geen Discord-webhook. Zet hem bij Settings > Secrets and variables > Actions > Repository secrets. Niets gepubliceerd."
+            exit 1
+          fi
           if ! [[ "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+\.([0-9]+)$ ]]; then
             echo "::error::$TAG is geen betanummer. Een beta heeft vier delen, bijvoorbeeld v0.5.22.91."
             exit 1
@@ -59,6 +64,5 @@ jobs:
 
       - name: Aankondigen in het testkanaal
         env:
-          DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
           NOTITIES_BESTAND: notities.md
         run: python3 .github/scripts/beta_aankondiging.py
