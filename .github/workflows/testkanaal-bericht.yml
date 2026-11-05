@@ -1,0 +1,31 @@
+name: Testkanaal bericht
+
+# Plaatst een mededeling in het testkanaal van Discord, met een ping voor de rol Beta (webhook: secret DISCORD_BETA_WEBHOOK).
+# De tekst staat in een bestand in .github/discord-berichten/. Alleen handmatig te starten (Run workflow).
+on:
+  workflow_dispatch:
+    inputs:
+      bestand:
+        description: "Het berichtbestand, bijvoorbeeld .github/discord-berichten/beta-vervangen.md"
+        required: true
+        default: ".github/discord-berichten/beta-vervangen.md"
+      voettekst:
+        description: "Tekst onderaan het bericht (leeg = Beta · de datum van vandaag)"
+        required: false
+        default: ""
+
+permissions:
+  contents: read
+
+jobs:
+  bericht:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Bericht plaatsen
+        env:
+          BETA_ROL: "1567484253640331264"
+          DISCORD_BETA_WEBHOOK: ${{ secrets.DISCORD_BETA_WEBHOOK }}
+          BERICHT_BESTAND: ${{ inputs.bestand }}
+          VOETTEKST: ${{ inputs.voettekst }}
+        run: python3 .github/scripts/testkanaal_bericht.py
