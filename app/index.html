@@ -2197,6 +2197,11 @@ QUESTS.forEach(function (q) { var x = RECX[q.n]; if (x) q.rec = (q.rec ? q.rec +
   window.OSRSQuest = {
     get: function () { return state; },
     keys: SK.slice(),
+    setDone: function (n, v) {
+      if (!n) return;
+      if (v) state.done[n] = 1; else delete state.done[n];
+      save(); buildAccount(); render();
+    },
     setMini: function (n, v) {
       if (!n) return;
       if (v) state.mini[n] = 1; else delete state.mini[n];
@@ -10029,7 +10034,7 @@ window.OSRSPath = (function () {
     if (q.ki) body.push("<b>Verslaan:</b> " + esc(q.ki));
     if (q.rec) body.push("<b>Aanbevolen:</b> " + esc(q.rec));
     if (q.w) body.push("<b>Start:</b> " + esc(q.w) + (q.st ? ", " + esc(q.st) : ""));
-    return "<li><details><summary><b>" + esc(q.n) + '</b> <span class="qv-why">' + esc(extra.join(" \u00b7 ")) + "</span></summary>" + (body.length ? '<div class="qv-body"><p>' + body.join("</p><p>") + "</p></div>" : "") + "</details></li>";
+    return "<li><details><summary>" + '<input type="checkbox" class="qv-cb" data-q="' + esc(q.n) + '" aria-label="Gedaan: ' + esc(q.n) + '"><b>' + esc(q.n) + '</b> <span class="qv-why">' + esc(extra.join(" \u00b7 ")) + "</span></summary>" + (body.length ? '<div class="qv-body"><p>' + body.join("</p><p>") + "</p></div>" : "") + "</details></li>";
   }
   function skMis(q, st) { var m = []; Object.keys(q.sk).forEach(function (k) { if ((st.lv[k] || 1) < q.sk[k]) m.push(k + " " + q.sk[k] + " (nu " + (st.lv[k] || 1) + ")"); }); return m.join(", "); }
   function toon() {
@@ -10059,6 +10064,12 @@ window.OSRSPath = (function () {
     h += '<p class="qnote">Vink gedane quests af bij Quests, dan schuift deze lijst vanzelf op.</p>';
     sec.innerHTML = h;
   }
+  sec.addEventListener("change", function (e) {
+    var cb = e.target && e.target.closest && e.target.closest(".qv-cb");
+    if (!cb || !window.OSRSQuest || !window.OSRSQuest.setDone) return;
+    window.OSRSQuest.setDone(cb.getAttribute("data-q"), cb.checked);
+    toon();
+  });
   window.OSRSQuestVolgorde = { toon: toon, bereken: bereken };
   /* De app kan al op deze pagina openen voordat dit script geladen is: dan nu alsnog tekenen. */
   try { if (window.OSRSShell && window.OSRSShell.current() === "questvolgorde") toon(); } catch (e) {}
@@ -10241,6 +10252,7 @@ window.OSRSPath = (function () {
 #questvolgorde ol > li > details[open] { border-radius: 14px; box-shadow: inset 0 0 0 1px var(--gold); }
 #questvolgorde ol > li summary { display: flex; align-items: center; gap: 12px; padding: 12px 16px; list-style: none; flex-wrap: wrap; }
 #questvolgorde ol > li summary::-webkit-details-marker { display: none; }
+#questvolgorde .qv-cb { width: 22px; height: 22px; flex: none; margin: 0 4px 0 0; accent-color: var(--gold, #f2c14e); cursor: pointer; }
 #questvolgorde ol > li summary::before { content: counter(qv); flex: none; width: 28px; height: 28px; border-radius: 50%; background: #1d2b3d; display: inline-flex; align-items: center; justify-content: center; font-size: .8rem; font-weight: 700; }
 #questvolgorde ol > li > details[open] summary::before { background: var(--gold, #f2c14e); color: #111a26; }
 #questvolgorde .qv-body { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 24px; padding: 4px 16px 16px 56px; }
