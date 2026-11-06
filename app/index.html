@@ -2003,11 +2003,22 @@ QUESTS.forEach(function (q) { var x = RECX[q.n]; if (x) q.rec = (q.rec ? q.rec +
   /* Waar was ik?: een korte notitie per quest, bewaard op deze pc (zie OSRSWaar onderaan het bestand) */
   function waarGet(n) { return window.OSRSWaar && window.OSRSWaar.get ? window.OSRSWaar.get(n) : null; }
   function waarRij(q) {
-    var w = waarGet(q.n), tijd = w && window.OSRSWaar.tijd ? window.OSRSWaar.tijd(w.d) : "";
-    return '<dt>Waar was ik?</dt><dd class="wb"><label class="wb-l" for="wb-' + q.i + '">Waar was ik gebleven met deze quest?</label>' +
-      '<textarea id="wb-' + q.i + '" class="wb-t" rows="3" maxlength="500" data-q="' + esc(q.n) + '" placeholder="Bijvoorbeeld: planks en hammer heb ik, nog bolts of cloth kopen.">' + esc(w ? w.t : "") + "</textarea>" +
-      '<div class="wb-r"><button type="button" class="btn wb-save" data-q="' + esc(q.n) + '">Bewaar notitie</button>' +
-      (w ? '<button type="button" class="btn ghost wb-del" data-q="' + esc(q.n) + '">Wis notitie</button><span class="loc">Bewaard ' + esc(tijd) + "</span>" : "") + "</div></dd>";
+    var W = window.OSRSWaar, w = waarGet(q.n), tijd = w && W.tijd ? W.tijd(w.d) : "";
+    var its = W && W.items ? W.items(q.it) : [], stp = W && W.stappen ? W.stappen(q.n) : [];
+    function lijst(naam, titel, arr, gedaan, lab) {
+      if (!arr.length) return "";
+      return '<fieldset class="wb-f"><legend>' + titel + "</legend>" + arr.map(function (x, i) {
+        var t = lab(x);
+        return '<label class="wb-c"><input type="checkbox" class="wb-ck" data-k="' + naam + '" data-i="' + i + '"' + (gedaan.indexOf(i) >= 0 ? " checked" : "") + '><span' + (x && x.v && x.v !== x.l ? ' title="' + esc(x.v) + '"' : "") + ">" + esc(t) + "</span></label>";
+      }).join("") + "</fieldset>";
+    }
+    return '<dt>Waar was ik?</dt><dd class="wb">' +
+      lijst("st", "Welke stappen heb je gedaan?", stp, w ? w.st : [], function (x) { return x; }) +
+      lijst("it", "Wat heb je al bij je?", its, w ? w.it : [], function (x) { return x.l; }) +
+      '<label class="wb-l" for="wb-' + q.i + '">Eigen notitie (mag leeg)</label>' +
+      '<textarea id="wb-' + q.i + '" class="wb-t" rows="3" maxlength="500" data-q="' + esc(q.n) + '" placeholder="Bijvoorbeeld: eerst de zagerij in Varrock, dan terug naar Yarlo.">' + esc(w ? w.t : "") + "</textarea>" +
+      '<div class="wb-r"><button type="button" class="btn wb-save" data-q="' + esc(q.n) + '">Bewaar</button>' +
+      (w ? '<button type="button" class="btn ghost wb-del" data-q="' + esc(q.n) + '">Wis</button><span class="loc">Bewaard ' + esc(tijd) + "</span>" : "") + "</div></dd>";
   }
   function card(q, ev, qp) {
     var done = !!state.done[q.n];
@@ -2182,7 +2193,10 @@ QUESTS.forEach(function (q) { var x = RECX[q.n]; if (x) q.rec = (q.rec ? q.rec +
     if (ws || wd) {
       var wn = (ws || wd).getAttribute("data-q"), W = window.OSRSWaar;
       if (W) {
-        if (ws) { var ta = listEl.querySelector('.wb-t[data-q="' + wn.replace(/"/g, '\\"') + '"]'); if (ta) W.set(wn, ta.value); } else W.wis(wn);
+        if (ws) {
+          var dd = ws.closest(".wb"), ta = dd && dd.querySelector(".wb-t"), pick = function (k) { var r = []; if (dd) Array.prototype.forEach.call(dd.querySelectorAll('.wb-ck[data-k="' + k + '"]:checked'), function (c) { r.push(+c.getAttribute("data-i")); }); return r; };
+          W.set(wn, { t: ta ? ta.value : "", it: pick("it"), st: pick("st") });
+        } else W.wis(wn);
         render();
       }
       return;
@@ -7509,8 +7523,22 @@ d.setAttribute("data-g", g.t);
     }
     c5 += "</div>";
     var WB = window.OSRSWaar && window.OSRSWaar.laatste ? window.OSRSWaar.laatste() : null, c6 = "";
-    if (WB) c6 = '<div class="pn"><h3>' + icon("scroll") + 'Waar was ik?</h3><div class="wb-home"><b class="wb-q">' + esc(WB.n) + '</b><p class="wb-note">' + esc(WB.t) + '</p><span class="loc">Bewaard ' + esc(window.OSRSWaar.tijd(WB.d)) + '</span>' +
-      '<div class="btnrow"><button type="button" class="btn" data-wvz="' + esc(WB.n) + '">Verder met deze quest</button><button type="button" class="btn ghost" data-wwis="' + esc(WB.n) + '">Klaar, wissen</button></div></div></div>';
+    if (WB) {
+      var WQ = window.QUESTS ? window.QUESTS.filter(function (z) { return z.n === WB.n; })[0] : null, WI = WQ ? window.OSRSWaar.items(WQ.it) : [], WS = window.OSRSWaar.stappen(WB.n), voort = "", chips = "", wh = "";
+      if (WS.length) {
+        var nx = -1; WS.forEach(function (x, i) { if (nx < 0 && WB.st.indexOf(i) < 0) nx = i; });
+        var pc = Math.round(WB.st.length / WS.length * 100);
+        voort = '<div class="hbar" role="progressbar" aria-valuenow="' + pc + '" aria-valuemin="0" aria-valuemax="100"><span style="width:' + pc + '%"></span></div><p class="loc">' + WB.st.length + " van " + WS.length + " stappen gedaan" + (nx >= 0 ? ". Volgende: " + esc(WS[nx]) : ".") + "</p>";
+      }
+      if (WI.length) {
+        var heb = WI.filter(function (x, i) { return WB.it.indexOf(i) >= 0; }), mis = WI.filter(function (x, i) { return WB.it.indexOf(i) < 0; });
+        if (heb.length) chips += '<div class="wb-chips"><b>Had ik al bij me</b>' + heb.map(function (x) { return '<span class="wb-chip ja">' + esc(x.l) + "</span>"; }).join("") + "</div>";
+        if (mis.length) chips += '<div class="wb-chips"><b>Nog nodig</b>' + mis.map(function (x) { return '<span class="wb-chip nee">' + esc(x.l) + "</span>"; }).join("") + "</div>";
+      }
+      c6 = '<div class="pn"><h3>' + icon("scroll") + 'Waar was ik?</h3><div class="wb-home"><b class="wb-q">' + esc(WB.n) + "</b>" + voort + chips +
+        (WB.t ? '<p class="wb-note">' + esc(WB.t) + "</p>" : "") + '<span class="loc">Bewaard ' + esc(window.OSRSWaar.tijd(WB.d)) + "</span>" +
+        '<div class="btnrow"><button type="button" class="btn" data-wvz="' + esc(WB.n) + '">Verder met deze quest</button><button type="button" class="btn ghost" data-wwis="' + esc(WB.n) + '">Klaar, wissen</button></div></div></div>';
+    }
     var BL = { waar: c6, doel: c0, quests: c2, prijs: c4, timers: c5, train: c1, snel: c3 }, L = homeLayout(), cols = "";
     L.order.forEach(function (id) {
       if (L.off.indexOf(id) >= 0 || !BL[id]) return;
@@ -10409,11 +10437,39 @@ window.OSRSPath = (function () {
     var d = new Date(+ts || Date.now());
     return d.toLocaleDateString("nl-NL", { day: "numeric", month: "long" }) + " om " + d.toLocaleTimeString("nl-NL", { hour: "2-digit", minute: "2-digit" });
   }
+  /* de spullen uit de questgegevens: komma's en puntkomma's buiten haakjes scheiden de items; "Geen..." betekent niets */
+  function items(tekst) {
+    var t = String(tekst == null ? "" : tekst).trim();
+    if (!t || /^geen\b/i.test(t)) return [];
+    var out = [], buf = "", diep = 0, i, c;
+    for (i = 0; i < t.length; i++) {
+      c = t.charAt(i);
+      if (c === "(") diep++; else if (c === ")") diep = Math.max(0, diep - 1);
+      if ((c === "," || c === ";") && diep === 0) { out.push(buf); buf = ""; } else buf += c;
+    }
+    out.push(buf);
+    return out.map(function (x) { return x.trim().replace(/\.$/, "").replace(/^(een|de|het)\s+/i, "").trim(); })
+      .filter(function (x) { return x && x.length <= 90; }).slice(0, 12)
+      .map(function (x) { var l = x.replace(/\s*\(.*\)\s*$/, "").trim() || x; return { l: l, v: x }; });
+  }
+  function stappen(n) {
+    var R = window.OSRS_ROUTES && window.OSRS_ROUTES[n];
+    return Array.isArray(R) ? R.map(function (x) { return String(x[3] || ""); }).filter(Boolean).slice(0, 60) : [];
+  }
+  function nums(a) { return Array.isArray(a) ? a.filter(function (x) { return Number.isInteger(x) && x >= 0 && x < 100; }) : []; }
+  function leeg(w) { return !w || (!w.t && !(w.it && w.it.length) && !(w.st && w.st.length)); }
   window.OSRSWaar = {
-    get: function (n) { var w = Object.prototype.hasOwnProperty.call(data, n) ? data[n] : null; return w && w.t ? w : null; },
-    set: function (n, t) { t = String(t == null ? "" : t).trim().slice(0, 500); if (!n) return; if (!t) delete data[n]; else data[n] = { t: t, d: Date.now() }; bewaar(); },
+    get: function (n) { var w = Object.prototype.hasOwnProperty.call(data, n) ? data[n] : null; return leeg(w) ? null : { t: w.t || "", d: w.d, it: nums(w.it), st: nums(w.st) }; },
+    set: function (n, x, it, st) {
+      if (!n) return;
+      var o = x && typeof x === "object" ? x : { t: x, it: it, st: st };
+      var w = { t: String(o.t == null ? "" : o.t).trim().slice(0, 500), it: nums(o.it), st: nums(o.st), d: Date.now() };
+      if (leeg(w)) delete data[n]; else data[n] = w;
+      bewaar();
+    },
     wis: function (n) { delete data[n]; bewaar(); },
-    laatste: function () { var best = null; Object.keys(data).forEach(function (n) { var w = data[n]; if (w && w.t && (!best || w.d > best.d)) best = { n: n, t: w.t, d: w.d }; }); return best; },
+    laatste: function () { var best = null; Object.keys(data).forEach(function (n) { var w = data[n]; if (!leeg(w) && (!best || w.d > best.d)) best = { n: n, t: w.t || "", d: w.d, it: nums(w.it), st: nums(w.st) }; }); return best; },
+    items: items, stappen: stappen,
     tijd: tijd
   };
   document.addEventListener("click", function (e) {
@@ -10437,7 +10493,16 @@ window.OSRSPath = (function () {
 .wb .wb-l { display: block; font-weight: 600; margin-bottom: 6px; }
 .wb .wb-t { width: 100%; box-sizing: border-box; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--rule, #3a4d68); background: transparent; color: inherit; font: inherit; line-height: 1.5; resize: vertical; }
 .wb .wb-r { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 8px; }
-.wb-home .wb-q { display: block; font-size: 1.1rem; margin-bottom: 4px; }
+.wb-home .wb-q { display: block; font-size: 1.1rem; margin-bottom: 6px; }
+.wb .wb-f { margin: 0 0 12px; padding: 0; border: 0; }
+.wb .wb-f legend { padding: 0; font-weight: 600; margin-bottom: 6px; }
+.wb .wb-c { display: flex; align-items: center; gap: 10px; min-height: 36px; cursor: pointer; }
+.wb .wb-c input { width: 20px; height: 20px; flex: none; accent-color: var(--gold, #f2c14e); }
+.wb-chips { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 8px 0; }
+.wb-chips b { font-size: 13px; margin-right: 4px; }
+.wb-chip { padding: 4px 10px; border-radius: 999px; font-size: 13px; }
+.wb-chip.ja { background: #1f3a36; color: #8fe4dc; }
+.wb-chip.nee { background: #3b2c14; color: #f6cf7a; }
 .wb-home .wb-note { margin: 4px 0 8px; white-space: pre-wrap; line-height: 1.5; }
 .wb-toast { position: fixed; right: 20px; bottom: 20px; z-index: 50; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; max-width: 420px; padding: 12px 16px; border-radius: 12px; border: 2px solid var(--gold, #f2c14e); background: #172233; color: #e7edf5; box-shadow: 0 6px 24px rgba(0,0,0,.5); }
 </style>
