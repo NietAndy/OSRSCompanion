@@ -2000,12 +2000,22 @@ QUESTS.forEach(function (q) { var x = RECX[q.n]; if (x) q.rec = (q.rec ? q.rec +
     var bad = sf.items.filter(function (i) { return i.st !== "ok"; }).map(function (i) { return esc(i.k === "Combat" ? "Combat" : i.k) + " " + i.have + "/" + i.need; });
     return '<span class="rl near">Let op, aanbevolen: ' + bad.join(", ") + "</span>";
   }
+  /* Waar was ik?: een korte notitie per quest, bewaard op deze pc (zie OSRSWaar onderaan het bestand) */
+  function waarGet(n) { return window.OSRSWaar && window.OSRSWaar.get ? window.OSRSWaar.get(n) : null; }
+  function waarRij(q) {
+    var w = waarGet(q.n), tijd = w && window.OSRSWaar.tijd ? window.OSRSWaar.tijd(w.d) : "";
+    return '<dt>Waar was ik?</dt><dd class="wb"><label class="wb-l" for="wb-' + q.i + '">Waar was ik gebleven met deze quest?</label>' +
+      '<textarea id="wb-' + q.i + '" class="wb-t" rows="3" maxlength="500" data-q="' + esc(q.n) + '" placeholder="Bijvoorbeeld: planks en hammer heb ik, nog bolts of cloth kopen.">' + esc(w ? w.t : "") + "</textarea>" +
+      '<div class="wb-r"><button type="button" class="btn wb-save" data-q="' + esc(q.n) + '">Bewaar notitie</button>' +
+      (w ? '<button type="button" class="btn ghost wb-del" data-q="' + esc(q.n) + '">Wis notitie</button><span class="loc">Bewaard ' + esc(tijd) + "</span>" : "") + "</div></dd>";
+  }
   function card(q, ev, qp) {
     var done = !!state.done[q.n];
     var meta = [q.f ? "Free-to-play" : "Members", DIFF[q.d], LEN[q.l], (q.qp ? q.qp : "?") + " QP"];
     var h = '<details class="qc st-' + ev.st + '" data-i="' + q.i + '"' + (openSet[q.i] ? " open" : "") + "><summary>";
     h += '<input type="checkbox" class="dn-cb" data-i="' + q.i + '"' + (done ? " checked" : "") + ' aria-label="Gedaan: ' + esc(q.n) + '">';
     h += '<span class="qn">' + esc(q.n) + "</span>";
+    if (waarGet(q.n)) h += '<span class="wb-badge">Notitie</span>';
     h += '<span class="stt ' + ev.st + '">' + ST[ev.st] + "</span>";
     h += '<span class="sub"><span>' + esc(meta.join(" · ")) + "</span></span>";
     if (ev.st !== "done") h += '<span class="rl ' + ev.st + '">' + verdict(q, ev, qp) + "</span>";
@@ -2018,6 +2028,7 @@ QUESTS.forEach(function (q) { var x = RECX[q.n]; if (x) q.rec = (q.rec ? q.rec +
     h += "<dt>Beloning</dt><dd>" + esc(q.rw || "Onbekend") + "</dd>";
     if (q.rec) h += "<dt>Aanbevolen</dt><dd>" + esc(q.rec) + "</dd>";
     h += safetyRow(q);
+    h += waarRij(q);
     h += '</dl><div class="btnrow"><button type="button" class="btn tg" data-i="' + q.i + '">' + (done ? "Maak ongedaan" : "Markeer als gedaan") + '</button><a href="' + wikiUrl(q) + '" target="_blank" rel="noopener">Open op de OSRS Wiki</a></div>';
     h += "</div></details>";
     return h;
@@ -2167,6 +2178,15 @@ QUESTS.forEach(function (q) { var x = RECX[q.n]; if (x) q.rec = (q.rec ? q.rec +
     save(); render();
   });
   listEl.addEventListener("click", function (e) {
+    var ws = e.target.closest(".wb-save"), wd = e.target.closest(".wb-del");
+    if (ws || wd) {
+      var wn = (ws || wd).getAttribute("data-q"), W = window.OSRSWaar;
+      if (W) {
+        if (ws) { var ta = listEl.querySelector('.wb-t[data-q="' + wn.replace(/"/g, '\\"') + '"]'); if (ta) W.set(wn, ta.value); } else W.wis(wn);
+        render();
+      }
+      return;
+    }
     var b = e.target.closest(".tg");
     if (!b) return;
     var q = QUESTS[parseInt(b.getAttribute("data-i"), 10)];
@@ -2197,6 +2217,12 @@ QUESTS.forEach(function (q) { var x = RECX[q.n]; if (x) q.rec = (q.rec ? q.rec +
   window.OSRSQuest = {
     get: function () { return state; },
     keys: SK.slice(),
+    focus: function (n) {
+      var q = QUESTS.filter(function (z) { return z.n === n; })[0]; if (!q) return;
+      ui.st = ui.type = ui.diff = ui.region = ui.xp = ui.safe = "all"; ui.text = q.n;
+      var inp = document.getElementById("qSearch"); if (inp) inp.value = q.n;
+      openSet[q.i] = 1; render();
+    },
     setDone: function (n, v) {
       if (!n) return;
       if (v) state.done[n] = 1; else delete state.done[n];
@@ -7368,7 +7394,7 @@ d.setAttribute("data-g", g.t);
   }
   document.addEventListener("osrs-live", function () { if (heroApi && heroApi.cv.isConnected) heroApi.update(); });
   function stat(p, v, l) { return '<div class="stat"><span class="rg2" style="--p:' + p.toFixed(3) + '"></span><div><b>' + v + "</b><span>" + esc(l) + "</span></div></div>"; }
-  var HOMEBL = [["doel", "Mijn doel"], ["quests", "Quests die je nu kunt doen"], ["prijs", "Prijsmelding"], ["timers", "Timers"], ["train", "Train hierna"], ["snel", "Snel naar"]], HBKEY = "osrs-gids-home-layout", homeEdit = false;
+  var HOMEBL = [["waar", "Waar was ik?"], ["doel", "Mijn doel"], ["quests", "Quests die je nu kunt doen"], ["prijs", "Prijsmelding"], ["timers", "Timers"], ["train", "Train hierna"], ["snel", "Snel naar"]], HBKEY = "osrs-gids-home-layout", homeEdit = false;
   /* indeling van het startscherm: volgorde en verborgen blokken, per gebruiker bewaard */
   function tmTxt(t) {
     var mn = Math.ceil((t - Date.now()) / 60000);
@@ -7383,13 +7409,15 @@ d.setAttribute("data-g", g.t);
     if (vol && !home.hidden) renderHome(false);
   }, 20000);
   window.addEventListener("osrs-timers", function () { if (!home.hidden) renderHome(false); });
+  window.addEventListener("osrs-waar", function () { if (!home.hidden) renderHome(false); });
   function homeLayout() {
-    var ids = HOMEBL.map(function (b) { return b[0]; }), order = ["doel", "quests", "prijs", "timers", "train", "snel"], off = ["train", "snel"];
+    var ids = HOMEBL.map(function (b) { return b[0]; }), order = ["waar", "doel", "quests", "prijs", "timers", "train", "snel"], off = ["train", "snel"];
     try {
       var r = JSON.parse(localStorage.getItem(HBKEY) || "null");
       if (r && Array.isArray(r.order) && Array.isArray(r.off)) {
         order = r.order.filter(function (x, i, arr) { return ids.indexOf(x) >= 0 && arr.indexOf(x) === i; });
         off = r.off.filter(function (x, i, arr) { return ids.indexOf(x) >= 0 && arr.indexOf(x) === i; });
+        if (order.indexOf("waar") < 0 && off.indexOf("waar") < 0) order.unshift("waar");
         ids.forEach(function (x) { if (order.indexOf(x) < 0) order.push(x); });
       }
     } catch (e) {}
@@ -7480,7 +7508,10 @@ d.setAttribute("data-g", g.t);
       if (TL.length > 5) c5 += '<button type="button" class="btn ghost" data-go="dagelijks">Alle ' + TL.length + " timers</button>";
     }
     c5 += "</div>";
-    var BL = { doel: c0, quests: c2, prijs: c4, timers: c5, train: c1, snel: c3 }, L = homeLayout(), cols = "";
+    var WB = window.OSRSWaar && window.OSRSWaar.laatste ? window.OSRSWaar.laatste() : null, c6 = "";
+    if (WB) c6 = '<div class="pn"><h3>' + icon("scroll") + 'Waar was ik?</h3><div class="wb-home"><b class="wb-q">' + esc(WB.n) + '</b><p class="wb-note">' + esc(WB.t) + '</p><span class="loc">Bewaard ' + esc(window.OSRSWaar.tijd(WB.d)) + '</span>' +
+      '<div class="btnrow"><button type="button" class="btn" data-wvz="' + esc(WB.n) + '">Verder met deze quest</button><button type="button" class="btn ghost" data-wwis="' + esc(WB.n) + '">Klaar, wissen</button></div></div></div>';
+    var BL = { waar: c6, doel: c0, quests: c2, prijs: c4, timers: c5, train: c1, snel: c3 }, L = homeLayout(), cols = "";
     L.order.forEach(function (id) {
       if (L.off.indexOf(id) >= 0 || !BL[id]) return;
       var tools = homeEdit ? '<div class="hbtools"><span class="hbgrip" aria-hidden="true">&#8942;&#8942; Sleep</span><button type="button" data-hbm="-1" aria-label="' + esc(homeName(id)) + ' eerder zetten">&#9664;</button><button type="button" data-hbm="1" aria-label="' + esc(homeName(id)) + ' later zetten">&#9654;</button><button type="button" data-hbx="1" aria-label="' + esc(homeName(id)) + ' verbergen">Verberg</button></div>' : "";
@@ -10367,4 +10398,46 @@ window.OSRSPath = (function () {
 .kic { display: flex; align-items: center; justify-content: center; box-sizing: border-box; width: 22px; height: 22px; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,.45); }
 .kic img { width: 18px; height: 18px; object-fit: contain; }
 .kic.ok { background: rgba(14,20,28,.78) !important; border-color: rgba(255,255,255,.85); }
+</style>
+<script>
+/* Waar was ik? (0.5.24): een korte notitie per quest, alleen op deze pc bewaard. Het Overzicht toont de laatste notitie. */
+(function () {
+  var KEY = "osrs-gids-waar", data = {};
+  try { var r = JSON.parse(localStorage.getItem(KEY) || "{}"); if (r && typeof r === "object") data = r; } catch (e) {}
+  function bewaar() { try { localStorage.setItem(KEY, JSON.stringify(data)); } catch (e) {} try { window.dispatchEvent(new Event("osrs-waar")); } catch (e) {} }
+  function tijd(ts) {
+    var d = new Date(+ts || Date.now());
+    return d.toLocaleDateString("nl-NL", { day: "numeric", month: "long" }) + " om " + d.toLocaleTimeString("nl-NL", { hour: "2-digit", minute: "2-digit" });
+  }
+  window.OSRSWaar = {
+    get: function (n) { var w = Object.prototype.hasOwnProperty.call(data, n) ? data[n] : null; return w && w.t ? w : null; },
+    set: function (n, t) { t = String(t == null ? "" : t).trim().slice(0, 500); if (!n) return; if (!t) delete data[n]; else data[n] = { t: t, d: Date.now() }; bewaar(); },
+    wis: function (n) { delete data[n]; bewaar(); },
+    laatste: function () { var best = null; Object.keys(data).forEach(function (n) { var w = data[n]; if (w && w.t && (!best || w.d > best.d)) best = { n: n, t: w.t, d: w.d }; }); return best; },
+    tijd: tijd
+  };
+  document.addEventListener("click", function (e) {
+    var v = e.target.closest && e.target.closest("[data-wvz]"), w = e.target.closest && e.target.closest("[data-wwis]");
+    if (v) { var n = v.getAttribute("data-wvz"); if (window.OSRSShell) window.OSRSShell.go("quests"); setTimeout(function () { if (window.OSRSQuest && window.OSRSQuest.focus) window.OSRSQuest.focus(n); }, 80); var t = document.getElementById("wbToast"); if (t) t.remove(); }
+    else if (w) window.OSRSWaar.wis(w.getAttribute("data-wwis"));
+  });
+  /* een herinnering bij het openen van de app, één keer per start */
+  setTimeout(function () {
+    var l = window.OSRSWaar.laatste(); if (!l || document.getElementById("wbToast")) return;
+    var t = document.createElement("div"); t.id = "wbToast"; t.className = "wb-toast"; t.setAttribute("role", "status");
+    t.innerHTML = '<span>Je was bezig met <b></b>.</span><button type="button" class="btn" data-wvz="">Verder</button><button type="button" class="btn ghost" aria-label="Sluiten">Sluiten</button>';
+    t.querySelector("b").textContent = l.n; t.querySelector("[data-wvz]").setAttribute("data-wvz", l.n);
+    t.querySelector(".ghost").addEventListener("click", function () { t.remove(); });
+    document.body.appendChild(t); setTimeout(function () { if (t.parentNode) t.remove(); }, 15000);
+  }, 4000);
+})();
+</script>
+<style>
+.wb-badge { font-size: 12px; font-weight: 700; color: #1a1405; background: var(--gold, #f2c14e); padding: 2px 8px; border-radius: 999px; margin-left: 6px; }
+.wb .wb-l { display: block; font-weight: 600; margin-bottom: 6px; }
+.wb .wb-t { width: 100%; box-sizing: border-box; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--rule, #3a4d68); background: transparent; color: inherit; font: inherit; line-height: 1.5; resize: vertical; }
+.wb .wb-r { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 8px; }
+.wb-home .wb-q { display: block; font-size: 1.1rem; margin-bottom: 4px; }
+.wb-home .wb-note { margin: 4px 0 8px; white-space: pre-wrap; line-height: 1.5; }
+.wb-toast { position: fixed; right: 20px; bottom: 20px; z-index: 50; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; max-width: 420px; padding: 12px 16px; border-radius: 12px; border: 2px solid var(--gold, #f2c14e); background: #172233; color: #e7edf5; box-shadow: 0 6px 24px rgba(0,0,0,.5); }
 </style>
