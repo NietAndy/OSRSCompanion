@@ -259,6 +259,8 @@ details.qc > summary::-webkit-details-marker { display: none; }
 .gsvg { width: 100%; height: auto; max-width: 720px; color: var(--ink); display: block; }
 .gleg { font-size: .85rem; margin: 4px 0; }
 .gchart { margin-left: 8px; }
+.gchl { display: inline-flex; align-items: center; gap: 8px; min-height: 36px; margin: 0 0 8px; font-size: 14px; cursor: pointer; }
+.gchl input { width: 18px; height: 18px; }
 .gal { font-size: .9rem; }
 .myp { font-size: .85rem; }
 .myp input { width: 8em; padding: 3px 6px; }
@@ -2817,6 +2819,7 @@ var GE_ALL = [[10344,"3rd age amulet",1,30300,8,1],[20011,"3rd age axe",1,33000,
   /* Live prijzen en prijsgrafiek (alleen in de app, alleen na een klik). Bron: prijs-API van de OSRS Wiki. */
   var CHART = !!(window.osrsWin && window.osrsWin.prijzen);
   var LKEY = "osrs-gids-live", chartId = 0, chartStep = 1, SERIES = {};
+  var chartHL = false; try { chartHL = localStorage.getItem("osrs-gids-chart-hl") === "1"; } catch (e) {}
   var PERIODS = [["1 dag", "5m", 288], ["1 week", "1h", 168], ["1 maand", "6h", 124], ["1 jaar", "24h", 365]];
   function applyLive(map, ts) {
     var n = 0;
@@ -2981,7 +2984,7 @@ var GE_ALL = [[10344,"3rd age amulet",1,30300,8,1],[20011,"3rd age axe",1,33000,
   function drawChart() {
     var box = document.querySelector("#geBody .gcw"); if (!box) return;
     var per = PERIODS[chartStep], key = chartId + "|" + per[1];
-    var tabs = '<div class="gcp" role="group" aria-label="Periode">' + PERIODS.map(function (p, i) { return '<button type="button" class="btn" data-p="' + i + '" aria-pressed="' + (i === chartStep) + '">' + p[0] + "</button>"; }).join("") + "</div>";
+    var tabs = '<div class="gcp" role="group" aria-label="Periode">' + PERIODS.map(function (p, i) { return '<button type="button" class="btn" data-p="' + i + '" aria-pressed="' + (i === chartStep) + '">' + p[0] + "</button>"; }).join("") + '</div><label class="gchl"><input type="checkbox" id="gcHL"' + (chartHL ? " checked" : "") + '> Toon ook hoog en laag</label>';
     function toon(html) { box.innerHTML = tabs + html; }
     var rows = SERIES[key];
     if (!rows) {
@@ -2999,14 +3002,16 @@ var GE_ALL = [[10344,"3rd age amulet",1,30300,8,1],[20011,"3rd age axe",1,33000,
     }
     var pts = rows.filter(function (x) { return x.hi > 0 || x.lo > 0; });
     if (pts.length < 2) { toon('<p class="loc">Te weinig handel om een grafiek te tonen voor deze periode.</p>'); return; }
+    function mid(x) { return x.hi > 0 && x.lo > 0 ? (x.hi + x.lo) / 2 : (x.hi > 0 ? x.hi : x.lo); }
     var W = 640, H = 230, L = 54, R = 10, T = 10, B = 24, lo = Infinity, hi = -Infinity;
-    pts.forEach(function (x) { [x.hi, x.lo].forEach(function (v) { if (v > 0) { if (v < lo) lo = v; if (v > hi) hi = v; } }); });
+    pts.forEach(function (x) { (chartHL ? [x.hi, x.lo] : [mid(x)]).forEach(function (v) { if (v > 0) { if (v < lo) lo = v; if (v > hi) hi = v; } }); });
     if (hi === lo) { hi += 1; lo = Math.max(0, lo - 1); }
     var pad = (hi - lo) * 0.06; hi += pad; lo = Math.max(0, lo - pad);
     var t0 = pts[0].t, t1 = pts[pts.length - 1].t;
     function X(t) { return L + (t - t0) / Math.max(1, t1 - t0) * (W - L - R); }
     function Y(v) { return T + (hi - v) / (hi - lo) * (H - T - B); }
     function lijn(f) { var d = "", pen = false; pts.forEach(function (x) { var v = x[f]; if (!(v > 0)) { pen = false; return; } d += (pen ? "L" : "M") + X(x.t).toFixed(1) + " " + Y(v).toFixed(1) + " "; pen = true; }); return d; }
+    function lijnMid() { var d = ""; pts.forEach(function (x, i) { d += (i ? "L" : "M") + X(x.t).toFixed(1) + " " + Y(mid(x)).toFixed(1) + " "; }); return d; }
     var g = "";
     for (var k = 0; k <= 4; k++) { var v = lo + (hi - lo) * k / 4, y = Y(v); g += '<line x1="' + L + '" x2="' + (W - R) + '" y1="' + y.toFixed(1) + '" y2="' + y.toFixed(1) + '" stroke="currentColor" opacity=".15"/><text x="' + (L - 6) + '" y="' + (y + 4).toFixed(1) + '" text-anchor="end" font-size="11" fill="currentColor" opacity=".75">' + kort(v) + "</text>"; }
     for (var m = 0; m <= 3; m++) {
@@ -3019,10 +3024,12 @@ var GE_ALL = [[10344,"3rd age amulet",1,30300,8,1],[20011,"3rd age axe",1,33000,
     var hs = pts.map(function (x) { return x.hi; }).filter(function (v) { return v > 0; }), ls = pts.map(function (x) { return x.lo; }).filter(function (v) { return v > 0; });
     var eerst = hs.length ? hs[0] : ls[0], laatst = hs.length ? hs[hs.length - 1] : ls[ls.length - 1], ver = eerst ? Math.round((laatst - eerst) / eerst * 1000) / 10 : 0;
     var minL = ls.length ? Math.min.apply(null, ls) : Math.min.apply(null, hs), maxH = hs.length ? Math.max.apply(null, hs) : Math.max.apply(null, ls);
-    toon('<svg class="gsvg" viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="Prijsgrafiek, hoge en lage prijs">' + g +
-      '<path d="' + lijn("lo") + '" fill="none" stroke="var(--teal, #3dd0c0)" stroke-width="2"/><path d="' + lijn("hi") + '" fill="none" stroke="var(--gold, #f2c14e)" stroke-width="2"/>' +
+    toon('<svg class="gsvg" viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="' + (chartHL ? "Prijsgrafiek, hoge en lage prijs" : "Prijsgrafiek, gemiddelde prijs") + '">' + g +
+      (chartHL ? '<path d="' + lijn("lo") + '" fill="none" stroke="var(--teal, #3dd0c0)" stroke-width="2"/><path d="' + lijn("hi") + '" fill="none" stroke="var(--gold, #f2c14e)" stroke-width="2"/>'
+        : '<path d="' + lijnMid() + '" fill="none" stroke="var(--gold, #f2c14e)" stroke-width="2.5"/>') +
       '<line id="gcx" x1="0" x2="0" y1="' + T + '" y2="' + (H - B) + '" stroke="currentColor" opacity=".4" hidden/></svg>' +
-      '<p class="gleg"><span style="color:var(--gold,#f2c14e)">&#9632;</span> hoog (wat kopers betalen) <span style="color:var(--teal,#3dd0c0)">&#9632;</span> laag (wat verkopers krijgen) <span style="opacity:.7">Streeplijn: gemiddelde. Gouden vlak: normaal bereik.</span></p>' +
+      '<p class="gleg">' + (chartHL ? '<span style="color:var(--gold,#f2c14e)">&#9632;</span> hoog (wat kopers betalen) <span style="color:var(--teal,#3dd0c0)">&#9632;</span> laag (wat verkopers krijgen) '
+        : '<span style="color:var(--gold,#f2c14e)">&#9632;</span> prijs (het midden van hoog en laag) ') + '<span style="opacity:.7">Streeplijn: gemiddelde van deze periode. Gouden vlak: normaal bereik.</span></p>' +
       '<p class="loc" id="gcro">Beweeg over de grafiek voor de prijs op dat moment.</p>' +
       "<p><b>Periode:</b> laagste " + gp(Math.round(minL)) + " gp, hoogste " + gp(Math.round(maxH)) + " gp, verandering " + (ver > 0 ? "+" : "") + String(ver).replace(".", ",") + "%.</p>" + zicht.html);
     if (zicht.html) momentLaad(chartId);
@@ -3031,7 +3038,7 @@ var GE_ALL = [[10344,"3rd age amulet",1,30300,8,1],[20011,"3rd age axe",1,33000,
       var rc = svg.getBoundingClientRect(), px = (e.clientX - rc.left) / rc.width * W, best = pts[0], bd = 1e9;
       pts.forEach(function (x) { var dd2 = Math.abs(X(x.t) - px); if (dd2 < bd) { bd = dd2; best = x; } });
       var ln = box.querySelector("#gcx"); ln.setAttribute("x1", X(best.t).toFixed(1)); ln.setAttribute("x2", X(best.t).toFixed(1)); ln.removeAttribute("hidden");
-      box.querySelector("#gcro").textContent = new Date(best.t * 1000).toLocaleString("nl-NL", { dateStyle: "medium", timeStyle: "short" }) + ": hoog " + (best.hi > 0 ? gp(best.hi) : "-") + ", laag " + (best.lo > 0 ? gp(best.lo) : "-") + ", verhandeld " + gp(best.vh + best.vl) + " stuks.";
+      box.querySelector("#gcro").textContent = new Date(best.t * 1000).toLocaleString("nl-NL", { dateStyle: "medium", timeStyle: "short" }) + ": prijs " + gp(Math.round(mid(best))) + ", hoog " + (best.hi > 0 ? gp(best.hi) : "-") + ", laag " + (best.lo > 0 ? gp(best.lo) : "-") + ", verhandeld " + gp(best.vh + best.vl) + " stuks.";
     });
   }
   document.getElementById("geBody").addEventListener("click", function (e) {
@@ -3041,6 +3048,9 @@ var GE_ALL = [[10344,"3rd age amulet",1,30300,8,1],[20011,"3rd age axe",1,33000,
     if (b) { var id = parseInt(b.getAttribute("data-id"), 10); chartId = chartId === id ? 0 : id; render(); return; }
     var p = e.target.closest && e.target.closest(".gcp button");
     if (p) { chartStep = parseInt(p.getAttribute("data-p"), 10) || 0; drawChart(); }
+  });
+  document.getElementById("geBody").addEventListener("change", function (e) {
+    if (e.target && e.target.id === "gcHL") { chartHL = e.target.checked; try { localStorage.setItem("osrs-gids-chart-hl", chartHL ? "1" : "0"); } catch (x) {} drawChart(); }
   });
   function render() {
     var q = el("geSearch").value.trim().toLowerCase(), cat = el("geCat").value, max = parseInt(el("geMax").value, 10) || 0, sort = el("geSort").value, src = el("geSrc").value, ty = el("geType").value;
