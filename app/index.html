@@ -2005,20 +2005,21 @@ QUESTS.forEach(function (q) { var x = RECX[q.n]; if (x) q.rec = (q.rec ? q.rec +
   function waarRij(q) {
     var W = window.OSRSWaar, w = waarGet(q.n), tijd = w && W.tijd ? W.tijd(w.d) : "";
     var its = W && W.items ? W.items(q.it) : [], stp = W && W.stappen ? W.stappen(q.n) : [];
-    function lijst(naam, titel, arr, gedaan, lab) {
-      if (!arr.length) return "";
-      return '<fieldset class="wb-f"><legend>' + titel + "</legend>" + arr.map(function (x, i) {
-        var t = lab(x);
-        return '<label class="wb-c"><input type="checkbox" class="wb-ck" data-k="' + naam + '" data-i="' + i + '"' + (gedaan.indexOf(i) >= 0 ? " checked" : "") + '><span' + (x && x.v && x.v !== x.l ? ' title="' + esc(x.v) + '"' : "") + ">" + esc(t) + "</span></label>";
-      }).join("") + "</fieldset>";
+    var laatste = w && w.st.length ? Math.max.apply(null, w.st) : -1, h = '<dt>Waar was ik?</dt><dd class="wb">';
+    if (its.length) {
+      h += '<fieldset class="wb-f"><legend>Vink aan wat je al bij je hebt</legend><div class="wb-vak">' + its.map(function (x, i) {
+        return '<label class="wb-vk"><input type="checkbox" class="wb-ck" data-k="it" data-i="' + i + '"' + (w && w.it.indexOf(i) >= 0 ? " checked" : "") + '><span' + (x.v !== x.l ? ' title="' + esc(x.v) + '"' : "") + ">" + esc(x.l) + "</span></label>";
+      }).join("") + "</div></fieldset>";
     }
-    return '<dt>Waar was ik?</dt><dd class="wb">' +
-      lijst("st", "Welke stappen heb je gedaan?", stp, w ? w.st : [], function (x) { return x; }) +
-      lijst("it", "Wat heb je al bij je?", its, w ? w.it : [], function (x) { return x.l; }) +
-      '<label class="wb-l" for="wb-' + q.i + '">Eigen notitie (mag leeg)</label>' +
-      '<textarea id="wb-' + q.i + '" class="wb-t" rows="3" maxlength="500" data-q="' + esc(q.n) + '" placeholder="Bijvoorbeeld: eerst de zagerij in Varrock, dan terug naar Yarlo.">' + esc(w ? w.t : "") + "</textarea>" +
+    if (stp.length) {
+      h += '<div class="wb-sl"><label class="wb-l" for="wbs-' + q.i + '">Laatste stap die ik deed</label><select id="wbs-' + q.i + '" class="wb-sel"><option value="-1">Nog niet begonnen</option>' +
+        stp.map(function (x, i) { var t = (i + 1) + ". " + x; return '<option value="' + i + '"' + (i === laatste ? " selected" : "") + ">" + esc(t.length > 80 ? t.slice(0, 77) + "..." : t) + "</option>"; }).join("") + "</select></div>";
+    }
+    h += '<label class="wb-l" for="wb-' + q.i + '">Eigen notitie (mag leeg)</label>' +
+      '<textarea id="wb-' + q.i + '" class="wb-t" rows="2" maxlength="500" data-q="' + esc(q.n) + '" placeholder="Bijvoorbeeld: eerst de zagerij in Varrock.">' + esc(w ? w.t : "") + "</textarea>" +
       '<div class="wb-r"><button type="button" class="btn wb-save" data-q="' + esc(q.n) + '">Bewaar</button>' +
       (w ? '<button type="button" class="btn ghost wb-del" data-q="' + esc(q.n) + '">Wis</button><span class="loc">Bewaard ' + esc(tijd) + "</span>" : "") + "</div></dd>";
+    return h;
   }
   function card(q, ev, qp) {
     var done = !!state.done[q.n];
@@ -2195,7 +2196,9 @@ QUESTS.forEach(function (q) { var x = RECX[q.n]; if (x) q.rec = (q.rec ? q.rec +
       if (W) {
         if (ws) {
           var dd = ws.closest(".wb"), ta = dd && dd.querySelector(".wb-t"), pick = function (k) { var r = []; if (dd) Array.prototype.forEach.call(dd.querySelectorAll('.wb-ck[data-k="' + k + '"]:checked'), function (c) { r.push(+c.getAttribute("data-i")); }); return r; };
-          W.set(wn, { t: ta ? ta.value : "", it: pick("it"), st: pick("st") });
+          var sel = dd && dd.querySelector(".wb-sel"), sv = sel ? parseInt(sel.value, 10) : -1, stl = [], z;
+          for (z = 0; z <= sv; z++) stl.push(z);
+          W.set(wn, { t: ta ? ta.value : "", it: pick("it"), st: stl });
         } else W.wis(wn);
         render();
       }
@@ -10479,12 +10482,8 @@ window.OSRSPath = (function () {
   });
   /* een herinnering bij het openen van de app, één keer per start */
   setTimeout(function () {
-    var l = window.OSRSWaar.laatste(); if (!l || document.getElementById("wbToast")) return;
-    var t = document.createElement("div"); t.id = "wbToast"; t.className = "wb-toast"; t.setAttribute("role", "status");
-    t.innerHTML = '<span>Je was bezig met <b></b>.</span><button type="button" class="btn" data-wvz="">Verder</button><button type="button" class="btn ghost" aria-label="Sluiten">Sluiten</button>';
-    t.querySelector("b").textContent = l.n; t.querySelector("[data-wvz]").setAttribute("data-wvz", l.n);
-    t.querySelector(".ghost").addEventListener("click", function () { t.remove(); });
-    document.body.appendChild(t); setTimeout(function () { if (t.parentNode) t.remove(); }, 15000);
+    var l = window.OSRSWaar.laatste(); if (!l || document.getElementById("wbToast") || !window.OSRSMelding) return;
+    window.OSRSMelding({ id: "wbToast", tekst: "Je was bezig met " + l.n + ".", knoppen: [{ t: "Verder", a: { "data-wvz": l.n } }] });
   }, 4000);
 })();
 </script>
@@ -10496,6 +10495,13 @@ window.OSRSPath = (function () {
 .wb-home .wb-q { display: block; font-size: 1.1rem; margin-bottom: 6px; }
 .wb .wb-f { margin: 0 0 12px; padding: 0; border: 0; }
 .wb .wb-f legend { padding: 0; font-weight: 600; margin-bottom: 6px; }
+.wb .wb-vak { display: flex; flex-wrap: wrap; gap: 8px; }
+.wb .wb-vk { display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 12px; border-radius: 999px; border: 1px solid var(--rule, #3a4d68); cursor: pointer; font-size: 14px; }
+.wb .wb-vk:has(input:checked) { background: #1f3a36; border-color: #3b8f86; color: #8fe4dc; }
+.wb .wb-vk input { width: 18px; height: 18px; accent-color: var(--gold, #f2c14e); }
+.wb .wb-sl { margin: 0 0 12px; }
+.wb .wb-sel { width: 100%; box-sizing: border-box; min-height: 44px; padding: 0 10px; border-radius: 10px; border: 1px solid var(--rule, #3a4d68); background: transparent; color: inherit; font: inherit; }
+.wb .wb-sel option { color: #111; }
 .wb .wb-c { display: flex; align-items: center; gap: 10px; min-height: 36px; cursor: pointer; }
 .wb .wb-c input { width: 20px; height: 20px; flex: none; accent-color: var(--gold, #f2c14e); }
 .wb-chips { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 8px 0; }
@@ -10504,5 +10510,71 @@ window.OSRSPath = (function () {
 .wb-chip.ja { background: #1f3a36; color: #8fe4dc; }
 .wb-chip.nee { background: #3b2c14; color: #f6cf7a; }
 .wb-home .wb-note { margin: 4px 0 8px; white-space: pre-wrap; line-height: 1.5; }
-.wb-toast { position: fixed; right: 20px; bottom: 20px; z-index: 50; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; max-width: 420px; padding: 12px 16px; border-radius: 12px; border: 2px solid var(--gold, #f2c14e); background: #172233; color: #e7edf5; box-shadow: 0 6px 24px rgba(0,0,0,.5); }
+.mld-wrap { position: fixed; right: 20px; bottom: 20px; z-index: 50; display: flex; flex-direction: column; align-items: flex-end; gap: 10px; }
+.wb-toast { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; max-width: 420px; padding: 12px 16px; border-radius: 12px; border: 2px solid var(--gold, #f2c14e); background: #172233; color: #e7edf5; box-shadow: 0 6px 24px rgba(0,0,0,.5); }
 </style>
+<script>
+/* Meldingen (0.5.24): een kader rechtsonder en eventueel een Windows-melding. Daarop bouwen "Je kunt weer iets doen" en de weeksamenvatting. */
+(function () {
+  window.OSRSMelding = function (o) {
+    var w = document.getElementById("mldWrap");
+    if (!w) { w = document.createElement("div"); w.id = "mldWrap"; w.className = "mld-wrap"; document.body.appendChild(w); }
+    var oud = o.id && document.getElementById(o.id); if (oud) oud.remove();
+    var t = document.createElement("div"); t.className = "wb-toast"; if (o.id) t.id = o.id; t.setAttribute("role", "status");
+    var sp = document.createElement("span"); sp.textContent = o.tekst; t.appendChild(sp);
+    (o.knoppen || []).forEach(function (k) {
+      var b = document.createElement("button"); b.type = "button"; b.className = "btn"; b.textContent = k.t;
+      Object.keys(k.a || {}).forEach(function (n) { b.setAttribute(n, k.a[n]); });
+      if (k.klik) b.addEventListener("click", function () { k.klik(); t.remove(); });
+      t.appendChild(b);
+    });
+    var x = document.createElement("button"); x.type = "button"; x.className = "btn ghost"; x.textContent = "Sluiten"; x.setAttribute("aria-label", "Sluiten");
+    x.addEventListener("click", function () { t.remove(); }); t.appendChild(x);
+    w.appendChild(t); setTimeout(function () { if (t.parentNode) t.remove(); }, o.sec || 20000);
+    if (o.windows) { try { if (window.Notification && Notification.permission === "granted") new Notification("Gielinor Guide", { body: o.tekst }); } catch (e) {} }
+  };
+  function nl(n) { return Math.round(n).toLocaleString("nl-NL"); }
+  function ga(pagina) { return function () { if (window.OSRSShell) window.OSRSShell.go(pagina); }; }
+
+  /* Je kunt weer iets doen: na een wijziging in je levels of quests kijken we welke quests er open zijn gegaan */
+  var OKEY = "osrs-gids-open-gezien", ot = null;
+  function openNu() { try { var Q = window.OSRSQuest; return Q && Q.evalAll ? Q.evalAll().filter(function (e) { return e.st === "open"; }).map(function (e) { return e.n; }) : null; } catch (e) { return null; } }
+  function openEerder() { try { var a = JSON.parse(localStorage.getItem(OKEY) || "null"); return Array.isArray(a) ? a : null; } catch (e) { return null; } }
+  function openCheck(stil) {
+    var nu = openNu(); if (!nu) return;
+    var prev = openEerder();
+    try { localStorage.setItem(OKEY, JSON.stringify(nu)); } catch (e) {}
+    if (stil || !prev) return;
+    var nieuw = nu.filter(function (n) { return prev.indexOf(n) < 0; });
+    if (!nieuw.length) return;
+    var lijst = nieuw.length === 1 ? nieuw[0] : nieuw.length <= 3 ? nieuw.slice(0, -1).join(", ") + " en " + nieuw[nieuw.length - 1] : nieuw.slice(0, 3).join(", ") + " en " + (nieuw.length - 3) + " andere";
+    window.OSRSMelding({ id: "opendoenToast", tekst: "Met je nieuwe levels kun je nu starten met " + lijst + ".", windows: true, knoppen: [{ t: "Bekijk de quests", klik: ga("quests") }] });
+  }
+  window.addEventListener("osrs-state", function () { clearTimeout(ot); ot = setTimeout(function () { openCheck(false); }, 2000); });
+  setTimeout(function () { openCheck(true); }, 2500);
+
+  /* Weeksamenvatting: wat je xp deze week deed, uit de momentopnames van de voortgang over tijd. Hooguit één keer per week. */
+  var WKEY = "osrs-gids-week", DAG = 864e5;
+  function momentopnames() { try { var a = JSON.parse(localStorage.getItem("osrs-gids-hs-snap") || "[]"); return Array.isArray(a) ? a : []; } catch (e) { return []; } }
+  window.OSRSWeek = function () {
+    var a = momentopnames(); if (a.length < 2) return null;
+    var last = a[a.length - 1], nu = last.c || last.t, basis = null;
+    a.forEach(function (x) { if (x.n === last.n && x.t <= nu - 5 * DAG && (!basis || Math.abs(x.t - (nu - 7 * DAG)) < Math.abs(basis.t - (nu - 7 * DAG)))) basis = x; });
+    if (!basis) return null;
+    var tot = 0, top = null, topv = 0;
+    Object.keys(last.xp || {}).forEach(function (k) {
+      if (/^overall$/i.test(k)) return;
+      var d = (last.xp[k] || 0) - ((basis.xp || {})[k] || 0);
+      if (d > 0) { tot += d; if (d > topv) { topv = d; top = k; } }
+    });
+    return tot > 0 ? { totaal: tot, top: top, dagen: Math.round((nu - basis.t) / DAG) } : null;
+  };
+  setTimeout(function () {
+    var laatst = 0; try { laatst = +localStorage.getItem(WKEY) || 0; } catch (e) {}
+    if (laatst && Date.now() - laatst < 7 * DAG) return;
+    var w = window.OSRSWeek(); if (!w) return;
+    try { localStorage.setItem(WKEY, String(Date.now())); } catch (e) {}
+    window.OSRSMelding({ id: "weekToast", tekst: "Deze week heb je " + nl(w.totaal) + " xp gewonnen, het meest in " + w.top + ".", windows: true, sec: 30000, knoppen: [{ t: "Bekijk", klik: ga("me") }] });
+  }, 6000);
+})();
+</script>

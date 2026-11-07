@@ -33,12 +33,12 @@ eis('en de notitie ook',await p.evaluate(()=>window.OSRSWaar.get("Daddy's Home")
 await p.evaluate(()=>window.OSRSShell.go('quests'));await p.waitForTimeout(400);
 await p.fill('#qSearch',"Cook's Assistant");await p.waitForTimeout(500);
 await p.click('#qList .qc summary');await p.waitForTimeout(300);
-const nSt=await p.locator('#qList .wb-ck[data-k="st"]').count();
-eis("een quest met een route heeft een aanvinklijst voor stappen",nSt>=3,'stappen='+nSt);
-await p.locator('#qList .wb-ck[data-k="st"]').nth(0).check();await p.locator('#qList .wb-ck[data-k="st"]').nth(1).check();
+const nSel=await p.locator('#qList .wb-sel').count();
+eis("een quest met een route heeft een keuzelijst voor de laatste stap",nSel>=1,'lijsten='+nSel);
+await p.locator('#qList .wb-sel').first().selectOption('1');
 await p.click('#qList .wb-save');await p.waitForTimeout(500);
 await p.evaluate(()=>window.OSRSShell.go('home'));await p.waitForTimeout(700);
-eis('het Overzicht toont de voortgang in stappen',await p.evaluate((n)=>{const e=document.querySelector('[data-blk="waar"]');return !!e&&/2 van \d+ stappen gedaan/.test(e.innerText)&&!!e.querySelector('.hbar')},nSt));
+eis('het Overzicht toont de voortgang in stappen',await p.evaluate((n)=>{const e=document.querySelector('[data-blk="waar"]');return !!e&&/2 van \d+ stappen gedaan/.test(e.innerText)&&!!e.querySelector('.hbar')}));
 await p.locator('[data-blk="waar"]').screenshot({path:'/tmp/claude-0/-home-user-OSRSCompanion/82568623-69e7-5bfc-9ec1-bf3f2fb623ae/scratchpad/t203-home-stappen.png'});
 await p.evaluate(()=>window.OSRSWaar.set("Rag and Bone Man II","Eerst de potten halen."));
 await p.reload();await p.waitForTimeout(6500);
