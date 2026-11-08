@@ -4,7 +4,7 @@ name: Bugs naar issues
 # met een uitwerking door GitHub Models (gratis). Zie .github/scripts/bugs_naar_issues.py.
 on:
   schedule:
-    - cron: "*/5 * * * *"
+    - cron: "0 11 * * *"   # 1x per dag, 12:00 NL-tijd in de winter (13:00 in de zomer)
   workflow_dispatch:     # knop "Run workflow": nu meteen controleren
 
 permissions:
