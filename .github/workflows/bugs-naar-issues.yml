@@ -1,6 +1,6 @@
 name: Bugs naar issues
 
-# Elke 5 minuten (het snelste dat GitHub toestaat; bij drukte start GitHub een geplande taak soms later): nieuwe meldingen uit #bugs op Discord worden een issue met het label "bug",
+# Eén keer per dag rond 12:00 (NL-winter): nieuwe meldingen uit #bugs op Discord worden een issue met het label "bug",
 # met een uitwerking door GitHub Models (gratis). Zie .github/scripts/bugs_naar_issues.py.
 on:
   schedule:
