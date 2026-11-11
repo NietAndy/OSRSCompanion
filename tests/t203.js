@@ -1,0 +1,48 @@
+/* Waar was ik?: notitie bij een quest, badge, kaartje op het Overzicht, Verder-knop, wissen. */
+const {chromium}=require('playwright');
+(async()=>{const b=await chromium.launch();let fouten=0;const eis=(n,ok,x)=>{console.log((ok?'OK    ':'FOUT  ')+n+(x?' '+x:''));if(!ok)fouten++;};
+const ctx=await b.newContext({viewport:{width:1440,height:1100}});
+await ctx.addInitScript(()=>{window.osrsWin={titel(){},discordInfo:async()=>({ingesteld:false}),discordLogin:async()=>({})};
+  localStorage.setItem('osrs-gids-login','skip');localStorage.setItem('osrs-gids-tour','1');});
+const p=await ctx.newPage();const errs=[];p.on('pageerror',e=>errs.push(e.message));
+await p.goto('file://'+require('path').resolve(__dirname,'../app/index.html'));await p.waitForTimeout(2500);
+eis('zonder notitie: geen blok Waar was ik? op het Overzicht',await p.evaluate(()=>!document.querySelector('[data-blk="waar"]')));
+await p.evaluate(()=>window.OSRSShell.go('quests'));await p.waitForTimeout(500);
+await p.fill('#qSearch',"Daddy's Home");await p.waitForTimeout(500);
+await p.click('#qList .qc summary');await p.waitForTimeout(300);
+eis('bij de quest staat een notitieveld',await p.locator('#qList .wb-t').count()>=1&&await p.evaluate(()=>document.querySelector('#qList .wb-t').getAttribute('data-q'))==="Daddy's Home");
+eis('de spullen van de quest staan als aanvinklijst',await p.locator('#qList .wb-ck[data-k="it"]').count()>=3);
+await p.locator('#qList .wb-ck[data-k="it"]').nth(0).check();
+await p.fill('#qList .wb-t','Planks en hammer heb ik. Nog bolts of cloth kopen.');
+await p.click('#qList .wb-save');await p.waitForTimeout(500);
+eis('na bewaren staat er een badge Notitie in de lijst',await p.locator('#qList .wb-badge').count()>=1);
+eis('de notitie is bewaard',await p.evaluate(()=>window.OSRSWaar.get("Daddy's Home").t)==='Planks en hammer heb ik. Nog bolts of cloth kopen.');
+await p.evaluate(()=>window.OSRSShell.go('home'));await p.waitForTimeout(800);
+const blok=await p.evaluate(()=>{const e=document.querySelector('[data-blk="waar"]');return e?e.innerText:''});
+eis('het Overzicht toont het blok met quest en notitie',/Daddy's Home/.test(blok)&&/bolts of cloth/.test(blok),blok.slice(0,80).replace(/\n/g,' '));
+eis('het blok toont wat al bij je is (groen) en wat nog nodig is (geel)',await p.evaluate(()=>document.querySelectorAll('[data-blk="waar"] .wb-chip.ja').length===1&&document.querySelectorAll('[data-blk="waar"] .wb-chip.nee').length>=2));
+eis('het blok staat vooraan',await p.evaluate(()=>{const e=document.querySelector('#homeCols .pn');return !!e&&e.getAttribute('data-blk')==='waar'}));
+await p.locator('[data-blk="waar"]').screenshot({path:'/tmp/claude-0/-home-user-OSRSCompanion/82568623-69e7-5bfc-9ec1-bf3f2fb623ae/scratchpad/t203-home.png'});
+await p.click('[data-blk="waar"] [data-wvz]');await p.waitForTimeout(800);
+eis('Verder met deze quest opent Quests met de quest geopend',await p.evaluate(()=>document.getElementById('qSearch').value==="Daddy's Home"&&!!document.querySelector('#qList details[open] .wb-t')));
+await p.evaluate(()=>window.OSRSShell.go('home'));await p.waitForTimeout(600);
+await p.click('[data-blk="waar"] [data-wwis]');await p.waitForTimeout(500);
+eis('na wissen is het blok weg',await p.evaluate(()=>!document.querySelector('[data-blk="waar"]')));
+eis('en de notitie ook',await p.evaluate(()=>window.OSRSWaar.get("Daddy's Home")===null));
+// een quest met een route: stappen aanvinken en voortgang op het Overzicht
+await p.evaluate(()=>window.OSRSShell.go('quests'));await p.waitForTimeout(400);
+await p.fill('#qSearch',"Cook's Assistant");await p.waitForTimeout(500);
+await p.click('#qList .qc summary');await p.waitForTimeout(300);
+const nSel=await p.locator('#qList .wb-sel').count();
+eis("een quest met een route heeft een keuzelijst voor de laatste stap",nSel>=1,'lijsten='+nSel);
+await p.locator('#qList .wb-sel').first().selectOption('1');
+await p.click('#qList .wb-save');await p.waitForTimeout(500);
+await p.evaluate(()=>window.OSRSShell.go('home'));await p.waitForTimeout(700);
+eis('het Overzicht toont de voortgang in stappen',await p.evaluate((n)=>{const e=document.querySelector('[data-blk="waar"]');return !!e&&/2 van \d+ stappen gedaan/.test(e.innerText)&&!!e.querySelector('.hbar')}));
+await p.locator('[data-blk="waar"]').screenshot({path:'/tmp/claude-0/-home-user-OSRSCompanion/82568623-69e7-5bfc-9ec1-bf3f2fb623ae/scratchpad/t203-home-stappen.png'});
+await p.evaluate(()=>window.OSRSWaar.set("Rag and Bone Man II","Eerst de potten halen."));
+await p.reload();await p.waitForTimeout(6500);
+eis('bij het openen van de app staat een herinnering',await p.evaluate(()=>{const t=document.getElementById('wbToast');return !!t&&/Rag and Bone Man II/.test(t.innerText)}),await p.evaluate(()=>{const t=document.getElementById('wbToast');return t?t.innerText.replace(/\n/g,' '):'GEEN toast; laatste='+JSON.stringify(window.OSRSWaar.laatste())}));
+await p.screenshot({path:'/tmp/claude-0/-home-user-OSRSCompanion/82568623-69e7-5bfc-9ec1-bf3f2fb623ae/scratchpad/t203-toast.png'});
+eis('geen scriptfouten',errs.length===0,errs.join('|'));
+console.log(fouten?'\n'+fouten+' mislukt':'\nAlles gelukt');await b.close();process.exit(fouten?1:0)})()

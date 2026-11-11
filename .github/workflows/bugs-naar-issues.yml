@@ -1,10 +1,10 @@
 name: Bugs naar issues
 
-# Elke 5 minuten (het snelste dat GitHub toestaat; bij drukte start GitHub een geplande taak soms later): nieuwe meldingen uit #bugs op Discord worden een issue met het label "bug",
+# Eén keer per dag rond 12:00 (NL-winter): nieuwe meldingen uit #bugs op Discord worden een issue met het label "bug",
 # met een uitwerking door GitHub Models (gratis). Zie .github/scripts/bugs_naar_issues.py.
 on:
   schedule:
-    - cron: "*/5 * * * *"
+    - cron: "0 11 * * *"   # 1x per dag, 12:00 NL-tijd in de winter (13:00 in de zomer)
   workflow_dispatch:     # knop "Run workflow": nu meteen controleren
 
 permissions:

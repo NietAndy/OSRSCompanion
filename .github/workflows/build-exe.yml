@@ -107,5 +107,8 @@ jobs:
             echo "::error::Release $TAG is al gepubliceerd. Exe niet vervangen. Gebruik een nieuw versienummer (x.y.z.1)."
             exit 1
           fi
+          # Bestaat de draft al, dan de tekst verversen met de releasenotities van nu (anders blijft er oude tekst staan als de notities zijn aangepast)
+          tail -n +2 "RELEASE-NOTES-$VERSIE.md" | sed '1{/^$/d}' > body.md
+          gh release edit "$TAG" --notes-file body.md
           gh release upload "$TAG" "dist/Gielinor-Guide-$VERSIE.exe" --clobber
-          echo "Exe bij draft $TAG gezet."
+          echo "Exe bij draft $TAG gezet en de tekst ververst."
