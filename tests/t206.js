@@ -1,0 +1,33 @@
+/* 0.5.24: Slayer-hulp. */
+const {chromium}=require('playwright');
+(async()=>{const b=await chromium.launch();let fouten=0;const eis=(n,ok,x)=>{console.log((ok?'OK    ':'FOUT  ')+n+(x?' '+x:''));if(!ok)fouten++;};
+const ctx=await b.newContext({viewport:{width:1440,height:1000}});
+await ctx.addInitScript(()=>{window.osrsWin={titel(){},discordInfo:async()=>({ingesteld:false}),discordLogin:async()=>({})};
+  localStorage.setItem('osrs-gids-login','skip');localStorage.setItem('osrs-gids-tour','1');});
+const p=await ctx.newPage();const errs=[];p.on('pageerror',e=>errs.push(e.message));
+await p.goto('file://'+require('path').resolve(__dirname,'../app/index.html'));await p.waitForTimeout(2500);
+eis('Slayer-hulp staat in het menu',await p.locator('.nv[data-go="slayer"]').count()===1);
+await p.evaluate(()=>window.OSRSShell.go('slayer'));await p.waitForTimeout(500);
+eis('pagina is zichtbaar en de andere tabbladen niet',await p.evaluate(()=>!document.getElementById('slayer').hidden&&document.getElementById('quests').hidden));
+eis('bijna alle taken staan in de lijst',await p.evaluate(()=>document.querySelectorAll('#slT option').length>100));
+await p.evaluate(()=>{window.OSRSQuest.setLevel('Slayer',1);});
+await p.selectOption('#slT','Gargoyles');await p.waitForTimeout(200);
+let t=await p.textContent('#slOut');
+eis('Gargoyles: rock hammer en Nog niet bij Slayer 1',/Rock hammer/.test(t)&&/Nog niet/.test(t)&&/Slayer 75/.test(t),t.slice(0,160));
+await p.evaluate(()=>{['Slayer','Attack','Strength','Defence','Hitpoints','Ranged','Magic','Prayer'].forEach(k=>window.OSRSQuest.setLevel(k,90));window.OSRSQuest.setDone('Priest in Peril',true);});await p.waitForTimeout(300);await p.evaluate(()=>window.OSRSSlayer.toon());
+t=await p.textContent('#slOut');
+eis('Met hoge levels en Priest in Peril gedaan geen "Nog niet" meer bij Gargoyles',!/Nog niet/.test(t)&&/Je kunt dit nu/.test(t),t.slice(0,120));
+await p.selectOption('#slT','Aberrant spectres');await p.waitForTimeout(200);
+t=await p.textContent('#slOut');
+eis('Aberrant spectres vraagt Priest in Peril en Nose peg',/Priest in Peril/.test(t)&&/Nose peg/.test(t));
+await p.selectOption('#slM','Turael');await p.waitForTimeout(200);
+const n1=await p.evaluate(()=>document.querySelectorAll('#slT option').length);
+eis('filter op meester Turael verkleint de lijst',n1>5&&n1<60,String(n1));
+eis('uitleg over overslaan en blokkeren staat er',/blokkeren/.test(await p.textContent('#slayer'))&&/7 taken/.test(await p.textContent('#slayer')));
+await p.selectOption('#slM','all');await p.fill('#slQ','dragons');await p.waitForTimeout(300);
+eis('zoeken op dragons houdt de focus in het zoekveld',await p.evaluate(()=>document.activeElement&&document.activeElement.id==='slQ'));
+const kb=await p.evaluate(()=>document.querySelectorAll('.sl-map').length);
+await p.selectOption('#slT','Green dragons');await p.waitForTimeout(200);
+await p.screenshot({path:process.env.SHOT||'/tmp/t206.png'});
+eis('geen scriptfouten',errs.length===0,errs.join('|'));
+console.log(fouten?'\n'+fouten+' mislukt':'\nAlles gelukt');await b.close();process.exit(fouten?1:0)})()
